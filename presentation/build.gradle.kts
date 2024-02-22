@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ray.template.android.presentation"
+    namespace = "kr.hobbly.hobbyweekly.android.presentation"
     compileSdk = libs.versions.sdk.compile.get().toInt()
 
     defaultConfig {

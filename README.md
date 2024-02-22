@@ -1,4 +1,4 @@
-# Android-Template
+# Android-HobbyWeekly
 
 [![Android CI](https://github.com/ajou4095/template-android/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/ajou4095/template-android/actions/workflows/android.yml)
 

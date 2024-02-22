@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "template"
+rootProject.name = "Hobby Weekly"
 include(":app")
 include(":common")
 include(":presentation")
