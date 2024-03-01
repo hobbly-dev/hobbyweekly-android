@@ -91,8 +91,9 @@ holix-bottomsheet = { module = "com.holix.android:bottomsheetdialog-compose", ve
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 sentry = { module = "io.sentry:sentry-android", version.ref = "sentry" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 # Debug
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3-logging-interceptor" }
@@ -118,4 +119,4 @@ androidx-presentation = ["androidx-core", "androidx-appcompat", "androidx-compos
 androidx-data = ["androidx-room-runtime", "androidx-room-coroutine", "androidx-paging-runtime"]
 network = ["ktor-core", "ktor-okhttp", "ktor-resources", "ktor-content-negotiation", "ktor-kotlinx-serialization",
     "ktor-auth", "kotlinx-serialization"]
-logging = ["timber", "sentry", "firebase-analytics", "firebase-crashlytics"]
+logging = ["timber", "sentry", "firebase-analytics", "firebase-crashlytics", "firebase-messaging"]

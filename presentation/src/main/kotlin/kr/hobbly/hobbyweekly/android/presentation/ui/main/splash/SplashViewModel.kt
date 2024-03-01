@@ -25,6 +25,10 @@ class SplashViewModel @Inject constructor(
     val event: EventFlow<SplashEvent> = _event.asEventFlow()
 
     init {
+        // TODO : FCM Token 처리
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            val refreshedToken = task.result ?: return@addOnCompleteListener
+//        }
         launch {
             login()
         }
