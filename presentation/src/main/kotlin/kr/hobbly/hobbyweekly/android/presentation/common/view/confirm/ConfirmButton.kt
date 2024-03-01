@@ -15,13 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue100
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue400
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray300
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray400
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray700
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray800
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HobbyWeeklyTheme
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral700
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral800
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Pink
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 
@@ -41,24 +41,24 @@ fun ConfirmButton(
     }
 
     val backgroundColor = when (properties.type) {
-        ConfirmButtonType.Primary -> if (isEnabled) Blue400 else Gray400
-        ConfirmButtonType.Secondary -> Gray300
-        ConfirmButtonType.Tertiary -> Blue100
+        ConfirmButtonType.Primary -> if (isEnabled) Red else Neutral400
+        ConfirmButtonType.Secondary -> Neutral300
+        ConfirmButtonType.Tertiary -> Pink
         ConfirmButtonType.Outline -> White
     }
 
     val textColor = when (properties.type) {
         ConfirmButtonType.Primary -> White
-        ConfirmButtonType.Secondary -> Gray700
-        ConfirmButtonType.Tertiary -> Blue400
-        ConfirmButtonType.Outline -> Gray800
+        ConfirmButtonType.Secondary -> Neutral700
+        ConfirmButtonType.Tertiary -> Red
+        ConfirmButtonType.Outline -> Neutral800
     }
 
     val border = when (properties.type) {
         ConfirmButtonType.Primary -> null
         ConfirmButtonType.Secondary -> null
         ConfirmButtonType.Tertiary -> null
-        ConfirmButtonType.Outline -> BorderStroke(1.dp, Gray800)
+        ConfirmButtonType.Outline -> BorderStroke(1.dp, Neutral800)
     }
 
     val height = when (properties.size) {

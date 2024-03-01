@@ -30,8 +30,8 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.BlueGray300
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray200
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -99,14 +99,14 @@ private fun HomeBottomBarScreen(
         modifier = Modifier
             .fillMaxWidth()
             .height(Space56),
-        containerColor = Gray200,
+        containerColor = Neutral200,
         tonalElevation = 10.dp
     ) {
         itemList.forEach { item ->
             NavigationBarItem(
                 selected = item == selectedHomeType,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BlueGray300
+                    selectedIconColor = Neutral300
                 ),
                 icon = {
                     Icon(

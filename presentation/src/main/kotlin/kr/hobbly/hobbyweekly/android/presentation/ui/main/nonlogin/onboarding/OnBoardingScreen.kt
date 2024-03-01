@@ -35,8 +35,8 @@ import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray400
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray900
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
@@ -110,7 +110,7 @@ fun OnBoardingScreen(
                     val isSelected = pagerState.currentPage == index
 
                     val color by animateColorAsState(
-                        targetValue = if (isSelected) Gray900 else Gray400,
+                        targetValue = if (isSelected) Neutral900 else Neutral400,
                         label = "iteration color"
                     )
 
