@@ -22,8 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.holix.android.bottomsheetdialog.compose.BottomSheetDialog
 import com.holix.android.bottomsheetdialog.compose.BottomSheetDialogProperties
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Body0
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius12
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
@@ -70,7 +70,7 @@ private fun BottomSheetScreenPreview() {
             ) {
                 Text(
                     text = "제목",
-                    style = Body0
+                    style = TitleMedium
                 )
 
                 Spacer(

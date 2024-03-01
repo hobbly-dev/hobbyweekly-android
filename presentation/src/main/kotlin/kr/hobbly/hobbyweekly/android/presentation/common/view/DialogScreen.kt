@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kr.hobbly.hobbyweekly.android.presentation.R
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Body0
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Headline0
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
@@ -61,7 +61,7 @@ fun DialogScreen(
             ) {
                 Text(
                     text = title,
-                    style = Headline0
+                    style = HeadlineRegular
                 )
 
                 if (message.isNotEmpty()) {
@@ -69,7 +69,7 @@ fun DialogScreen(
 
                     Text(
                         text = message,
-                        style = Body0,
+                        style = TitleMedium,
                         textAlign = TextAlign.Center
                     )
                 }

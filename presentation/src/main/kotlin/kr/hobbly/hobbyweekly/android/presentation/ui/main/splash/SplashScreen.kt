@@ -21,7 +21,7 @@ import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Headline1
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.NonLoginConstant
@@ -74,7 +74,7 @@ fun SplashScreen(
         )
         Text(
             text = stringResource(id = R.string.app_name),
-            style = Headline1
+            style = HeadlineRegular
         )
     }
 

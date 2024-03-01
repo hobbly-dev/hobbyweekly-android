@@ -22,7 +22,7 @@ import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Headline0
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -62,7 +62,7 @@ fun LoginScreen(
         Text(
             modifier = Modifier.padding(horizontal = Space20),
             text = stringResource(R.string.app_name),
-            style = Headline0
+            style = HeadlineRegular
         )
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(

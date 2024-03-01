@@ -17,7 +17,7 @@ import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Body0
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 
@@ -68,7 +68,7 @@ private fun MyPageScreen(
     ) {
         Text(
             text = "MyPageScreen",
-            style = Body0
+            style = TitleMedium
         )
     }
 

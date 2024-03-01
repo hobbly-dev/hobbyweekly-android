@@ -17,14 +17,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue100
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue400
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Body1
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Caption2
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray300
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray700
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Gray800
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Headline2
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HobbyWeeklyTheme
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 
 @Composable
@@ -36,10 +34,10 @@ fun ConfirmButton(
     content: @Composable RowScope.(TextStyle) -> Unit
 ) {
     val textStyle = when (properties.size) {
-        ConfirmButtonSize.Xlarge -> Headline2
-        ConfirmButtonSize.Large -> Body1
-        ConfirmButtonSize.Medium -> Body1
-        ConfirmButtonSize.Small -> Caption2
+        ConfirmButtonSize.Xlarge -> TitleMedium
+        ConfirmButtonSize.Large -> TitleMedium
+        ConfirmButtonSize.Medium -> TitleMedium
+        ConfirmButtonSize.Small -> TitleMedium
     }
 
     val backgroundColor = when (properties.type) {
