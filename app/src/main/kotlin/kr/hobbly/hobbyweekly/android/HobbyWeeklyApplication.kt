@@ -5,6 +5,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
+import com.kakao.sdk.common.util.Utility
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -23,5 +24,7 @@ open class HobbyWeeklyApplication : Application() {
 
     private fun initializeKakaoTalk() {
         KakaoSdk.init(this, getString(R.string.key_kakao_app))
+        var keyHash = Utility.getKeyHash(this)
+        println("keyHash: $keyHash")
     }
 }

@@ -1,6 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.login
 
 import androidx.compose.runtime.Immutable
+import com.kakao.sdk.auth.model.OAuthToken
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 
@@ -26,5 +27,5 @@ sealed interface LoginEvent {
 }
 
 sealed interface LoginIntent {
-    data object OnConfirm : LoginIntent
+    data class Login(val token: OAuthToken) : LoginIntent
 }

@@ -1,6 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.login
 
 import androidx.lifecycle.SavedStateHandle
+import com.kakao.sdk.auth.model.OAuthToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,13 +29,15 @@ class LoginViewModel @Inject constructor(
 
     fun onIntent(intent: LoginIntent) {
         when (intent) {
-            is LoginIntent.OnConfirm -> {
-                login()
+            is LoginIntent.Login -> {
+                login(intent.token)
             }
         }
     }
 
-    private fun login() {
+    private fun login(
+        token: OAuthToken
+    ) {
         launch {
             _state.value = LoginState.Loading
 
