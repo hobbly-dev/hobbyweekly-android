@@ -15,7 +15,7 @@ sealed class HomeType(
     @Parcelize
     data object MyPage : HomeType(
         route = MyPageConstant.ROUTE,
-        iconRes = R.drawable.ic_account
+        iconRes = R.drawable.img_setting
     )
 
     companion object {
