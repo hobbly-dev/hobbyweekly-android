@@ -25,6 +25,6 @@ val Neutral900 = Color(0xFF1D1B20)
 val Warning = Color(0xFFFF0003)
 val Success = Color(0xFF00BF1F)
 
-val Transparent = Color(0xFF00ffff)
-val White = Color(0xFFffffff)
+val Transparent = Color(0x00FFFFFF)
+val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)

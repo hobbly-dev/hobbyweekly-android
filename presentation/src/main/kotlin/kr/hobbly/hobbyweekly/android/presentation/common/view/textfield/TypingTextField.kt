@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -37,6 +38,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Shapes
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 
@@ -87,7 +89,8 @@ fun TypingTextField(
                 isTextFieldFocused = it.isFocused
                 onTextFieldFocusChange(it.isFocused)
             }
-            .padding(horizontal = 15.dp),
+            .padding(horizontal = 15.dp)
+            .height(40.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         leadingIconContent()
@@ -121,8 +124,11 @@ fun TypingTextField(
                         style = LabelMedium.merge(Neutral400)
                     )
                 },
-                contentPadding = PaddingValues(vertical = 13.dp),
-                colors = OutlinedTextFieldDefaults.colors()
+                contentPadding = PaddingValues(0.dp),
+                colors = OutlinedTextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = Transparent,
+                    unfocusedIndicatorColor = Transparent,
+                )
             )
         }
         trailingIconContent()

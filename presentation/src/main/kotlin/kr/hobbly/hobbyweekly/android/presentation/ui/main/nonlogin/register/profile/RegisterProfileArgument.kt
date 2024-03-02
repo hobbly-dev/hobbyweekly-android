@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.pro
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
+import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
 @Immutable
 data class RegisterProfileArgument(
@@ -19,6 +20,16 @@ sealed interface RegisterProfileState {
 }
 
 
-sealed interface RegisterProfileEvent
+sealed interface RegisterProfileEvent {
+    sealed interface CheckNickname : RegisterProfileEvent {
+        data object Failure : CheckNickname
+    }
 
-sealed interface RegisterProfileIntent
+    sealed interface SetProfile : RegisterProfileEvent {
+        data object Success : SetProfile
+    }
+}
+
+sealed interface RegisterProfileIntent {
+    data class OnConfirm(val nickname: String, val image: GalleryImage?) : RegisterProfileIntent
+}
