@@ -1,41 +1,46 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space30
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space36
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.CommunityScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.MyPageScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.RoutineScreen
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -47,10 +52,8 @@ fun HomeScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
-    val homeTypeList = HomeType.values()
-
     val pagerState = rememberPagerState(
-        pageCount = { 3 }
+        pageCount = { data.homeTypeList.size },
     )
     var selectedHomeType: HomeType by remember { mutableStateOf(data.initialHomeType) }
 
@@ -65,20 +68,34 @@ fun HomeScreen(
                 .weight(1f),
             state = pagerState,
         ) { page ->
-            when (homeTypeList[page]) {
+            when (data.homeTypeList.getOrNull(page)) {
+                HomeType.Routine -> {
+                    RoutineScreen(navController = navController)
+                }
+
+                HomeType.Community -> {
+                    CommunityScreen(navController = navController)
+                }
+
                 HomeType.MyPage -> {
                     MyPageScreen(navController = navController)
                 }
+
+                null -> Unit
             }
         }
 
         HomeBottomBarScreen(
-            itemList = homeTypeList,
+            itemList = data.homeTypeList,
             selectedHomeType = selectedHomeType,
             onClick = {
                 selectedHomeType = it
             }
         )
+    }
+
+    LaunchedEffect(selectedHomeType) {
+        pagerState.animateScrollToPage(data.homeTypeList.indexOf(selectedHomeType))
     }
 
     LaunchedEffectWithLifecycle(event, handler) {
@@ -94,31 +111,32 @@ private fun HomeBottomBarScreen(
     selectedHomeType: HomeType,
     onClick: (HomeType) -> Unit
 ) {
-
-    NavigationBar(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(Space56),
-        containerColor = Neutral200,
-        tonalElevation = 10.dp
+        horizontalArrangement = Arrangement.spacedBy(Space30, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         itemList.forEach { item ->
-            NavigationBarItem(
-                selected = item == selectedHomeType,
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Neutral300
-                ),
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(Space24),
-                        painter = painterResource(id = item.iconRes),
-                        contentDescription = "bottom icon"
-                    )
-                },
-                onClick = {
-                    onClick(item)
-                }
-            )
+            val isSelected = item == selectedHomeType
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+//                    .background(
+//                        if (isSelected) Red else Neutral100
+//                    )
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(Space36)
+                        .clickable {
+                            onClick(item)
+                        },
+                    painter = painterResource(item.iconRes),
+                    contentDescription = null,
+                )
+            }
         }
     }
 }
@@ -136,7 +154,8 @@ private fun HomeScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = HomeData(
-            initialHomeType = HomeType.MyPage
+            initialHomeType = HomeType.MyPage,
+            homeTypeList = emptyList()
         )
     )
 }
