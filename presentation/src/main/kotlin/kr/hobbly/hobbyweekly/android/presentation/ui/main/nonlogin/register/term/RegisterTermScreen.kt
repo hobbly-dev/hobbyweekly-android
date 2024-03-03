@@ -79,7 +79,11 @@ fun RegisterTermScreen(
     val isConfirmButtonEnabled = state != RegisterTermState.Loading && isNecessaryTermChecked
 
     fun navigateToRegisterProfile() {
-        navController.navigate(RegisterProfileConstant.ROUTE)
+        navController.navigate(RegisterProfileConstant.ROUTE) {
+            popUpTo(RegisterTermConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     Column(

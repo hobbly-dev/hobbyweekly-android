@@ -42,7 +42,11 @@ fun RegisterResultScreen(
     val scope = rememberCoroutineScope() + handler
 
     fun navigateToHome() {
-        navController.navigate(HomeConstant.ROUTE)
+        navController.navigate(HomeConstant.ROUTE) {
+            popUpTo(RegisterResultConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     Column(

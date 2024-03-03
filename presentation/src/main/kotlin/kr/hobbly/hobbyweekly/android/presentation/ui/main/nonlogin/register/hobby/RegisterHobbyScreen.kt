@@ -74,7 +74,11 @@ fun RegisterHobbyScreen(
     val isConfirmButtonEnabled = state != RegisterHobbyState.Loading && isMinimumHobbyChecked
 
     fun navigateToRegisterResult() {
-        navController.navigate(RegisterResultConstant.ROUTE)
+        navController.navigate(RegisterResultConstant.ROUTE) {
+            popUpTo(RegisterHobbyConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     Column(

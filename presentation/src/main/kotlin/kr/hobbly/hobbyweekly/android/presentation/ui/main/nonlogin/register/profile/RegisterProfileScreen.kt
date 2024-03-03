@@ -82,7 +82,11 @@ fun RegisterProfileScreen(
     }
 
     fun navigateToRegisterHobby() {
-        navController.navigate(RegisterHobbyConstant.ROUTE)
+        navController.navigate(RegisterHobbyConstant.ROUTE) {
+            popUpTo(RegisterProfileConstant.ROUTE) {
+                inclusive = true
+            }
+        }
     }
 
     Column(
