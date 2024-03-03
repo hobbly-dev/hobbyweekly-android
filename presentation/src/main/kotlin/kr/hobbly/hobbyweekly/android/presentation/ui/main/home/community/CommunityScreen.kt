@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -90,8 +92,8 @@ private fun CommunityScreen(
         Box(
             modifier = Modifier
                 .height(Space56)
+                .background(White)
                 .fillMaxWidth()
-                .padding(horizontal = Space20)
         ) {
             Text(
                 text = "하비위클리",
@@ -99,12 +101,15 @@ private fun CommunityScreen(
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
             RippleBox(
-                modifier = Modifier.align(Alignment.CenterEnd),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = Space20),
                 onClick = {
                     navigateToNotification()
                 }
             ) {
                 Icon(
+                    modifier = Modifier.size(Space24),
                     painter = painterResource(R.drawable.ic_notification),
                     contentDescription = null,
                     tint = Neutral900
