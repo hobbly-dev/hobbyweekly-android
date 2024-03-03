@@ -19,6 +19,12 @@ sealed interface RegisterTermState {
 }
 
 
-sealed interface RegisterTermEvent
+sealed interface RegisterTermEvent {
+    sealed interface PatchTerm : RegisterTermEvent {
+        data object Success : PatchTerm
+    }
+}
 
-sealed interface RegisterTermIntent
+sealed interface RegisterTermIntent {
+    data class OnConfirm(val checkedTermList: List<String>) : RegisterTermIntent
+}

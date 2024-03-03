@@ -28,10 +28,19 @@ fun NavGraphBuilder.registerTermDestination(
             )
         }
 
+        val data: RegisterTermData = let {
+            val termList by viewModel.termList.collectAsStateWithLifecycle()
+
+            RegisterTermData(
+                termList = termList
+            )
+        }
+
         ErrorObserver(viewModel)
         RegisterTermScreen(
             navController = navController,
-            argument = argument
+            argument = argument,
+            data = data
         )
     }
 }
