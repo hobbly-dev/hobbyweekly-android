@@ -28,10 +28,19 @@ fun NavGraphBuilder.registerHobbyDestination(
             )
         }
 
+        val data: RegisterHobbyData = let {
+            val hobbyList by viewModel.hobbyList.collectAsStateWithLifecycle()
+
+            RegisterHobbyData(
+                hobbyList = hobbyList
+            )
+        }
+
         ErrorObserver(viewModel)
         RegisterHobbyScreen(
             navController = navController,
-            argument = argument
+            argument = argument,
+            data = data
         )
     }
 }

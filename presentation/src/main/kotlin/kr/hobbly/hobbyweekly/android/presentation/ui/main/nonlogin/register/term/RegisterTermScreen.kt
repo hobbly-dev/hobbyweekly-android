@@ -128,7 +128,7 @@ fun RegisterTermScreen(
             }
         ) { style ->
             Text(
-                text = "서비스 이용하기",
+                text = "다음",
                 style = style
             )
         }

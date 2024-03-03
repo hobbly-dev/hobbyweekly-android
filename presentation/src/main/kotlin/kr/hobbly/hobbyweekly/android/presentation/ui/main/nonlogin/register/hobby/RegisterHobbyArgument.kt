@@ -19,6 +19,12 @@ sealed interface RegisterHobbyState {
 }
 
 
-sealed interface RegisterHobbyEvent
+sealed interface RegisterHobbyEvent {
+    sealed interface PatchHobby : RegisterHobbyEvent {
+        data object Success : PatchHobby
+    }
+}
 
-sealed interface RegisterHobbyIntent
+sealed interface RegisterHobbyIntent {
+    data class OnConfirm(val checkedHobbyList: List<String>) : RegisterHobbyIntent
+}

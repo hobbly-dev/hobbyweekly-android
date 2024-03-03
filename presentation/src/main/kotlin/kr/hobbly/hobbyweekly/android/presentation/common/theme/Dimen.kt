@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.presentation.common.theme
 import androidx.compose.ui.unit.dp
 
 val Space4 = 4.dp
+val Space6 = 6.dp
 val Space8 = 8.dp
 val Space10 = 10.dp
 val Space12 = 12.dp
