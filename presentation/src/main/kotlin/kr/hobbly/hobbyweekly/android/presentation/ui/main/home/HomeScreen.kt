@@ -29,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
@@ -41,6 +40,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space30
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space36
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.CommunityScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.MyPageScreen
@@ -70,7 +70,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(White)
     ) {
         HorizontalPager(
             modifier = Modifier
