@@ -15,7 +15,6 @@ data class RegisterResultArgument(
 
 sealed interface RegisterResultState {
     data object Init : RegisterResultState
-    data object Loading : RegisterResultState
 }
 
 
