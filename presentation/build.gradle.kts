@@ -61,8 +61,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.lottie)
 
-    implementation(libs.ted.permission)
-
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.kakao)
     implementation(libs.bundles.logging)

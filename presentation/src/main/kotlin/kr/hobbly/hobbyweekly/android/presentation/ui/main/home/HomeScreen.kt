@@ -1,5 +1,9 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,6 +61,12 @@ fun HomeScreen(
     )
     var selectedHomeType: HomeType by remember { mutableStateOf(data.initialHomeType) }
 
+    val perMissionAlbumLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -92,6 +102,14 @@ fun HomeScreen(
                 selectedHomeType = it
             }
         )
+    }
+
+    LaunchedEffect(perMissionAlbumLauncher) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            perMissionAlbumLauncher.launch(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        }
     }
 
     LaunchedEffect(selectedHomeType) {

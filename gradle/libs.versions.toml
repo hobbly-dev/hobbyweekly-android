@@ -49,8 +49,6 @@ firebase-bom = "32.7.2"
 # Debug
 leakcanary = "2.12"
 okhttp3-logging-interceptor = "4.12.0"
-# Common
-ted-permission = "3.3.0"
 
 [libraries]
 # Kotlin
@@ -87,7 +85,6 @@ ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 # UI
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
-ted-permission = { module = "io.github.ParkSangGwon:tedpermission-coroutine", version.ref = "ted-permission" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 holix-bottomsheet = { module = "com.holix.android:bottomsheetdialog-compose", version.ref = "holix-bottomsheet" }
 # Kakao
