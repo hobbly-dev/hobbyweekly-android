@@ -41,10 +41,13 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space44
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space6
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -69,7 +72,8 @@ fun RegisterProfileScreen(
     var nickname: String by rememberSaveable { mutableStateOf("") }
 
     var isNicknameDuplicated: Boolean by remember { mutableStateOf(false) }
-    val isConfirmButtonEnabled = nickname.isNotBlank() && !isNicknameDuplicated
+    val isConfirmButtonEnabled =
+        state != RegisterProfileState.Loading && nickname.isNotBlank() && !isNicknameDuplicated
 
     var isGalleryShowing by remember { mutableStateOf(false) }
 
@@ -113,7 +117,7 @@ fun RegisterProfileScreen(
                 ) {
                     image?.let {
                         AsyncImage(
-                            model = it,
+                            model = it.filePath,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -166,11 +170,22 @@ fun RegisterProfileScreen(
                 .padding(horizontal = Space40),
             text = nickname,
             hintText = "닉네임",
+            isError = isNicknameDuplicated,
             onValueChange = {
                 nickname = it
                 isNicknameDuplicated = false
             },
         )
+        if (isNicknameDuplicated) {
+            Spacer(modifier = Modifier.height(Space6))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Space44),
+                text = "이미 사용중인 닉네임입니다.",
+                style = LabelRegular.merge(Red),
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             modifier = Modifier

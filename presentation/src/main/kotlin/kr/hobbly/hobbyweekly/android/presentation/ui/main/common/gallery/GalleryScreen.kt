@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,7 +25,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,16 +56,15 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Black
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral600
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral700
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -202,8 +201,8 @@ private fun GalleryScreen(
                         )
                         DropdownMenu(
                             modifier = Modifier
-                                .width(localConfiguration.screenWidthDp.dp / 3)
-                                .padding(vertical = Space40)
+                                .requiredSizeIn(maxHeight = localConfiguration.screenHeightDp.dp - Space80)
+                                .width(localConfiguration.screenWidthDp.dp * 2 / 5)
                                 .background(White),
                             expanded = isDropDownMenuExpanded,
                             onDismissRequest = { isDropDownMenuExpanded = false },
@@ -222,7 +221,7 @@ private fun GalleryScreen(
                                             ) {
                                                 Text(
                                                     text = folder.name,
-                                                    style = BodyRegular.merge(Neutral700)
+                                                    style = TitleMedium.merge(Neutral700)
                                                 )
                                                 Spacer(modifier = Modifier.weight(1f))
                                                 if (folder.name == currentFolder.name) {
@@ -232,14 +231,6 @@ private fun GalleryScreen(
                                                         tint = Red
                                                     )
                                                 }
-                                            }
-                                            if (index != data.folderList.size - 1) {
-                                                HorizontalDivider(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(1.dp),
-                                                    color = Neutral300
-                                                )
                                             }
                                         }
                                     },
@@ -256,32 +247,38 @@ private fun GalleryScreen(
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Box(
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = rememberRipple(bounded = false),
-                            onClick = {
-                                if (currentSelectedId > 0) {
-                                    data.galleryImageList.itemSnapshotList
-                                        .find { image ->
-                                            image?.id == currentSelectedId
-                                        }
-                                        ?.let { currentImage ->
-                                            onDismissRequest()
-                                            onResult(currentImage)
-                                        }
+                if (currentSelectedId > 0) {
+                    Box(
+                        modifier = Modifier
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(bounded = false),
+                                onClick = {
+                                    if (currentSelectedId > 0) {
+                                        data.galleryImageList.itemSnapshotList
+                                            .find { image ->
+                                                image?.id == currentSelectedId
+                                            }
+                                            ?.let { currentImage ->
+                                                onDismissRequest()
+                                                onResult(currentImage)
+                                            }
+                                    }
                                 }
-                            }
+                            )
+                    ) {
+                        Text(
+                            text = "확인",
+                            style = TitleSemiBold.merge(Red)
                         )
-                ) {
+                    }
+                } else {
                     Text(
                         text = "확인",
-                        style = TitleSemiBold.merge(
-                            if (currentSelectedId > 0) Red else Neutral600
-                        )
+                        style = TitleSemiBold.merge(Neutral400)
                     )
                 }
+
                 Spacer(modifier = Modifier.width(Space20))
             }
 
@@ -330,7 +327,7 @@ private fun GalleryScreen(
     }
 }
 
-@Preview(apiLevel = 33)
+@Preview(apiLevel = 34)
 @Composable
 private fun GalleryScreenPreview() {
     GalleryScreen(

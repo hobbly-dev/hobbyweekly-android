@@ -44,7 +44,7 @@ class RegisterProfileViewModel @Inject constructor(
             _state.value = RegisterProfileState.Loading
             // TODO
             delay(1000L)
-            _event.emit(RegisterProfileEvent.CheckNickname.Failure)
+            _event.emit(RegisterProfileEvent.SetProfile.Success)
             _state.value = RegisterProfileState.Init
         }
     }

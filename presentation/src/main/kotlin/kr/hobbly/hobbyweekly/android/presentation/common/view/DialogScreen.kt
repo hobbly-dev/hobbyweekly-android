@@ -122,7 +122,7 @@ fun DialogScreen(
 
 @Preview
 @Composable
-fun DialogScreenPreview1() {
+private fun DialogScreenPreview1() {
     DialogScreen(
         title = "제목",
         message = "내용\n여러줄 넘어가면 이렇게 됨.\n가가가가가가가가가가가가가가가가가가가가가가가",
@@ -133,7 +133,7 @@ fun DialogScreenPreview1() {
 
 @Preview
 @Composable
-fun DialogScreenPreview2() {
+private fun DialogScreenPreview2() {
     DialogScreen(
         title = "제목",
         onDismissRequest = {}
