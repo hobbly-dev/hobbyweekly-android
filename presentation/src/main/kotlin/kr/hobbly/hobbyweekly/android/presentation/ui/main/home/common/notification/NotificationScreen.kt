@@ -64,7 +64,7 @@ fun NotificationScreen(
                 Icon(
                     modifier = Modifier
                         .size(Space24),
-                    painter = painterResource(R.drawable.ic_notification),
+                    painter = painterResource(R.drawable.ic_chevron_left),
                     contentDescription = null,
                     tint = Neutral900
                 )

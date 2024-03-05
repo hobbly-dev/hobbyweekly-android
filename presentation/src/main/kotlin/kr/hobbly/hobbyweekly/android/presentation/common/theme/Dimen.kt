@@ -28,4 +28,5 @@ val Space80 = 80.dp
 
 val Radius4 = 4.dp
 val Radius8 = 8.dp
+val Radius10 = 10.dp
 val Radius12 = 12.dp

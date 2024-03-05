@@ -77,6 +77,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .weight(1f),
             state = pagerState,
+            userScrollEnabled = false
         ) { page ->
             when (data.homeTypeList.getOrNull(page)) {
                 HomeType.Routine -> {
