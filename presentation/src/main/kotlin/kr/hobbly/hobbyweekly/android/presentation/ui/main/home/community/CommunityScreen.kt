@@ -35,7 +35,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.common.notification.NotificationConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
 @Composable
 fun CommunityScreen(

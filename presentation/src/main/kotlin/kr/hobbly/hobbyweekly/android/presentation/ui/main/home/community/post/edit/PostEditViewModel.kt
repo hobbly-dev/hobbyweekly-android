@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,19 +12,19 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
-class CommunityViewModel @Inject constructor(
+class PostEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel() {
 
-    private val _state: MutableStateFlow<CommunityState> = MutableStateFlow(CommunityState.Init)
-    val state: StateFlow<CommunityState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<PostEditState> = MutableStateFlow(PostEditState.Init)
+    val state: StateFlow<PostEditState> = _state.asStateFlow()
 
-    private val _event: MutableEventFlow<CommunityEvent> = MutableEventFlow()
-    val event: EventFlow<CommunityEvent> = _event.asEventFlow()
+    private val _event: MutableEventFlow<PostEditEvent> = MutableEventFlow()
+    val event: EventFlow<PostEditEvent> = _event.asEventFlow()
 
-    val initialData: String = ""
+    val initialData = ""
 
-    fun onIntent(intent: CommunityIntent) {
+    fun onIntent(intent: PostEditIntent) {
 
     }
 }

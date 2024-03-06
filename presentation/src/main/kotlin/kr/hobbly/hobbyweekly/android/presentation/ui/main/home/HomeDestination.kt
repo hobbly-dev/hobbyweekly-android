@@ -9,12 +9,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.common.notification.notificationDestination
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.communityDestination
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.myPageDestination
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.routineDestination
 
 fun NavGraphBuilder.homeDestination(
     navController: NavController
 ) {
-    notificationDestination(navController)
+    routineDestination(navController)
+    communityDestination(navController)
+    myPageDestination(navController)
     composable(
         route = HomeConstant.ROUTE_STRUCTURE,
         arguments = listOf(

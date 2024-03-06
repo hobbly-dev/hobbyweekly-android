@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.common.notification
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification
 
 import androidx.compose.runtime.Immutable
 
