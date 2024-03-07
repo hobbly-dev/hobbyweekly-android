@@ -16,6 +16,10 @@ fun NavGraphBuilder.postDestination(
     composable(
         route = PostConstant.ROUTE_STRUCTURE,
         arguments = listOf(
+            navArgument(PostConstant.ROUTE_ARGUMENT_COMMUNITY_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
+            },
             navArgument(PostConstant.ROUTE_ARGUMENT_BOARD_ID) {
                 type = NavType.LongType
                 defaultValue = -1L

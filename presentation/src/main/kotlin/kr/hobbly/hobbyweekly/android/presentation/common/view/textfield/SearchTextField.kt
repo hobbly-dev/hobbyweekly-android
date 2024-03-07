@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
@@ -40,6 +41,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral100
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius10
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
@@ -78,10 +80,8 @@ fun SearchTextField(
 
     Box(
         modifier = modifier
-            .background(
-                color = Neutral100,
-                shape = RoundedCornerShape(100.dp)
-            )
+            .clip(RoundedCornerShape(100.dp))
+            .background(Neutral100)
             .onFocusChanged {
                 isTextFieldFocused = it.isFocused
                 onTextFieldFocusChange(it.isFocused)
@@ -104,7 +104,7 @@ fun SearchTextField(
         ) {
             Spacer(modifier = Modifier.width(14.dp))
             leadingIconContent()
-            if (onClick == null) {
+            if (onClick != null) {
                 val hasText = text.isNotEmpty()
                 Text(
                     text = if (hasText) text else hintText,
