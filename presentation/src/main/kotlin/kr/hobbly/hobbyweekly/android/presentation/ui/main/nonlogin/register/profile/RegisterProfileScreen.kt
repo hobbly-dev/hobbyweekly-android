@@ -51,6 +51,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space6
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
@@ -86,7 +87,7 @@ fun RegisterProfileScreen(
     }
 
     fun navigateToRegisterHobby() {
-        navController.navigate(RegisterHobbyConstant.ROUTE) {
+        navController.safeNavigate(RegisterHobbyConstant.ROUTE) {
             popUpTo(RegisterProfileConstant.ROUTE) {
                 inclusive = true
             }

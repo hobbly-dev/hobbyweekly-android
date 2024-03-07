@@ -55,7 +55,7 @@ fun LoginScreen(
     val scope = rememberCoroutineScope() + handler
     val context = LocalContext.current
 
-    var isConfirmButtonEnabled = argument.state != LoginState.Loading
+    val isConfirmButtonEnabled = argument.state != LoginState.Loading
 
     fun navigateToHome() {
         navController.navigate(HomeConstant.ROUTE) {

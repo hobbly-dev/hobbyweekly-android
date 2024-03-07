@@ -35,6 +35,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmal
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
@@ -81,7 +82,7 @@ private fun MyPageScreen(
     val scope = rememberCoroutineScope() + handler
 
     fun navigateToNotification() {
-        navController.navigate(NotificationConstant.ROUTE)
+        navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     Column(

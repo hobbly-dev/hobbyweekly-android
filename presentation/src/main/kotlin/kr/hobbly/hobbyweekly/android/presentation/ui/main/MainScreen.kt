@@ -16,6 +16,7 @@ import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HobbyWeeklyTheme
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.homeDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.nonLoginNavGraphNavGraph
@@ -56,7 +57,7 @@ fun MainScreenRefreshFailDialog(
             title = stringResource(R.string.invalid_jwt_token_dialog_title),
             message = stringResource(R.string.invalid_jwt_token_dialog_content),
             onConfirm = {
-                navController.navigate(SplashConstant.ROUTE)
+                navController.safeNavigate(SplashConstant.ROUTE)
             },
             onDismissRequest = {
                 isInvalidTokenDialogShowing = false

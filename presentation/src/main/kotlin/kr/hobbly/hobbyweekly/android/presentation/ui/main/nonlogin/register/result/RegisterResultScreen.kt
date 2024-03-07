@@ -27,6 +27,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Success
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
@@ -42,7 +43,7 @@ fun RegisterResultScreen(
     val scope = rememberCoroutineScope() + handler
 
     fun navigateToHome() {
-        navController.navigate(HomeConstant.ROUTE) {
+        navController.safeNavigate(HomeConstant.ROUTE) {
             popUpTo(RegisterResultConstant.ROUTE) {
                 inclusive = true
             }

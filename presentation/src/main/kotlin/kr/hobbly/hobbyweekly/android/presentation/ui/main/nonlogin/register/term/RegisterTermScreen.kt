@@ -52,6 +52,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
@@ -77,7 +78,7 @@ fun RegisterTermScreen(
     val isConfirmButtonEnabled = state != RegisterTermState.Loading && isNecessaryTermChecked
 
     fun navigateToRegisterProfile() {
-        navController.navigate(RegisterProfileConstant.ROUTE) {
+        navController.safeNavigate(RegisterProfileConstant.ROUTE) {
             popUpTo(RegisterTermConstant.ROUTE) {
                 inclusive = true
             }

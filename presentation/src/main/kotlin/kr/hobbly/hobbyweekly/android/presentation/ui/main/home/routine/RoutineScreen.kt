@@ -85,6 +85,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Yellow
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
@@ -147,7 +148,7 @@ private fun RoutineScreen(
         .toList()
 
     fun navigateToNotification() {
-        navController.navigate(NotificationConstant.ROUTE)
+        navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     fun navigateToAddRoutine() {

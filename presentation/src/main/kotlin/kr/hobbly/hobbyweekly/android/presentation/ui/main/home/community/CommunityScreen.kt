@@ -85,6 +85,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
@@ -141,7 +142,7 @@ private fun CommunityScreen(
     var searchText: String by remember { mutableStateOf("") }
 
     fun navigateToNotification() {
-        navController.navigate(NotificationConstant.ROUTE)
+        navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     fun navigateToCommunitySearch() {
@@ -166,7 +167,7 @@ private fun CommunityScreen(
                 BoardConstant.ROUTE_ARGUMENT_COMMUNITY_ID to community.id
             )
         )
-        navController.navigate(route)
+        navController.safeNavigate(route)
     }
 
     fun navigateToPopularPost() {
@@ -184,7 +185,7 @@ private fun CommunityScreen(
                 PostConstant.ROUTE_ARGUMENT_POST_ID to post.id
             )
         )
-        navController.navigate(route)
+        navController.safeNavigate(route)
     }
 
     Column(

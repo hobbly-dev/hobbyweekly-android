@@ -30,6 +30,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 
 @Composable
@@ -57,8 +58,7 @@ fun NotificationScreen(
                     .align(Alignment.CenterStart)
                     .padding(start = Space20),
                 onClick = {
-                    // 더블클릭 방지 대책 세우기
-                    navController.navigateUp()
+                    navController.safeNavigateUp()
                 }
             ) {
                 Icon(
