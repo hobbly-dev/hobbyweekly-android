@@ -34,6 +34,12 @@ val TitleMedium = TextStyle(
     fontSize = 16.sp
 )
 
+val TitleSemiBoldXSmall = TextStyle(
+    fontFamily = FontFamily(Font(R.font.pretendard)),
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 15.sp
+)
+
 val TitleSemiBoldSmall = TextStyle(
     fontFamily = FontFamily(Font(R.font.pretendard)),
     fontWeight = FontWeight.SemiBold,
@@ -58,8 +64,27 @@ val LabelMedium = TextStyle(
     fontSize = 12.sp
 )
 
+val LabelSemiBold = TextStyle(
+    fontFamily = FontFamily(Font(R.font.pretendard)),
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 12.sp
+)
+
+val BodyRegularSmall = TextStyle(
+    fontFamily = FontFamily(Font(R.font.pretendard)),
+    fontWeight = FontWeight.Normal,
+    fontSize = 8.sp
+)
+
 val BodyRegular = TextStyle(
     fontFamily = FontFamily(Font(R.font.pretendard)),
     fontWeight = FontWeight.Normal,
+    fontSize = 10.sp,
+    letterSpacing = (-0.1).sp
+)
+
+val BodySemiBold = TextStyle(
+    fontFamily = FontFamily(Font(R.font.pretendard)),
+    fontWeight = FontWeight.SemiBold,
     fontSize = 10.sp
 )
