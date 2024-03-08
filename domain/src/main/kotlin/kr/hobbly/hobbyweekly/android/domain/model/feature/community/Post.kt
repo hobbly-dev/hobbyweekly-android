@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDateTime
 data class Post(
     val id: Long,
     val member: PostMember,
-    val communityId: Long,
+    val blockId: Long,
     val boardId: Long,
     val title: String,
     val description: String,

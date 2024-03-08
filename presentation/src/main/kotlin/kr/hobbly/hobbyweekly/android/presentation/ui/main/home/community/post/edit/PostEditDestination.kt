@@ -16,6 +16,10 @@ fun NavGraphBuilder.postEditDestination(
     composable(
         route = PostEditConstant.ROUTE_STRUCTURE,
         arguments = listOf(
+            navArgument(PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
+            },
             navArgument(PostEditConstant.ROUTE_ARGUMENT_BOARD_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
@@ -41,10 +45,14 @@ fun NavGraphBuilder.postEditDestination(
         }
 
         val data: PostEditData = let {
-            val initialData = viewModel.initialData
+            val blockId = viewModel.blockId
+            val boardId = viewModel.boardId
+            val postId = viewModel.postId
 
             PostEditData(
-                initialData = initialData
+                blockId = blockId,
+                boardId = boardId,
+                postId = postId
             )
         }
 

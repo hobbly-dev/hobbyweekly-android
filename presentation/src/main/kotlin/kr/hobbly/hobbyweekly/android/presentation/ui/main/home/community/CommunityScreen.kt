@@ -24,10 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +50,7 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Community
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.PostMember
 import kr.hobbly.hobbyweekly.android.presentation.R
@@ -90,8 +87,11 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.SearchTextField
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.BoardConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.popularblock.PopularBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock.SearchBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
 @Composable
@@ -139,39 +139,32 @@ private fun CommunityScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
-    var searchText: String by remember { mutableStateOf("") }
-
     fun navigateToNotification() {
         navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
-    fun navigateToCommunitySearch() {
-        // TODO
-//        navController.navigate(CommunitySearchConstant.ROUTE)
+    fun navigateToSearchBlock() {
+        navController.navigate(SearchBlockConstant.ROUTE)
     }
 
-    fun navigateToMyCommunity() {
-        // TODO
+    fun navigateToMyBlock() {
+        navController.navigate(MyBlockConstant.ROUTE)
     }
 
-    fun navigateToPopularCommunity() {
-        // TODO
+    fun navigateToPopularBlock() {
+        navController.navigate(PopularBlockConstant.ROUTE)
     }
 
-    fun navigateToBoard(
-        community: Community
+    fun navigateToBlock(
+        block: Block
     ) {
         val route = makeRoute(
-            BoardConstant.ROUTE,
+            BlockConstant.ROUTE,
             listOf(
-                BoardConstant.ROUTE_ARGUMENT_COMMUNITY_ID to community.id
+                BlockConstant.ROUTE_ARGUMENT_BLOCK_ID to block.id
             )
         )
         navController.safeNavigate(route)
-    }
-
-    fun navigateToPopularPost() {
-        // TODO
     }
 
     fun navigateToPost(
@@ -180,7 +173,7 @@ private fun CommunityScreen(
         val route = makeRoute(
             PostConstant.ROUTE,
             listOf(
-                PostConstant.ROUTE_ARGUMENT_COMMUNITY_ID to post.communityId,
+                PostConstant.ROUTE_ARGUMENT_BLOCK_ID to post.blockId,
                 PostConstant.ROUTE_ARGUMENT_BOARD_ID to post.boardId,
                 PostConstant.ROUTE_ARGUMENT_POST_ID to post.id
             )
@@ -236,7 +229,7 @@ private fun CommunityScreen(
                 )
             },
             onClick = {
-                navigateToCommunitySearch()
+                navigateToSearchBlock()
             }
         )
         Spacer(modifier = Modifier.height(Space40))
@@ -251,10 +244,10 @@ private fun CommunityScreen(
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
             Spacer(modifier = Modifier.weight(1f))
-            if (data.myCommunity.isNotEmpty()) {
+            if (data.myBlock.isNotEmpty()) {
                 RippleBox(
                     onClick = {
-                        navigateToMyCommunity()
+                        navigateToMyBlock()
                     }
                 ) {
                     Row(
@@ -274,7 +267,7 @@ private fun CommunityScreen(
                 }
             }
         }
-        if (data.myCommunity.isEmpty()) {
+        if (data.myBlock.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -294,13 +287,13 @@ private fun CommunityScreen(
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
                 items(
-                    items = data.myCommunity,
+                    items = data.myBlock,
                     key = { it.id }
-                ) { community ->
-                    CommunityScreenMyCommunityItem(
-                        community = community,
+                ) { block ->
+                    CommunityScreenMyBlockItem(
+                        block = block,
                         onClick = {
-                            navigateToBoard(it)
+                            navigateToBlock(it)
                         }
                     )
                 }
@@ -324,10 +317,10 @@ private fun CommunityScreen(
                 tint = Red
             )
             Spacer(modifier = Modifier.weight(1f))
-            if (data.popularCommunity.isNotEmpty()) {
+            if (data.popularBlock.isNotEmpty()) {
                 RippleBox(
                     onClick = {
-                        navigateToPopularCommunity()
+                        navigateToPopularBlock()
                     }
                 ) {
                     Row(
@@ -347,7 +340,7 @@ private fun CommunityScreen(
                 }
             }
         }
-        if (data.popularCommunity.isEmpty()) {
+        if (data.popularBlock.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -366,11 +359,11 @@ private fun CommunityScreen(
                 modifier = Modifier.padding(horizontal = Space20),
                 verticalArrangement = Arrangement.spacedBy(Space16)
             ) {
-                data.popularCommunity.forEach { community ->
-                    CommunityScreenPopularCommunityItem(
-                        community = community,
+                data.popularBlock.forEach { block ->
+                    CommunityScreenPopularBlockItem(
+                        block = block,
                         onClick = {
-                            navigateToBoard(it)
+                            navigateToBlock(it)
                         }
                     )
                 }
@@ -393,29 +386,6 @@ private fun CommunityScreen(
                 contentDescription = null,
                 tint = Red
             )
-            Spacer(modifier = Modifier.weight(1f))
-            if (data.popularPost.isNotEmpty()) {
-                RippleBox(
-                    onClick = {
-                        navigateToPopularPost()
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "더보기",
-                            style = LabelRegular.merge(Neutral300)
-                        )
-                        Icon(
-                            modifier = Modifier.size(21.dp),
-                            painter = painterResource(id = R.drawable.ic_chevron_right),
-                            contentDescription = null,
-                            tint = Neutral300
-                        )
-                    }
-                }
-            }
         }
         if (data.popularPost.isEmpty()) {
             Box(
@@ -438,7 +408,7 @@ private fun CommunityScreen(
             ) {
                 items(
                     items = data.popularPost,
-                    key = { "${it.communityId}/${it.boardId}/${it.id}" }
+                    key = { "${it.blockId}/${it.boardId}/${it.id}" }
                 ) { post ->
                     CommunityScreenPopularPostItem(
                         post = post,
@@ -460,9 +430,9 @@ private fun CommunityScreen(
 }
 
 @Composable
-fun CommunityScreenMyCommunityItem(
-    community: Community,
-    onClick: (Community) -> Unit
+fun CommunityScreenMyBlockItem(
+    block: Block,
+    onClick: (Block) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -471,17 +441,17 @@ fun CommunityScreenMyCommunityItem(
     ) {
         Column(
             modifier = Modifier.clickable {
-                onClick(community)
+                onClick(block)
             },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             PostImage(
-                data = community.thumbnail,
+                data = block.thumbnail,
                 modifier = Modifier.size(Space60)
             )
             Spacer(modifier = Modifier.height(Space8))
             Text(
-                text = community.name,
+                text = block.name,
                 style = BodySemiBold.merge(Neutral900)
             )
         }
@@ -489,9 +459,9 @@ fun CommunityScreenMyCommunityItem(
 }
 
 @Composable
-fun CommunityScreenPopularCommunityItem(
-    community: Community,
-    onClick: (Community) -> Unit
+fun CommunityScreenPopularBlockItem(
+    block: Block,
+    onClick: (Block) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -500,7 +470,7 @@ fun CommunityScreenPopularCommunityItem(
     ) {
         Column(
             modifier = Modifier.clickable {
-                onClick(community)
+                onClick(block)
             }
         ) {
             Spacer(modifier = Modifier.height(Space10))
@@ -509,7 +479,7 @@ fun CommunityScreenPopularCommunityItem(
             ) {
                 Spacer(modifier = Modifier.width(Space10))
                 PostImage(
-                    data = community.thumbnail,
+                    data = block.thumbnail,
                     modifier = Modifier.size(Space60)
                 )
                 Spacer(modifier = Modifier.width(Space12))
@@ -517,12 +487,12 @@ fun CommunityScreenPopularCommunityItem(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = community.name,
+                        text = block.name,
                         style = LabelMedium.merge(Neutral900)
                     )
                     Spacer(modifier = Modifier.height(Space10))
                     Text(
-                        text = community.description,
+                        text = block.description,
                         style = LabelRegular.merge(Neutral500)
                     )
                 }
@@ -675,46 +645,46 @@ private fun CommunityScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = CommunityData(
-            myCommunity = listOf(
-                Community(
+            myBlock = listOf(
+                Block(
                     id = 1,
                     name = "영어 블록",
                     description = "영어를 공부하고 인증하는 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
-                Community(
+                Block(
                     id = 2,
                     name = "요리 블록",
                     description = "취미로 요리를 하는 사람들의 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
-                Community(
+                Block(
                     id = 3,
                     name = "여행 블록",
                     description = "여행을 취미로 하는 사람들의 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
-                Community(
+                Block(
                     id = 4,
                     name = "공부 블록",
                     description = "공부를 취미로 하는 사람들의 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
-                Community(
+                Block(
                     id = 5,
                     name = "코딩 블록",
                     description = "코딩을 취미로 하는 사람들의 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
             ),
-            popularCommunity = listOf(
-                Community(
+            popularBlock = listOf(
+                Block(
                     id = 4,
                     name = "공부 블록",
                     description = "공부를 취미로 하는 사람들의 모임",
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
-                Community(
+                Block(
                     id = 5,
                     name = "코딩 블록",
                     description = "코딩을 취미로 하는 사람들의 모임",
@@ -729,7 +699,7 @@ private fun CommunityScreenPreview() {
                         name = "장성혁",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
-                    communityId = 1,
+                    blockId = 1,
                     boardId = 1,
                     title = "휴식 인증합니다",
                     description = "휴식 했습니다.",
@@ -750,7 +720,7 @@ private fun CommunityScreenPreview() {
                         name = "히카루",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
-                    communityId = 1,
+                    blockId = 1,
                     boardId = 1,
                     title = "영어 인증합니다",
                     description = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
@@ -773,7 +743,7 @@ private fun CommunityScreenPreview() {
                         name = "박상준",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
-                    communityId = 1,
+                    blockId = 1,
                     boardId = 1,
                     title = "개발 인증합니다. 오늘은 이것저것 많이 했고 어려운 내용도 많이 공부했습니다.",
                     description = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",

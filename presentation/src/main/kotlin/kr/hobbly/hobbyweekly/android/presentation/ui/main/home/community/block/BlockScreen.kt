@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,10 +17,10 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 
 @Composable
-fun BoardScreen(
+fun BlockScreen(
     navController: NavController,
-    argument: BoardArgument,
-    data: BoardData
+    argument: BlockArgument,
+    data: BlockData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
@@ -42,19 +42,18 @@ fun BoardScreen(
 
 @Preview
 @Composable
-private fun BoardScreenPreview() {
-    BoardScreen(
+private fun BlockScreenPreview() {
+    BlockScreen(
         navController = rememberNavController(),
-        argument = BoardArgument(
-            state = BoardState.Init,
+        argument = BlockArgument(
+            state = BlockState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
-        data = BoardData(
-            blockId = 1L,
-            boardId = 1L
+        data = BlockData(
+            blockId = 1L
         )
     )
 }

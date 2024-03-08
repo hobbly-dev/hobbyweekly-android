@@ -16,7 +16,7 @@ fun NavGraphBuilder.postDestination(
     composable(
         route = PostConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument(PostConstant.ROUTE_ARGUMENT_COMMUNITY_ID) {
+            navArgument(PostConstant.ROUTE_ARGUMENT_BLOCK_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
             },
@@ -45,10 +45,14 @@ fun NavGraphBuilder.postDestination(
         }
 
         val data: PostData = let {
-            val initialData = viewModel.initialData
+            val blockId = viewModel.blockId
+            val boardId = viewModel.boardId
+            val postId = viewModel.postId
 
             PostData(
-                initialData = initialData
+                blockId = blockId,
+                boardId = boardId,
+                postId = postId
             )
         }
 

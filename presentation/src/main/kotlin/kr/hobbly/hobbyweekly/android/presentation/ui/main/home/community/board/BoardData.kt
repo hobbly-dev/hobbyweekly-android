@@ -4,5 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class BoardData(
-    val initialData: String
+    val blockId: Long,
+    val boardId: Long
 )

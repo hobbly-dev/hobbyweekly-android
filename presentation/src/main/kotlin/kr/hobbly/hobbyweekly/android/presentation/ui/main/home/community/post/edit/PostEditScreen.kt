@@ -53,7 +53,9 @@ private fun PostEditScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = PostEditData(
-            initialData = ""
+            blockId = 1L,
+            boardId = 1L,
+            postId = 1L
         )
     )
 }

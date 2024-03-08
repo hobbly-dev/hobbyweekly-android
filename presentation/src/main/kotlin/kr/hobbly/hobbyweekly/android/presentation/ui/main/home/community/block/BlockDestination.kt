@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,28 +10,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
-fun NavGraphBuilder.boardDestination(
+fun NavGraphBuilder.blockDestination(
     navController: NavController
 ) {
     composable(
-        route = BoardConstant.ROUTE_STRUCTURE,
+        route = BlockConstant.ROUTE_STRUCTURE,
         arguments = listOf(
-            navArgument(BoardConstant.ROUTE_ARGUMENT_BLOCK_ID) {
-                type = NavType.LongType
-                defaultValue = -1L
-            },
-            navArgument(BoardConstant.ROUTE_ARGUMENT_BOARD_ID) {
+            navArgument(BlockConstant.ROUTE_ARGUMENT_BLOCK_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
             }
         )
     ) {
-        val viewModel: BoardViewModel = hiltViewModel()
+        val viewModel: BlockViewModel = hiltViewModel()
 
-        val argument: BoardArgument = let {
+        val argument: BlockArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            BoardArgument(
+            BlockArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -40,18 +36,16 @@ fun NavGraphBuilder.boardDestination(
             )
         }
 
-        val data: BoardData = let {
+        val data: BlockData = let {
             val blockId = viewModel.blockId
-            val boardId = viewModel.boardId
 
-            BoardData(
-                blockId = blockId,
-                boardId = boardId
+            BlockData(
+                blockId = blockId
             )
         }
 
         ErrorObserver(viewModel)
-        BoardScreen(
+        BlockScreen(
             navController = navController,
             argument = argument,
             data = data

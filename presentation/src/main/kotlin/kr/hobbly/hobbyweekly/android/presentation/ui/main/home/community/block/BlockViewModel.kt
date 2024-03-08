@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,25 +12,21 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
-class BoardViewModel @Inject constructor(
+class BlockViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel() {
 
-    private val _state: MutableStateFlow<BoardState> = MutableStateFlow(BoardState.Init)
-    val state: StateFlow<BoardState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<BlockState> = MutableStateFlow(BlockState.Init)
+    val state: StateFlow<BlockState> = _state.asStateFlow()
 
-    private val _event: MutableEventFlow<BoardEvent> = MutableEventFlow()
-    val event: EventFlow<BoardEvent> = _event.asEventFlow()
+    private val _event: MutableEventFlow<BlockEvent> = MutableEventFlow()
+    val event: EventFlow<BlockEvent> = _event.asEventFlow()
 
     val blockId: Long by lazy {
-        savedStateHandle.get<Long>(BoardConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1L
+        savedStateHandle.get<Long>(BlockConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1L
     }
 
-    val boardId: Long by lazy {
-        savedStateHandle.get<Long>(BoardConstant.ROUTE_ARGUMENT_BOARD_ID) ?: -1L
-    }
-
-    fun onIntent(intent: BoardIntent) {
+    fun onIntent(intent: BlockIntent) {
 
     }
 }

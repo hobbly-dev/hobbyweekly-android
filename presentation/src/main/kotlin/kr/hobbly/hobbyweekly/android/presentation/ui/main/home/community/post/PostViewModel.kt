@@ -22,7 +22,17 @@ class PostViewModel @Inject constructor(
     private val _event: MutableEventFlow<PostEvent> = MutableEventFlow()
     val event: EventFlow<PostEvent> = _event.asEventFlow()
 
-    val initialData = ""
+    val blockId: Long by lazy {
+        savedStateHandle.get<Long>(PostConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1L
+    }
+
+    val boardId: Long by lazy {
+        savedStateHandle.get<Long>(PostConstant.ROUTE_ARGUMENT_BOARD_ID) ?: -1L
+    }
+
+    val postId: Long by lazy {
+        savedStateHandle.get<Long>(PostConstant.ROUTE_ARGUMENT_POST_ID) ?: -1L
+    }
 
     fun onIntent(intent: PostIntent) {
 
