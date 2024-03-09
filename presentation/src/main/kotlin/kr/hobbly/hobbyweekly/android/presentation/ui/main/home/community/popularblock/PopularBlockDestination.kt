@@ -29,10 +29,10 @@ fun NavGraphBuilder.popularBlockDestination(
         }
 
         val data: PopularBlockData = let {
-            val initialData = viewModel.initialData
+            val popularBlockList by viewModel.popularBlockList.collectAsStateWithLifecycle()
 
             PopularBlockData(
-                initialData = initialData
+                popularBlockList = popularBlockList
             )
         }
 

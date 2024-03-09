@@ -238,7 +238,7 @@ fun SearchBlockScreen(
 }
 
 @Composable
-fun SearchBlockScreenBlockItem(
+private fun SearchBlockScreenBlockItem(
     block: Block,
     onClick: (Block) -> Unit
 ) {

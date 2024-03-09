@@ -430,7 +430,7 @@ private fun CommunityScreen(
 }
 
 @Composable
-fun CommunityScreenMyBlockItem(
+private fun CommunityScreenMyBlockItem(
     block: Block,
     onClick: (Block) -> Unit
 ) {
@@ -459,7 +459,7 @@ fun CommunityScreenMyBlockItem(
 }
 
 @Composable
-fun CommunityScreenPopularBlockItem(
+private fun CommunityScreenPopularBlockItem(
     block: Block,
     onClick: (Block) -> Unit
 ) {
@@ -504,7 +504,7 @@ fun CommunityScreenPopularBlockItem(
 }
 
 @Composable
-fun CommunityScreenPopularPostItem(
+private fun CommunityScreenPopularPostItem(
     post: Post,
     onClick: (Post) -> Unit
 ) {

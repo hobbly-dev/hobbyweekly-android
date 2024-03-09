@@ -29,10 +29,10 @@ fun NavGraphBuilder.myBlockDestination(
         }
 
         val data: MyBlockData = let {
-            val initialData = viewModel.initialData
+            val myBlockList by viewModel.myBlockList.collectAsStateWithLifecycle()
 
             MyBlockData(
-                initialData = initialData
+                myBlockList = myBlockList
             )
         }
 

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
@@ -23,7 +24,8 @@ class PopularBlockViewModel @Inject constructor(
     private val _event: MutableEventFlow<PopularBlockEvent> = MutableEventFlow()
     val event: EventFlow<PopularBlockEvent> = _event.asEventFlow()
 
-    val initialData: String = ""
+    private val _popularBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
+    val popularBlockList: StateFlow<List<Block>> = _popularBlockList.asStateFlow()
 
     fun onIntent(intent: PopularBlockIntent) {
 
