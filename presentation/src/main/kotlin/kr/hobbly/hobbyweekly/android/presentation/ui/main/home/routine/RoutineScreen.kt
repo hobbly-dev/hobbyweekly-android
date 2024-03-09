@@ -85,10 +85,12 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Yellow
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit.RoutineEditConstant
 
 @Composable
 fun RoutineScreen(
@@ -138,25 +140,36 @@ private fun RoutineScreen(
     val routineList: MutableList<Routine> =
         remember { mutableStateListOf(*data.routineList.toTypedArray()) }
     var selectedDate: LocalDate by remember { mutableStateOf(now) }
+    val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
 
     val currentRoutineList: List<Routine> = routineList.filter {
-        it.dayOfWeek == selectedDate.dayOfWeek.ordinal
+        it.dayOfWeekList.any { it == selectedDate.dayOfWeek.ordinal }
     }
-    val isConfirmedDayOfWeek: List<Int> = routineList.filter { it.isConfirmed }
-        .map { it.dayOfWeek }
-        .toSet()
-        .toList()
+    val isConfirmedDayOfWeek: List<Int> = routineList.map { routine ->
+        routine.dayOfWeekList.map { it to routine.isConfirmedList.contains(it) }
+    }.flatten().groupBy { it.first }.map { (key, value) ->
+        Triple(key, value.count(), value.count { it.second })
+    }.map { (key, count, confirmedCount) ->
+        val isConfirmed = count == confirmedCount
+        if (isConfirmed) key else null
+    }.filterNotNull()
 
     fun navigateToNotification() {
         navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
     fun navigateToAddRoutine() {
-
+        navController.safeNavigate(RoutineEditConstant.ROUTE)
     }
 
     fun navigateToEditRoutine(routine: Routine) {
-
+        val route = makeRoute(
+            RoutineEditConstant.ROUTE,
+            listOf(
+                RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID to routine.id
+            )
+        )
+        navController.safeNavigate(route)
     }
 
     Column(
@@ -257,6 +270,7 @@ private fun RoutineScreen(
             ) { routine ->
                 RoutineScreenItem(
                     routine = routine,
+                    selectedDayOfWeek = selectedDayOfWeek,
                     onEnableStateChanged = {
                         val index = routineList.indexOfFirst { it.id == routine.id }
                         val fixedRoutine = routine.copy(isEnabled = it)
@@ -265,7 +279,10 @@ private fun RoutineScreen(
                     },
                     onConfirm = {
                         val index = routineList.indexOfFirst { it.id == routine.id }
-                        val fixedRoutine = routine.copy(isConfirmed = true)
+                        val fixedConfirmedList = routine.isConfirmedList.toMutableList().apply {
+                            add(selectedDate.dayOfWeek.ordinal)
+                        }
+                        val fixedRoutine = routine.copy(isConfirmedList = fixedConfirmedList)
                         routineList[index] = fixedRoutine
                         intent(RoutineIntent.OnEditRoutine(fixedRoutine))
                     },
@@ -408,13 +425,14 @@ private fun RoutineScreenCalendar(
 @Composable
 fun RoutineScreenItem(
     routine: Routine,
+    selectedDayOfWeek: Int,
     onEnableStateChanged: (Boolean) -> Unit,
     onConfirm: () -> Unit,
     onEdit: () -> Unit
 ) {
     val containerColor = if (!routine.isEnabled) {
         Neutral200
-    } else when (routine.dayOfWeek) {
+    } else when (selectedDayOfWeek) {
         0 -> Red
         1 -> Orange
         2 -> Yellow
@@ -526,7 +544,7 @@ fun RoutineScreenItem(
                     ) {
                         Box(
                             modifier = Modifier.clickable {
-                                if (!routine.isConfirmed) {
+                                if (!routine.isConfirmedList.contains(selectedDayOfWeek)) {
                                     onConfirm()
                                 }
                             }
@@ -536,7 +554,7 @@ fun RoutineScreenItem(
                                     horizontal = Space12,
                                     vertical = Space4
                                 ),
-                                text = if (routine.isConfirmed) "인증완료" else "인증하기",
+                                text = if (routine.isConfirmedList.contains(selectedDayOfWeek)) "인증완료" else "인증하기",
                                 style = BodyRegular.merge(containerColor)
                             )
                         }
@@ -566,11 +584,11 @@ private fun RoutineScreenPreview() {
                 Routine(
                     id = 0,
                     blockName = "블록 이름",
-                    dayOfWeek = 0,
+                    dayOfWeekList = listOf(0, 1, 2),
                     description = "설명",
                     alarmTime = null,
                     isEnabled = true,
-                    isConfirmed = false
+                    isConfirmedList = listOf(0, 1)
                 )
             )
         )

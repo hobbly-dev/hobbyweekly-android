@@ -5,4 +5,14 @@ data class Block(
     val name: String,
     val description: String,
     val thumbnail: String
-)
+) {
+    companion object {
+        val empty = Block(
+            id = 0,
+            name = "",
+            description = "",
+            thumbnail = ""
+        )
+    }
+}
+
