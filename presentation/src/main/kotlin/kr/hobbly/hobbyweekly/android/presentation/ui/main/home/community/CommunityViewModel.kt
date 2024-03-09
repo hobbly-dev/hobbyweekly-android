@@ -33,16 +33,16 @@ class CommunityViewModel @Inject constructor(
 
     private val _communityData: MutableStateFlow<CommunityData> = MutableStateFlow(
         CommunityData(
-            myBlock = listOf(),
-            popularBlock = listOf(),
-            popularPost = listOf()
+            myBlockList = listOf(),
+            popularBlockList = listOf(),
+            popularPostList = listOf()
         )
     )
     val communityData: StateFlow<CommunityData> = _communityData.asStateFlow()
 
     init {
         _communityData.value = CommunityData(
-            myBlock = listOf(
+            myBlockList = listOf(
                 Block(
                     id = 1,
                     name = "영어 블록",
@@ -74,7 +74,7 @@ class CommunityViewModel @Inject constructor(
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
             ),
-            popularBlock = listOf(
+            popularBlockList = listOf(
                 Block(
                     id = 4,
                     name = "공부 블록",
@@ -88,7 +88,7 @@ class CommunityViewModel @Inject constructor(
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 )
             ),
-            popularPost = listOf(
+            popularPostList = listOf(
                 Post(
                     id = 1,
                     member = PostMember(

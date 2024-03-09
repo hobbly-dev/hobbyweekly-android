@@ -16,9 +16,12 @@ data class SearchBlockArgument(
 sealed interface SearchBlockState {
     data object Init : SearchBlockState
     data object Loading : SearchBlockState
+    data object SearchResult : SearchBlockState
 }
 
 
 sealed interface SearchBlockEvent
 
-sealed interface SearchBlockIntent
+sealed interface SearchBlockIntent {
+    data class Search(val keyword: String) : SearchBlockIntent
+}

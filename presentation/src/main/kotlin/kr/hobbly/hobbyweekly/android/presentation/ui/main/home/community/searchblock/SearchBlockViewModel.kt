@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
@@ -23,9 +24,25 @@ class SearchBlockViewModel @Inject constructor(
     private val _event: MutableEventFlow<SearchBlockEvent> = MutableEventFlow()
     val event: EventFlow<SearchBlockEvent> = _event.asEventFlow()
 
-    val initialData: String = ""
+    private val _suggestBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
+    val suggestBlockList: StateFlow<List<Block>> = _suggestBlockList.asStateFlow()
+
+    private val _searchBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
+    val searchBlockList: StateFlow<List<Block>> = _searchBlockList.asStateFlow()
 
     fun onIntent(intent: SearchBlockIntent) {
+        when (intent) {
+            is SearchBlockIntent.Search -> {
+                search(intent.keyword)
+            }
+        }
+    }
 
+    private fun search(keyword: String) {
+        launch {
+            _state.value = SearchBlockState.Loading
+
+            _state.value = SearchBlockState.SearchResult
+        }
     }
 }

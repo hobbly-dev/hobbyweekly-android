@@ -6,7 +6,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
 @Immutable
 data class CommunityData(
-    val myBlock: List<Block>,
-    val popularBlock: List<Block>,
-    val popularPost: List<Post>
+    val myBlockList: List<Block>,
+    val popularBlockList: List<Block>,
+    val popularPostList: List<Post>
 )

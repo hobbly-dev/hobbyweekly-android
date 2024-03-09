@@ -28,10 +28,21 @@ fun NavGraphBuilder.searchBlockDestination(
             )
         }
 
+        val data: SearchBlockData = let {
+            val suggestBlockList by viewModel.suggestBlockList.collectAsStateWithLifecycle()
+            val searchBlockList by viewModel.searchBlockList.collectAsStateWithLifecycle()
+
+            SearchBlockData(
+                suggestBlockList = suggestBlockList,
+                searchBlockList = searchBlockList
+            )
+        }
+
         ErrorObserver(viewModel)
         SearchBlockScreen(
             navController = navController,
-            argument = argument
+            argument = argument,
+            data = data
         )
     }
 }

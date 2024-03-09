@@ -144,15 +144,15 @@ private fun CommunityScreen(
     }
 
     fun navigateToSearchBlock() {
-        navController.navigate(SearchBlockConstant.ROUTE)
+        navController.safeNavigate(SearchBlockConstant.ROUTE)
     }
 
     fun navigateToMyBlock() {
-        navController.navigate(MyBlockConstant.ROUTE)
+        navController.safeNavigate(MyBlockConstant.ROUTE)
     }
 
     fun navigateToPopularBlock() {
-        navController.navigate(PopularBlockConstant.ROUTE)
+        navController.safeNavigate(PopularBlockConstant.ROUTE)
     }
 
     fun navigateToBlock(
@@ -244,7 +244,7 @@ private fun CommunityScreen(
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
             Spacer(modifier = Modifier.weight(1f))
-            if (data.myBlock.isNotEmpty()) {
+            if (data.myBlockList.isNotEmpty()) {
                 RippleBox(
                     onClick = {
                         navigateToMyBlock()
@@ -267,7 +267,7 @@ private fun CommunityScreen(
                 }
             }
         }
-        if (data.myBlock.isEmpty()) {
+        if (data.myBlockList.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -287,7 +287,7 @@ private fun CommunityScreen(
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
                 items(
-                    items = data.myBlock,
+                    items = data.myBlockList,
                     key = { it.id }
                 ) { block ->
                     CommunityScreenMyBlockItem(
@@ -317,7 +317,7 @@ private fun CommunityScreen(
                 tint = Red
             )
             Spacer(modifier = Modifier.weight(1f))
-            if (data.popularBlock.isNotEmpty()) {
+            if (data.popularBlockList.isNotEmpty()) {
                 RippleBox(
                     onClick = {
                         navigateToPopularBlock()
@@ -340,7 +340,7 @@ private fun CommunityScreen(
                 }
             }
         }
-        if (data.popularBlock.isEmpty()) {
+        if (data.popularBlockList.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -359,7 +359,7 @@ private fun CommunityScreen(
                 modifier = Modifier.padding(horizontal = Space20),
                 verticalArrangement = Arrangement.spacedBy(Space16)
             ) {
-                data.popularBlock.forEach { block ->
+                data.popularBlockList.forEach { block ->
                     CommunityScreenPopularBlockItem(
                         block = block,
                         onClick = {
@@ -387,7 +387,7 @@ private fun CommunityScreen(
                 tint = Red
             )
         }
-        if (data.popularPost.isEmpty()) {
+        if (data.popularPostList.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -407,7 +407,7 @@ private fun CommunityScreen(
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
                 items(
-                    items = data.popularPost,
+                    items = data.popularPostList,
                     key = { "${it.blockId}/${it.boardId}/${it.id}" }
                 ) { post ->
                     CommunityScreenPopularPostItem(
@@ -645,7 +645,7 @@ private fun CommunityScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = CommunityData(
-            myBlock = listOf(
+            myBlockList = listOf(
                 Block(
                     id = 1,
                     name = "영어 블록",
@@ -677,7 +677,7 @@ private fun CommunityScreenPreview() {
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 ),
             ),
-            popularBlock = listOf(
+            popularBlockList = listOf(
                 Block(
                     id = 4,
                     name = "공부 블록",
@@ -691,7 +691,7 @@ private fun CommunityScreenPreview() {
                     thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 )
             ),
-            popularPost = listOf(
+            popularPostList = listOf(
                 Post(
                     id = 1,
                     member = PostMember(

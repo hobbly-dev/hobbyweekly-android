@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,7 +42,6 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral100
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius10
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
@@ -57,7 +57,10 @@ fun SearchTextField(
     isEnabled: Boolean = true,
     minLines: Int = 1,
     maxTextLength: Int = 100,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text,
+        imeAction = ImeAction.Search
+    ),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingIconContent: (@Composable () -> Unit) = {},
