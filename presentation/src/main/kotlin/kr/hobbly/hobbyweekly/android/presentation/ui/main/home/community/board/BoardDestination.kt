@@ -40,15 +40,7 @@ fun NavGraphBuilder.boardDestination(
             )
         }
 
-        val data: BoardData = let {
-            val blockId = viewModel.blockId
-            val boardId = viewModel.boardId
-
-            BoardData(
-                blockId = blockId,
-                boardId = boardId
-            )
-        }
+        val data: BoardData by viewModel.boardData.collectAsStateWithLifecycle()
 
         ErrorObserver(viewModel)
         BoardScreen(

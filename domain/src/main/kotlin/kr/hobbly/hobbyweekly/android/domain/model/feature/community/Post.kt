@@ -13,6 +13,8 @@ data class Post(
     val commentCount: Long,
     val likeCount: Long,
     val scrapCount: Long,
+    val isLike: Boolean,
+    val isScrap: Boolean,
     val createdAt: LocalDateTime
 )
 

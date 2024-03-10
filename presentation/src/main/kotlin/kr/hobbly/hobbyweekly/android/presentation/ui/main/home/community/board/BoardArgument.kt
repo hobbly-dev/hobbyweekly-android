@@ -19,6 +19,8 @@ sealed interface BoardState {
 }
 
 
-sealed interface BoardEvent
+sealed interface BoardEvent {
+
+}
 
 sealed interface BoardIntent

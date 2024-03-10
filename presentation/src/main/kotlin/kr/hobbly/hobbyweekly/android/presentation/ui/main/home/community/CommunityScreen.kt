@@ -707,6 +707,8 @@ private fun CommunityScreenPreview() {
                     commentCount = 0,
                     likeCount = 0,
                     scrapCount = 0,
+                    isLike = false,
+                    isScrap = false,
                     createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(1, DateTimeUnit.WEEK)
                         .atTime(
@@ -733,6 +735,8 @@ private fun CommunityScreenPreview() {
                     commentCount = 99,
                     likeCount = 99,
                     scrapCount = 99,
+                    isLike = false,
+                    isScrap = false,
                     createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .atTime(0, 0, 0)
                 ),
@@ -753,6 +757,8 @@ private fun CommunityScreenPreview() {
                     commentCount = 1,
                     likeCount = 1,
                     scrapCount = 1,
+                    isLike = false,
+                    isScrap = false,
                     createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(1, DateTimeUnit.DAY)
                         .atTime(0, 0, 0)

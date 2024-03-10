@@ -30,6 +30,9 @@ class BoardViewModel @Inject constructor(
         savedStateHandle.get<Long>(BoardConstant.ROUTE_ARGUMENT_BOARD_ID) ?: -1L
     }
 
+    private val _boardData: MutableStateFlow<BoardData> = MutableStateFlow(BoardData.empty)
+    val boardData: StateFlow<BoardData> = _boardData.asStateFlow()
+
     fun onIntent(intent: BoardIntent) {
 
     }

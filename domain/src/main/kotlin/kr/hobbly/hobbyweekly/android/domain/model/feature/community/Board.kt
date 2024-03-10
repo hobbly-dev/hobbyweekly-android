@@ -5,4 +5,13 @@ data class Board(
     val blockId: Long,
     val name: String,
     val hasNewPost: Boolean
-)
+) {
+    companion object {
+        val empty = Board(
+            id = 0,
+            blockId = 0,
+            name = "",
+            hasNewPost = false
+        )
+    }
+}
