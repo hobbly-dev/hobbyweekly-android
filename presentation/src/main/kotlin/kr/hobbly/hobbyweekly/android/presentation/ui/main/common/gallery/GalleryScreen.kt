@@ -27,7 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,7 +75,9 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 fun GalleryScreen(
     navController: NavController,
     onDismissRequest: () -> Unit,
-    onResult: (GalleryImage) -> Unit,
+    minSelectCount: Int = 1,
+    maxSelectCount: Int = 1,
+    onResult: (List<GalleryImage>) -> Unit,
     viewModel: GalleryViewModel = hiltViewModel()
 ) {
     val argument: GalleryArgument = Unit.let {
@@ -96,7 +98,9 @@ fun GalleryScreen(
 
         GalleryData(
             folderList = folderList,
-            galleryImageList = galleryImageList
+            galleryImageList = galleryImageList,
+            minSelectCount = minSelectCount,
+            maxSelectCount = maxSelectCount
         )
     }
 
@@ -115,7 +119,7 @@ private fun GalleryScreen(
     argument: GalleryArgument,
     data: GalleryData,
     onDismissRequest: () -> Unit,
-    onResult: (GalleryImage) -> Unit,
+    onResult: (List<GalleryImage>) -> Unit,
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
@@ -130,7 +134,7 @@ private fun GalleryScreen(
             onDismissRequest()
         }
     }
-    var currentSelectedId: Long by remember { mutableLongStateOf(-1) }
+    val selectedList: MutableList<Long> = remember { mutableStateListOf() }
     var isDropDownMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var currentFolder: GalleryFolder by remember { mutableStateOf(GalleryFolder.recent) }
 
@@ -235,19 +239,15 @@ private fun GalleryScreen(
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                if (currentSelectedId > 0) {
+                if (selectedList.size >= data.minSelectCount) {
                     RippleBox(
                         onClick = {
-                            if (currentSelectedId > 0) {
-                                data.galleryImageList.itemSnapshotList
-                                    .find { image ->
-                                        image?.id == currentSelectedId
-                                    }
-                                    ?.let { currentImage ->
-                                        onDismissRequest()
-                                        onResult(currentImage)
-                                    }
-                            }
+                            val list = data.galleryImageList.itemSnapshotList
+                                .filter { image ->
+                                    selectedList.any { it == image?.id }
+                                }.filterNotNull()
+                            onDismissRequest()
+                            onResult(list)
                         }
                     ) {
                         Text(
@@ -274,14 +274,15 @@ private fun GalleryScreen(
                 ) {
                     items(data.galleryImageList.itemCount) { index ->
                         data.galleryImageList[index]?.let { gallery ->
+                            val isSelected = selectedList.any { it == gallery.id }
                             GalleryItemContent(
                                 galleryImage = gallery,
-                                currentSelectedImageId = currentSelectedId,
+                                selected = isSelected,
                                 onSelectImage = {
-                                    currentSelectedId = gallery.id
+                                    selectedList.add(it.id)
                                 },
                                 onDeleteImage = {
-                                    currentSelectedId = -1
+                                    selectedList.remove(it.id)
                                 }
                             )
                         }
@@ -324,7 +325,9 @@ private fun GalleryScreenPreview() {
         ),
         data = GalleryData(
             folderList = listOf(),
-            galleryImageList = MutableStateFlow<PagingData<GalleryImage>>(PagingData.empty()).collectAsLazyPagingItems()
+            galleryImageList = MutableStateFlow<PagingData<GalleryImage>>(PagingData.empty()).collectAsLazyPagingItems(),
+            minSelectCount = 1,
+            maxSelectCount = 1
         ),
         onDismissRequest = {},
         onResult = {}

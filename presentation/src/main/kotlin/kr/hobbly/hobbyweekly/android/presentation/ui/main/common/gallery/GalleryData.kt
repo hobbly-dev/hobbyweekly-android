@@ -8,5 +8,7 @@ import androidx.paging.compose.LazyPagingItems
 @Immutable
 data class GalleryData(
     val folderList: List<GalleryFolder>,
-    val galleryImageList: LazyPagingItems<GalleryImage>
+    val galleryImageList: LazyPagingItems<GalleryImage>,
+    val minSelectCount: Int,
+    val maxSelectCount: Int
 )
