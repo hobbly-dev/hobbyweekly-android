@@ -82,7 +82,7 @@ fun RegisterProfileScreen(
         GalleryScreen(
             navController = navController,
             onDismissRequest = { isGalleryShowing = false },
-            onResult = { image = it }
+            onResult = { image = it.firstOrNull() }
         )
     }
 

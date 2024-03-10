@@ -9,7 +9,7 @@ object PostEditConstant {
     const val ROUTE_ARGUMENT_BOARD_ID = "board_id"
     const val ROUTE_ARGUMENT_POST_ID = "post_id"
     const val ROUTE_STRUCTURE =
-        PostConstant.ROUTE + "?${ROUTE_ARGUMENT_BLOCK_ID}={${ROUTE_ARGUMENT_BLOCK_ID}}" +
+        ROUTE + "?${ROUTE_ARGUMENT_BLOCK_ID}={${ROUTE_ARGUMENT_BLOCK_ID}}" +
                 "&${ROUTE_ARGUMENT_BOARD_ID}={${ROUTE_ARGUMENT_BOARD_ID}}" +
                 "&${ROUTE_ARGUMENT_POST_ID}={${ROUTE_ARGUMENT_POST_ID}}"
 }

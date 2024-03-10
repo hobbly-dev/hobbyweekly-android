@@ -10,6 +10,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
+import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
 @HiltViewModel
 class PostEditViewModel @Inject constructor(
@@ -34,7 +35,71 @@ class PostEditViewModel @Inject constructor(
         savedStateHandle.get<Long>(PostEditConstant.ROUTE_ARGUMENT_POST_ID) ?: -1L
     }
 
-    fun onIntent(intent: PostEditIntent) {
+    init {
+        if (postId != -1L) {
+            load()
+        }
+    }
 
+    fun onIntent(intent: PostEditIntent) {
+        when (intent) {
+            is PostEditIntent.OnPost -> {
+                if (postId == -1L) {
+                    edit(
+                        title = intent.title,
+                        content = intent.content,
+                        imageList = intent.imageList,
+                        isSecret = intent.isSecret,
+                        isAnonymous = intent.isAnonymous
+                    )
+                } else {
+                    post(
+                        title = intent.title,
+                        content = intent.content,
+                        imageList = intent.imageList,
+                        isSecret = intent.isSecret,
+                        isAnonymous = intent.isAnonymous
+                    )
+                }
+            }
+        }
+    }
+
+    private fun load() {
+        launch {
+            _state.value = PostEditState.Loading
+
+            _state.value = PostEditState.Init
+        }
+    }
+
+    private fun edit(
+        title: String,
+        content: String,
+        imageList: List<GalleryImage>,
+        isSecret: Boolean,
+        isAnonymous: Boolean
+    ) {
+        launch {
+            _state.value = PostEditState.Loading
+
+            _event.emit(PostEditEvent.Edit.Success)
+            _state.value = PostEditState.Init
+        }
+    }
+
+    private fun post(
+        title: String,
+        content: String,
+        imageList: List<GalleryImage>,
+        isSecret: Boolean,
+        isAnonymous: Boolean
+    ) {
+        launch {
+            _state.value = PostEditState.Loading
+
+            _event.emit(PostEditEvent.Post.Success)
+            _state.value = PostEditState.Init
+        }
     }
 }
