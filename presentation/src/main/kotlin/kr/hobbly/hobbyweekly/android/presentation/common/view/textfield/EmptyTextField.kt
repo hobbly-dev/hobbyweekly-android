@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,15 +30,16 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmptyTextField(
     text: String,
-    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit,
+    style: TextStyle = LabelMedium.merge(Neutral900),
     hintText: String = "",
+    hintStyle: TextStyle = LabelMedium.merge(Neutral400),
     isError: Boolean = false,
     isEnabled: Boolean = true,
     maxLines: Int = 1,
@@ -72,7 +74,7 @@ fun EmptyTextField(
             }
         },
         enabled = isEnabled,
-        textStyle = LabelMedium.merge(Neutral900),
+        textStyle = style,
         singleLine = maxLines == 1,
         maxLines = maxLines,
         keyboardOptions = keyboardOptions,
@@ -90,7 +92,7 @@ fun EmptyTextField(
             placeholder = {
                 Text(
                     text = hintText,
-                    style = LabelMedium.merge(Neutral400)
+                    style = hintStyle
                 )
             },
             contentPadding = PaddingValues(0.dp),
