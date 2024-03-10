@@ -55,7 +55,7 @@ fun SearchTextField(
     hintText: String = "",
     isError: Boolean = false,
     isEnabled: Boolean = true,
-    minLines: Int = 1,
+    maxLines: Int = 1,
     maxTextLength: Int = 100,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Text,
@@ -127,8 +127,8 @@ fun SearchTextField(
                     enabled = isEnabled,
                     modifier = Modifier.weight(1f),
                     textStyle = LabelMedium.merge(Neutral900),
-                    singleLine = minLines == 1,
-                    minLines = minLines,
+                    singleLine = maxLines == 1,
+                    maxLines = maxLines,
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions,
                     cursorBrush = SolidColor(value = currentColorState.value),
@@ -138,7 +138,7 @@ fun SearchTextField(
                         value = text,
                         innerTextField = textField,
                         enabled = isEnabled,
-                        singleLine = minLines == 1,
+                        singleLine = maxLines == 1,
                         visualTransformation = visualTransformation,
                         interactionSource = interactionSource,
                         placeholder = {
