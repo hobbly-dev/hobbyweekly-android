@@ -19,6 +19,12 @@ sealed interface BlockState {
 }
 
 
-sealed interface BlockEvent
+sealed interface BlockEvent {
+    sealed interface RemoveBlock : BlockEvent {
+        data object Success : RemoveBlock
+    }
+}
 
-sealed interface BlockIntent
+sealed interface BlockIntent {
+    data object OnRemove : BlockIntent
+}

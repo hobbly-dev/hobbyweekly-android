@@ -26,7 +26,23 @@ class BlockViewModel @Inject constructor(
         savedStateHandle.get<Long>(BlockConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1L
     }
 
-    fun onIntent(intent: BlockIntent) {
+    private val _blockData: MutableStateFlow<BlockData> = MutableStateFlow(BlockData.empty)
+    val blockData: StateFlow<BlockData> = _blockData.asStateFlow()
 
+    fun onIntent(intent: BlockIntent) {
+        when (intent) {
+            BlockIntent.OnRemove -> {
+                removeBlock()
+            }
+        }
+    }
+
+    private fun removeBlock() {
+        launch {
+            _state.value = BlockState.Loading
+
+            _event.emit(BlockEvent.RemoveBlock.Success)
+            _state.value = BlockState.Init
+        }
     }
 }

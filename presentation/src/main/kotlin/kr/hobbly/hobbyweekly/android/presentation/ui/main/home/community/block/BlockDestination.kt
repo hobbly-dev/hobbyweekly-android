@@ -36,13 +36,7 @@ fun NavGraphBuilder.blockDestination(
             )
         }
 
-        val data: BlockData = let {
-            val blockId = viewModel.blockId
-
-            BlockData(
-                blockId = blockId
-            )
-        }
+        val data by viewModel.blockData.collectAsStateWithLifecycle()
 
         ErrorObserver(viewModel)
         BlockScreen(
