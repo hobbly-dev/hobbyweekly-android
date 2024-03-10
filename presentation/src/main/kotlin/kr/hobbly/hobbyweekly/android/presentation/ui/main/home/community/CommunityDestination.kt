@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.blockDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.boardDestination
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.search.boardSearchDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.myBlockDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.popularblock.popularBlockDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.postEditDestination
@@ -18,6 +19,7 @@ fun NavGraphBuilder.communityDestination(
     communitySearchDestination(navController)
     blockDestination(navController)
     boardDestination(navController)
+    boardSearchDestination(navController)
     postDestination(navController)
     postEditDestination(navController)
 }

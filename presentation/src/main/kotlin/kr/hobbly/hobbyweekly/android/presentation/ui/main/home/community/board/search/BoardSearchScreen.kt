@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,17 +14,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,12 +50,12 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.PostMember
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral030
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral050
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
@@ -62,12 +68,13 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space32
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space4
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space60
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
@@ -77,22 +84,19 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.SearchTextField
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.search.BoardSearchConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
 
 @Composable
-fun BoardScreen(
+fun BoardSearchScreen(
     navController: NavController,
-    argument: BoardArgument,
-    data: BoardData
+    argument: BoardSearchArgument,
+    data: BoardSearchData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val focusRequester = remember { FocusRequester() }
 
-    fun navigateToBoardSearch() {
-        navController.safeNavigate(BoardSearchConstant.ROUTE)
-    }
+    var keyword: String by remember { mutableStateOf("") }
 
     fun navigateToPost(
         post: Post
@@ -108,23 +112,10 @@ fun BoardScreen(
         navController.safeNavigate(route)
     }
 
-    fun navigateToPostAdd(
-        board: Board
-    ) {
-        val route = makeRoute(
-            PostEditConstant.ROUTE,
-            listOf(
-                PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to board.blockId,
-                PostEditConstant.ROUTE_ARGUMENT_BOARD_ID to board.id
-            )
-        )
-        navController.safeNavigate(route)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(White)
+            .background(Neutral030)
     ) {
         Box(
             modifier = Modifier
@@ -154,71 +145,75 @@ fun BoardScreen(
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
         }
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Neutral030)
-                    .align(Alignment.TopStart)
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(Space24))
-                    SearchTextField(
-                        text = "",
-                        modifier = Modifier.padding(horizontal = Space20),
-                        hintText = "글, 제목, 내용",
-                        onValueChange = {},
-                        leadingIconContent = {
-                            Icon(
-                                modifier = Modifier.size(Space16),
-                                painter = painterResource(R.drawable.ic_search),
-                                contentDescription = null,
-                                tint = Neutral900
-                            )
-                        },
-                        onClick = {
-                            navigateToBoardSearch()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(Space24))
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = Neutral050
-                    )
+        Spacer(modifier = Modifier.height(Space24))
+        SearchTextField(
+            text = keyword,
+            modifier = Modifier
+                .padding(horizontal = Space20)
+                .focusRequester(focusRequester),
+            hintText = "관심있는 취미를 입력하세요",
+            onValueChange = { keyword = it },
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    intent(BoardSearchIntent.Search(keyword))
                 }
-                items(data.postList) { post ->
-                    BoardScreenPostItem(
-                        post = post,
-                        onClick = {
-                            navigateToPost(post)
-                        }
-                    )
-                }
-            }
+            ),
+            leadingIconContent = {
+                Icon(
+                    modifier = Modifier.size(Space16),
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = null,
+                    tint = Neutral900
+                )
+            },
+        )
+        Spacer(modifier = Modifier.height(Space40))
+        if (data.searchPostList.isEmpty()) {
             Box(
                 modifier = Modifier
-                    .padding(Space16)
-                    .align(Alignment.BottomEnd)
+                    .padding(horizontal = Space20)
+                    .fillMaxWidth()
+                    .height(100.dp)
             ) {
-                FloatingActionButton(
-                    modifier = Modifier.size(Space56),
-                    shape = CircleShape,
-                    containerColor = Red,
-                    onClick = {
-                        navigateToPostAdd(data.board)
-                    }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(Space32),
-                        painter = painterResource(id = R.drawable.ic_edit),
-                        contentDescription = null,
-                        tint = White
+                Text(
+                    text = "검색 결과가 없습니다",
+                    modifier = Modifier.align(Alignment.Center),
+                    style = LabelRegular.merge(Neutral400)
+                )
+            }
+        } else {
+            Text(
+                text = "검색결과 ${data.searchPostList.size}개",
+                modifier = Modifier.padding(horizontal = Space20),
+                style = TitleSemiBoldXSmall.merge(Neutral900)
+            )
+            Spacer(modifier = Modifier.height(Space20))
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = Neutral050
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                items(
+                    items = data.searchPostList,
+                    key = { it.id }
+                ) { post ->
+                    BoardSearchScreenPostItem(
+                        post = post,
+                        onClick = {
+                            navigateToPost(it)
+                        }
                     )
                 }
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     LaunchedEffectWithLifecycle(event, handler) {
@@ -229,7 +224,7 @@ fun BoardScreen(
 }
 
 @Composable
-private fun BoardScreenPostItem(
+private fun BoardSearchScreenPostItem(
     post: Post,
     onClick: (Post) -> Unit
 ) {
@@ -395,24 +390,18 @@ private fun BoardScreenPostItem(
 
 @Preview
 @Composable
-private fun BoardScreenPreview() {
-    BoardScreen(
+private fun BoardSearchScreenPreview() {
+    BoardSearchScreen(
         navController = rememberNavController(),
-        argument = BoardArgument(
-            state = BoardState.Init,
+        argument = BoardSearchArgument(
+            state = BoardSearchState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
-        data = BoardData(
-            board = Board(
-                id = 1,
-                blockId = 1,
-                name = "자유게시판",
-                hasNewPost = true
-            ),
-            postList = listOf(
+        data = BoardSearchData(
+            searchPostList = listOf(
                 Post(
                     id = 1,
                     member = PostMember(

@@ -129,7 +129,9 @@ fun CommunitySearchScreen(
         Spacer(modifier = Modifier.height(Space24))
         SearchTextField(
             text = keyword,
-            modifier = Modifier.padding(horizontal = Space20).focusRequester(focusRequester),
+            modifier = Modifier
+                .padding(horizontal = Space20)
+                .focusRequester(focusRequester),
             hintText = "관심있는 취미를 입력하세요",
             onValueChange = { keyword = it },
             keyboardActions = KeyboardActions(
@@ -169,7 +171,10 @@ fun CommunitySearchScreen(
                 )
                 Spacer(modifier = Modifier.height(Space20))
                 LazyColumn(
-                    modifier = Modifier.padding(horizontal = Space20),
+                    modifier = Modifier
+                        .padding(horizontal = Space20)
+                        .fillMaxWidth()
+                        .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(Space16)
                 ) {
                     items(
