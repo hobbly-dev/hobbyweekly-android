@@ -45,6 +45,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space32
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
@@ -119,7 +121,7 @@ fun RegisterTermScreen(
         Spacer(modifier = Modifier.height(Space80))
         ConfirmButton(
             modifier = Modifier
-                .padding(start = 22.5.dp, end = 22.5.dp, bottom = 55.dp)
+                .padding(start = Space20, end = Space20, bottom = Space12)
                 .fillMaxWidth(),
             properties = ConfirmButtonProperties(
                 size = ConfirmButtonSize.Large,

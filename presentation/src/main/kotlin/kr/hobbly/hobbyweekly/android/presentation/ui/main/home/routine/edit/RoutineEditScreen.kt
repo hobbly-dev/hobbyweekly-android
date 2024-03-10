@@ -198,7 +198,7 @@ fun RoutineEditScreen(
                 RippleBox(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(start = Space20),
+                        .padding(end = Space20),
                     onClick = {
                         isMenuShowing = true
                     }
@@ -392,7 +392,7 @@ fun RoutineEditScreen(
         Spacer(modifier = Modifier.height(Space80))
         ConfirmButton(
             modifier = Modifier
-                .padding(start = 22.5.dp, end = 22.5.dp, bottom = 55.dp)
+                .padding(start = Space20, end = Space20, bottom = Space12)
                 .fillMaxWidth(),
             properties = ConfirmButtonProperties(
                 size = ConfirmButtonSize.Large,

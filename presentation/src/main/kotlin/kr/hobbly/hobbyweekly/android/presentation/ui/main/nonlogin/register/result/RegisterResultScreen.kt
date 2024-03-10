@@ -23,6 +23,8 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Success
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -69,7 +71,7 @@ fun RegisterResultScreen(
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             modifier = Modifier
-                .padding(start = 22.5.dp, end = 22.5.dp, bottom = 55.dp)
+                .padding(start = Space20, end = Space20, bottom = Space12)
                 .fillMaxWidth(),
             properties = ConfirmButtonProperties(
                 size = ConfirmButtonSize.Large,

@@ -31,6 +31,8 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space30
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleRegular
@@ -90,7 +92,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.weight(1f))
         ConfirmButton(
             modifier = Modifier
-                .padding(start = 22.5.dp, end = 22.5.dp, bottom = 55.dp)
+                .padding(start = Space20, end = Space20, bottom = Space12)
                 .fillMaxWidth(),
             properties = ConfirmButtonProperties(
                 size = ConfirmButtonSize.Large,
