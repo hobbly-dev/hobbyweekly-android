@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,10 +70,10 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.SearchTe
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
 
 @Composable
-fun SearchBlockScreen(
+fun CommunitySearchScreen(
     navController: NavController,
-    argument: SearchBlockArgument,
-    data: SearchBlockData
+    argument: CommunitySearchArgument,
+    data: CommunitySearchData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
@@ -134,7 +134,7 @@ fun SearchBlockScreen(
             onValueChange = { keyword = it },
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    intent(SearchBlockIntent.Search(keyword))
+                    intent(CommunitySearchIntent.Search(keyword))
                 }
             ),
             leadingIconContent = {
@@ -147,7 +147,7 @@ fun SearchBlockScreen(
             },
         )
         Spacer(modifier = Modifier.height(Space40))
-        if (state == SearchBlockState.SearchResult) {
+        if (state == CommunitySearchState.SearchResult) {
             if (data.searchBlockList.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -176,7 +176,7 @@ fun SearchBlockScreen(
                         items = data.searchBlockList,
                         key = { it.id }
                     ) { block ->
-                        SearchBlockScreenBlockItem(
+                        CommunitySearchScreenBlockItem(
                             block = block,
                             onClick = {
                                 navigateToBlock(it)
@@ -214,7 +214,7 @@ fun SearchBlockScreen(
                         items = data.suggestBlockList,
                         key = { it.id }
                     ) { block ->
-                        SearchBlockScreenBlockItem(
+                        CommunitySearchScreenBlockItem(
                             block = block,
                             onClick = {
                                 navigateToBlock(it)
@@ -238,7 +238,7 @@ fun SearchBlockScreen(
 }
 
 @Composable
-private fun SearchBlockScreenBlockItem(
+private fun CommunitySearchScreenBlockItem(
     block: Block,
     onClick: (Block) -> Unit
 ) {
@@ -284,17 +284,17 @@ private fun SearchBlockScreenBlockItem(
 
 @Preview
 @Composable
-private fun SearchBlockScreenPreview() {
-    SearchBlockScreen(
+private fun CommunitySearchScreenPreview() {
+    CommunitySearchScreen(
         navController = rememberNavController(),
-        argument = SearchBlockArgument(
-            state = SearchBlockState.Init,
+        argument = CommunitySearchArgument(
+            state = CommunitySearchState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
-        data = SearchBlockData(
+        data = CommunitySearchData(
             suggestBlockList = listOf(
                 Block(
                     id = 1,

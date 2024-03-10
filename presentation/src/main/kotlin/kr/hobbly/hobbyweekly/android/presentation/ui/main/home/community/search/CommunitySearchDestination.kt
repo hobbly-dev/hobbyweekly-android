@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search
 
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -8,18 +8,18 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
-fun NavGraphBuilder.searchBlockDestination(
+fun NavGraphBuilder.communitySearchDestination(
     navController: NavController
 ) {
     composable(
-        route = SearchBlockConstant.ROUTE
+        route = CommunitySearchConstant.ROUTE
     ) {
-        val viewModel: SearchBlockViewModel = hiltViewModel()
+        val viewModel: CommunitySearchViewModel = hiltViewModel()
 
-        val argument: SearchBlockArgument = let {
+        val argument: CommunitySearchArgument = let {
             val state by viewModel.state.collectAsStateWithLifecycle()
 
-            SearchBlockArgument(
+            CommunitySearchArgument(
                 state = state,
                 event = viewModel.event,
                 intent = viewModel::onIntent,
@@ -28,18 +28,18 @@ fun NavGraphBuilder.searchBlockDestination(
             )
         }
 
-        val data: SearchBlockData = let {
+        val data: CommunitySearchData = let {
             val suggestBlockList by viewModel.suggestBlockList.collectAsStateWithLifecycle()
             val searchBlockList by viewModel.searchBlockList.collectAsStateWithLifecycle()
 
-            SearchBlockData(
+            CommunitySearchData(
                 suggestBlockList = suggestBlockList,
                 searchBlockList = searchBlockList
             )
         }
 
         ErrorObserver(viewModel)
-        SearchBlockScreen(
+        CommunitySearchScreen(
             navController = navController,
             argument = argument,
             data = data

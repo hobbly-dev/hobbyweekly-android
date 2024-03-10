@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock
+package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search
 
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,16 +13,16 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
-class SearchBlockViewModel @Inject constructor(
+class CommunitySearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
 ) : BaseViewModel() {
 
-    private val _state: MutableStateFlow<SearchBlockState> =
-        MutableStateFlow(SearchBlockState.Init)
-    val state: StateFlow<SearchBlockState> = _state.asStateFlow()
+    private val _state: MutableStateFlow<CommunitySearchState> =
+        MutableStateFlow(CommunitySearchState.Init)
+    val state: StateFlow<CommunitySearchState> = _state.asStateFlow()
 
-    private val _event: MutableEventFlow<SearchBlockEvent> = MutableEventFlow()
-    val event: EventFlow<SearchBlockEvent> = _event.asEventFlow()
+    private val _event: MutableEventFlow<CommunitySearchEvent> = MutableEventFlow()
+    val event: EventFlow<CommunitySearchEvent> = _event.asEventFlow()
 
     private val _suggestBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val suggestBlockList: StateFlow<List<Block>> = _suggestBlockList.asStateFlow()
@@ -30,9 +30,9 @@ class SearchBlockViewModel @Inject constructor(
     private val _searchBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val searchBlockList: StateFlow<List<Block>> = _searchBlockList.asStateFlow()
 
-    fun onIntent(intent: SearchBlockIntent) {
+    fun onIntent(intent: CommunitySearchIntent) {
         when (intent) {
-            is SearchBlockIntent.Search -> {
+            is CommunitySearchIntent.Search -> {
                 search(intent.keyword)
             }
         }
@@ -40,9 +40,9 @@ class SearchBlockViewModel @Inject constructor(
 
     private fun search(keyword: String) {
         launch {
-            _state.value = SearchBlockState.Loading
+            _state.value = CommunitySearchState.Loading
 
-            _state.value = SearchBlockState.SearchResult
+            _state.value = CommunitySearchState.SearchResult
         }
     }
 }

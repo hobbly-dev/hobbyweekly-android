@@ -91,7 +91,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.B
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.popularblock.PopularBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock.SearchBlockConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search.CommunitySearchConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
 @Composable
@@ -143,8 +143,8 @@ private fun CommunityScreen(
         navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
-    fun navigateToSearchBlock() {
-        navController.safeNavigate(SearchBlockConstant.ROUTE)
+    fun navigateToCommunitySearch() {
+        navController.safeNavigate(CommunitySearchConstant.ROUTE)
     }
 
     fun navigateToMyBlock() {
@@ -229,7 +229,7 @@ private fun CommunityScreen(
                 )
             },
             onClick = {
-                navigateToSearchBlock()
+                navigateToCommunitySearch()
             }
         )
         Spacer(modifier = Modifier.height(Space40))

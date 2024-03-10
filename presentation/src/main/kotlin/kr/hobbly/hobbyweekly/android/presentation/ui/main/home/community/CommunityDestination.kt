@@ -8,14 +8,14 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.popularblock.popularBlockDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.postEditDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.postDestination
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.searchblock.searchBlockDestination
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search.communitySearchDestination
 
 fun NavGraphBuilder.communityDestination(
     navController: NavController
 ) {
     myBlockDestination(navController)
     popularBlockDestination(navController)
-    searchBlockDestination(navController)
+    communitySearchDestination(navController)
     blockDestination(navController)
     boardDestination(navController)
     postDestination(navController)
