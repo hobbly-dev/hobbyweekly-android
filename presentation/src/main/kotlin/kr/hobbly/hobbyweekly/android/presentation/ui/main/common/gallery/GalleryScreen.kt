@@ -75,6 +75,7 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 fun GalleryScreen(
     navController: NavController,
     onDismissRequest: () -> Unit,
+    selectedImageList: List<GalleryImage> = listOf(),
     minSelectCount: Int = 1,
     maxSelectCount: Int = 1,
     onResult: (List<GalleryImage>) -> Unit,
@@ -99,6 +100,7 @@ fun GalleryScreen(
         GalleryData(
             folderList = folderList,
             galleryImageList = galleryImageList,
+            selectedImageList = selectedImageList,
             minSelectCount = minSelectCount,
             maxSelectCount = maxSelectCount
         )
@@ -134,7 +136,7 @@ private fun GalleryScreen(
             onDismissRequest()
         }
     }
-    val selectedList: MutableList<Long> = remember { mutableStateListOf() }
+    val selectedList: MutableList<Long> = remember { mutableStateListOf<Long>() }
     var isDropDownMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var currentFolder: GalleryFolder by remember { mutableStateOf(GalleryFolder.recent) }
 
@@ -274,10 +276,9 @@ private fun GalleryScreen(
                 ) {
                     items(data.galleryImageList.itemCount) { index ->
                         data.galleryImageList[index]?.let { gallery ->
-                            val isSelected = selectedList.any { it == gallery.id }
                             GalleryItemContent(
                                 galleryImage = gallery,
-                                selected = isSelected,
+                                selectedList = selectedList,
                                 onSelectImage = {
                                     selectedList.add(it.id)
                                 },
@@ -289,6 +290,11 @@ private fun GalleryScreen(
                     }
                 }
             }
+        }
+
+        LaunchedEffect(data.selectedImageList) {
+            selectedList.clear()
+            selectedList.addAll(data.selectedImageList.map { it.id })
         }
 
         LaunchedEffect(Unit) {
@@ -326,6 +332,7 @@ private fun GalleryScreenPreview() {
         data = GalleryData(
             folderList = listOf(),
             galleryImageList = MutableStateFlow<PagingData<GalleryImage>>(PagingData.empty()).collectAsLazyPagingItems(),
+            selectedImageList = listOf(),
             minSelectCount = 1,
             maxSelectCount = 1
         ),

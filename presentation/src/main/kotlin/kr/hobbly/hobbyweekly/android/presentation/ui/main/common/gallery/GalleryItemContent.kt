@@ -28,10 +28,11 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 @Composable
 fun GalleryItemContent(
     galleryImage: GalleryImage,
-    selected: Boolean,
+    selectedList: List<Long>,
     onSelectImage: (GalleryImage) -> Unit,
     onDeleteImage: (GalleryImage) -> Unit
 ) {
+    val isSelected = selectedList.any { it == galleryImage.id }
     Box {
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -58,15 +59,15 @@ fun GalleryItemContent(
                 .aspectRatio(1f)
                 .animateContentSize()
                 .clickable {
-                    if (selected) {
+                    if (isSelected) {
                         onDeleteImage(galleryImage)
                     } else {
                         onSelectImage(galleryImage)
                     }
                 },
-            alpha = if (selected) 1f else 0.4f
+            alpha = if (isSelected || selectedList.isEmpty()) 1f else 0.4f
         )
-        if (selected) {
+        if (isSelected) {
             Box(
                 modifier = Modifier.padding(Space6)
             ) {
