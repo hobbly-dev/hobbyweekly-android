@@ -28,6 +28,12 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onIntent(intent: HomeIntent) {
-
+        when (intent) {
+            is HomeIntent.HomeTypeChange -> {
+                launch {
+                    _event.emit(HomeEvent.ChangeHomeType(intent.homeType))
+                }
+            }
+        }
     }
 }

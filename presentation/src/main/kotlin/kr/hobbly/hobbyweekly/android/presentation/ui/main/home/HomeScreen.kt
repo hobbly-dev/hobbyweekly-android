@@ -81,15 +81,24 @@ fun HomeScreen(
         ) { page ->
             when (data.homeTypeList.getOrNull(page)) {
                 HomeType.Routine -> {
-                    RoutineScreen(navController = navController)
+                    RoutineScreen(
+                        navController = navController,
+                        parentArgument = argument
+                    )
                 }
 
                 HomeType.Community -> {
-                    CommunityScreen(navController = navController)
+                    CommunityScreen(
+                        navController = navController,
+                        parentArgument = argument
+                    )
                 }
 
                 HomeType.MyPage -> {
-                    MyPageScreen(navController = navController)
+                    MyPageScreen(
+                        navController = navController,
+                        parentArgument = argument
+                    )
                 }
 
                 null -> Unit
@@ -119,7 +128,11 @@ fun HomeScreen(
 
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
-
+            when (event) {
+                is HomeEvent.ChangeHomeType -> {
+                    selectedHomeType = event.homeType
+                }
+            }
         }
     }
 }

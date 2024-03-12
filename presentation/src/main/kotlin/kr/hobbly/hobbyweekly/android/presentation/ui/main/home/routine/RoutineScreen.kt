@@ -48,6 +48,7 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
@@ -89,12 +90,18 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeIntent
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeState
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeType
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.block.RoutineBlockScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit.RoutineEditConstant
 
 @Composable
 fun RoutineScreen(
-    navController: NavController
+    navController: NavController,
+    parentArgument: HomeArgument
 ) {
     val viewModel: RoutineViewModel = hiltViewModel()
 
@@ -121,6 +128,7 @@ fun RoutineScreen(
     ErrorObserver(viewModel)
     RoutineScreen(
         navController = navController,
+        parentArgument = parentArgument,
         argument = argument,
         data = data
     )
@@ -129,6 +137,7 @@ fun RoutineScreen(
 @Composable
 private fun RoutineScreen(
     navController: NavController,
+    parentArgument: HomeArgument,
     argument: RoutineArgument,
     data: RoutineData
 ) {
@@ -154,22 +163,43 @@ private fun RoutineScreen(
         if (isConfirmed) key else null
     }.filterNotNull()
 
+    var isRoutineBlockShowing: Boolean by remember { mutableStateOf(false) }
+
     fun navigateToNotification() {
         navController.safeNavigate(NotificationConstant.ROUTE)
     }
 
-    fun navigateToAddRoutine() {
-        navController.safeNavigate(RoutineEditConstant.ROUTE)
+    fun navigateToAddRoutine(block: Block) {
+        val route = makeRoute(
+            RoutineEditConstant.ROUTE,
+            listOf(
+                RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID to block.id
+            )
+        )
+        navController.safeNavigate(route)
     }
 
     fun navigateToEditRoutine(routine: Routine) {
         val route = makeRoute(
             RoutineEditConstant.ROUTE,
             listOf(
-                RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID to routine.id
+                RoutineEditConstant.ROUTE_ARGUMENT_ROUTINE_ID to routine.id
             )
         )
-        navController.safeNavigate(route)
+        navController.navigate(route)
+    }
+
+    fun navigateToCommunity() {
+        parentArgument.intent(HomeIntent.HomeTypeChange(HomeType.Community))
+    }
+
+    if (isRoutineBlockShowing) {
+        RoutineBlockScreen(
+            navController = navController,
+            onDismissRequest = { isRoutineBlockShowing = false },
+            onClickBlock = { navigateToAddRoutine(it) },
+            onConfirm = { navigateToCommunity() }
+        )
     }
 
     Column(
@@ -309,7 +339,7 @@ private fun RoutineScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    navigateToAddRoutine()
+                                    isRoutineBlockShowing = true
                                 },
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
@@ -572,6 +602,13 @@ fun RoutineScreenItem(
 private fun RoutineScreenPreview() {
     RoutineScreen(
         navController = rememberNavController(),
+        parentArgument = HomeArgument(
+            state = HomeState.Init,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            handler = CoroutineExceptionHandler { _, _ -> }
+        ),
         argument = RoutineArgument(
             state = RoutineState.Init,
             event = MutableEventFlow(),

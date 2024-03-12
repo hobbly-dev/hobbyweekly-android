@@ -16,6 +16,10 @@ fun NavGraphBuilder.routineEditDestination(
     composable(
         route = RoutineEditConstant.ROUTE_STRUCTURE,
         arguments = listOf(
+            navArgument(RoutineEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) {
+                type = NavType.LongType
+                defaultValue = -1
+            },
             navArgument(RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID) {
                 type = NavType.LongType
                 defaultValue = -1

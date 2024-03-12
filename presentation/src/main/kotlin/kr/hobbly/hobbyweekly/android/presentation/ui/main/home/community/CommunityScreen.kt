@@ -85,6 +85,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.SearchTextField
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.popularblock.PopularBlockConstant
@@ -94,7 +95,8 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notificati
 
 @Composable
 fun CommunityScreen(
-    navController: NavController
+    navController: NavController,
+    parentArgument: HomeArgument
 ) {
     val viewModel: CommunityViewModel = hiltViewModel()
 

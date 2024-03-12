@@ -30,10 +30,14 @@ class RoutineEditViewModel @Inject constructor(
         savedStateHandle.get<Long>(RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1
     }
 
+    val routineId: Long by lazy {
+        savedStateHandle.get<Long>(RoutineEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1
+    }
+
     fun onIntent(intent: RoutineEditIntent) {
         when (intent) {
             is RoutineEditIntent.OnConfirm -> {
-                if (blockId == -1L) {
+                if (routineId == -1L) {
                     addRoutine(intent.selectedDayOfWeek, intent.description)
                 } else {
                     editRoutine(intent.selectedDayOfWeek, intent.description)

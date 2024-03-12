@@ -37,11 +37,13 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 
 @Composable
 fun MyPageScreen(
     navController: NavController,
+    parentArgument: HomeArgument,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val argument: MyPageArgument = Unit.let {

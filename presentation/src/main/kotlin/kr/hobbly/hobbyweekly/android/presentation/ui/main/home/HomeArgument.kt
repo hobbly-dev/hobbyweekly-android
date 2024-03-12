@@ -18,6 +18,10 @@ sealed interface HomeState {
 }
 
 
-sealed interface HomeEvent
+sealed interface HomeEvent {
+    data class ChangeHomeType(val homeType: HomeType) : HomeEvent
+}
 
-sealed interface HomeIntent
+sealed interface HomeIntent {
+    data class HomeTypeChange(val homeType: HomeType) : HomeIntent
+}
