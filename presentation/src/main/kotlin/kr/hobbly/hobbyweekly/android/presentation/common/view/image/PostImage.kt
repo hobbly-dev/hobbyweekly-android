@@ -29,6 +29,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 fun PostImage(
     data: Any?,
     modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop
 ) {
     val context = LocalContext.current
 
@@ -42,7 +43,7 @@ fun PostImage(
                 .data(data)
                 .crossfade(true)
                 .build(),
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             loading = {

@@ -213,7 +213,7 @@ fun PostEditScreen(
                 ) {
                     Icon(
                         modifier = Modifier.size(Space24),
-                        painter = painterResource(R.drawable.ic_edit),
+                        painter = painterResource(R.drawable.ic_send),
                         contentDescription = null,
                         tint = Neutral900
                     )

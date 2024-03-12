@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.paging.compose.collectAsLazyPagingItems
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.postDestination(
@@ -45,14 +46,14 @@ fun NavGraphBuilder.postDestination(
         }
 
         val data: PostData = let {
-            val blockId = viewModel.blockId
-            val boardId = viewModel.boardId
-            val postId = viewModel.postId
+            val post by viewModel.post.collectAsStateWithLifecycle()
+            val profile by viewModel.profile.collectAsStateWithLifecycle()
+            val commentList = viewModel.commentList.collectAsLazyPagingItems()
 
             PostData(
-                blockId = blockId,
-                boardId = boardId,
-                postId = postId
+                post = post,
+                profile = profile,
+                commentList = commentList
             )
         }
 

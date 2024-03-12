@@ -42,8 +42,8 @@ import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.PostMember
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -370,7 +370,7 @@ private fun BoardScreenPreview() {
             postList = listOf(
                 Post(
                     id = 1,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "히카루",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
@@ -395,7 +395,7 @@ private fun BoardScreenPreview() {
                 ),
                 Post(
                     id = 2,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "박상준",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
@@ -418,7 +418,7 @@ private fun BoardScreenPreview() {
                 ),
                 Post(
                     id = 3,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "장성혁",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"

@@ -17,7 +17,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.PostMember
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
@@ -91,7 +91,7 @@ class CommunityViewModel @Inject constructor(
             popularPostList = listOf(
                 Post(
                     id = 1,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "히카루",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
@@ -116,7 +116,7 @@ class CommunityViewModel @Inject constructor(
                 ),
                 Post(
                     id = 2,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "박상준",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
@@ -139,7 +139,7 @@ class CommunityViewModel @Inject constructor(
                 ),
                 Post(
                     id = 3,
-                    member = PostMember(
+                    member = Member(
                         id = 1,
                         name = "장성혁",
                         thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
