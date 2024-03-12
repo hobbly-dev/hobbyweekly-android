@@ -52,9 +52,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
-import kotlinx.datetime.number
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
@@ -90,6 +87,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEf
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
+import kr.hobbly.hobbyweekly.android.presentation.common.util.toDurationString
 import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButton
@@ -513,53 +511,11 @@ private fun BlockScreenPostItem(
     post: Post,
     onClick: (Post) -> Unit
 ) {
-    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    val duration =
-        now.toInstant(TimeZone.currentSystemDefault()) - (post.createdAt.toInstant(TimeZone.currentSystemDefault()))
     val maxImageCount = 2
 
     val leftImageCount = max(0, post.images.size - maxImageCount)
 
-    val formattedDate = when {
-        duration.inWholeMinutes < 1 -> {
-            "${duration.inWholeSeconds}초 전"
-        }
-
-        duration.inWholeHours < 1 -> {
-            "${duration.inWholeMinutes}분 전"
-        }
-
-        duration.inWholeDays < 1 -> {
-            "${duration.inWholeHours}시간 전"
-        }
-
-        duration.inWholeDays < 8 -> {
-            "${duration.inWholeDays}일 전"
-        }
-
-        post.createdAt.date.year == now.year -> {
-            val format = "%02d월 %02d일"
-            runCatching {
-                String.format(
-                    format,
-                    post.createdAt.date.month.number,
-                    post.createdAt.date.dayOfMonth
-                )
-            }.getOrDefault("??월 ??일")
-        }
-
-        else -> {
-            val format = "%02d년 %02d월 %02d일"
-            runCatching {
-                String.format(
-                    format,
-                    post.createdAt.date.year % 100,
-                    post.createdAt.date.year,
-                    post.createdAt.date.month.number
-                )
-            }.getOrDefault("??년 ??월 ??일")
-        }
-    }
+    val formattedDate = post.createdAt.toDurationString()
 
     Box(
         modifier = Modifier
