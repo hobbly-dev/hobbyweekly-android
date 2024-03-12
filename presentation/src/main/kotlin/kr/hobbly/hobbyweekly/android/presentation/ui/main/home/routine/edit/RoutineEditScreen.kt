@@ -78,6 +78,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.TypingTextField
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.timepicker.TimePickerScreen
 
 @Composable
 fun RoutineEditScreen(
@@ -116,7 +117,12 @@ fun RoutineEditScreen(
     var isDeleteDialogShowing: Boolean by remember { mutableStateOf(false) }
 
     if (isTimePickerShowing) {
-        // TODO
+        TimePickerScreen(
+            localTime = alarmTime ?: LocalTime(0, 0),
+            onDismissRequest = { isTimePickerShowing = false },
+            onCancel = { alarmTime = null },
+            onConfirm = { alarmTime = it }
+        )
     }
 
     if (isAddDialogShowing) {
