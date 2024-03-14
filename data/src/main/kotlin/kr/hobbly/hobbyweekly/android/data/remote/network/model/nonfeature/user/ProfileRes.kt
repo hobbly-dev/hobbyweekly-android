@@ -14,14 +14,17 @@ data class ProfileRes(
     @SerialName("nickname")
     val nickname: String,
     @SerialName("email")
-    val email: String
+    val email: String,
+    @SerialName("thumbnail")
+    val thumbnail: String
 ) : DataMapper<Profile> {
     override fun toDomain(): Profile {
         return Profile(
             id = id,
             name = name,
             nickname = nickname,
-            email = email
+            email = email,
+            thumbnail = thumbnail
         )
     }
 }

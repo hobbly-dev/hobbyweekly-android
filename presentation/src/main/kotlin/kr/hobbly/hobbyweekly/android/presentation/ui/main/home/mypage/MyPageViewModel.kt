@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.feature.mypage.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
@@ -29,6 +31,13 @@ class MyPageViewModel @Inject constructor(
 
     private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
     val profile: StateFlow<Profile> = _profile.asStateFlow()
+
+    private val _myBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
+    val myBlockList: StateFlow<List<Block>> = _myBlockList.asStateFlow()
+
+    private val _routineStatistics: MutableStateFlow<RoutineStatistics> =
+        MutableStateFlow(RoutineStatistics.empty)
+    val routineStatistics: StateFlow<RoutineStatistics> = _routineStatistics.asStateFlow()
 
     init {
         launch {
