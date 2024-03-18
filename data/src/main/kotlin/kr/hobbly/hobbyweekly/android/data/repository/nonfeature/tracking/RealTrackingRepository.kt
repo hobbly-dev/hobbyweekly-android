@@ -9,10 +9,17 @@ import com.google.firebase.ktx.Firebase
 import io.sentry.Sentry
 import io.sentry.protocol.User
 import javax.inject.Inject
+import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingRepository
 
-class RealTrackingRepository @Inject constructor() : TrackingRepository {
+class RealTrackingRepository @Inject constructor(
+    private val sharedPreferencesManager: SharedPreferencesManager
+) : TrackingRepository {
+
+    override var fcmToken: String
+        set(value) = sharedPreferencesManager.setString(FCM_TOKEN, value)
+        get() = sharedPreferencesManager.getString(FCM_TOKEN, "")
 
     override suspend fun setProfile(
         profile: Profile
@@ -59,5 +66,9 @@ class RealTrackingRepository @Inject constructor() : TrackingRepository {
                 )
             )
         }
+    }
+
+    companion object {
+        private const val FCM_TOKEN = "fcm_token"
     }
 }

@@ -2,10 +2,17 @@ package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.tracking
 
 import androidx.annotation.Size
 import javax.inject.Inject
+import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingRepository
 
-class MockTrackingRepository @Inject constructor() : TrackingRepository {
+class MockTrackingRepository @Inject constructor(
+    private val sharedPreferencesManager: SharedPreferencesManager
+) : TrackingRepository {
+
+    override var fcmToken: String
+        set(value) = sharedPreferencesManager.setString(FCM_TOKEN, value)
+        get() = sharedPreferencesManager.getString(FCM_TOKEN, "")
 
     override suspend fun setProfile(
         profile: Profile
@@ -26,5 +33,9 @@ class MockTrackingRepository @Inject constructor() : TrackingRepository {
         } else {
             Result.success(Unit)
         }
+    }
+
+    companion object {
+        private const val FCM_TOKEN = "fcm_token"
     }
 }
