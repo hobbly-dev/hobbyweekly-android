@@ -51,7 +51,7 @@ class UserApi @Inject constructor(
     suspend fun setHobbyList(
         hobbyList: List<String>
     ): Result<Unit> {
-        return client.post("$baseUrl/v1/member/hobby") {
+        return client.post("$baseUrl/v1/member/hobbies") {
             setBody(
                 SetHobbyListReq(
                     hobbies = hobbyList

@@ -10,16 +10,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.LoginUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetAgreedTermListUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetTermListUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val getProfileUseCase: GetProfileUseCase,
+    private val getTermListUseCase: GetTermListUseCase,
+    private val getAgreedTermListUseCase: GetAgreedTermListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<LoginState> = MutableStateFlow(LoginState.Init)
@@ -46,7 +53,7 @@ class LoginViewModel @Inject constructor(
                 socialId = token.idToken.orEmpty(),
                 socialType = SocialType.Kakao
             ).onSuccess {
-                _event.emit(LoginEvent.Login.Success)
+                checkProgress()
             }.onFailure { exception ->
                 _state.value = LoginState.Init
                 when (exception) {
@@ -57,6 +64,45 @@ class LoginViewModel @Inject constructor(
                     else -> {
                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                     }
+                }
+            }
+        }
+    }
+
+    private suspend fun checkProgress() {
+        _state.value = LoginState.Loading
+
+        zip(
+            { getProfileUseCase() },
+            { getTermListUseCase() },
+            { getAgreedTermListUseCase() }
+        ).onSuccess { (profile, termList, agreedTermList) ->
+            _state.value = LoginState.Init
+
+            val isNicknameValid = profile.nickname.isNotEmpty()
+            val isTermAgreed = termList.all { term ->
+                !term.isRequired || agreedTermList.contains(term.id)
+            }
+            val isHobbyChecked = profile.isHobbyChecked
+
+            when {
+                !isNicknameValid || !isTermAgreed || !isHobbyChecked -> {
+                    _event.emit(LoginEvent.Login.NeedRegister)
+                }
+
+                else -> {
+                    _event.emit(LoginEvent.Login.Success)
+                }
+            }
+        }.onFailure { exception ->
+            _state.value = LoginState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
         }

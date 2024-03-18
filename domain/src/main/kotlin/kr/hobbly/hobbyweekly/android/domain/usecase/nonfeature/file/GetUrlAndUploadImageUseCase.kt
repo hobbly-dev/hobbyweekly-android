@@ -7,15 +7,15 @@ class GetUrlAndUploadImageUseCase @Inject constructor(
     private val uploadImageUseCase: UploadImageUseCase
 ) {
     suspend operator fun invoke(
-        imageUri: List<String>
+        imageUriList: List<String>
     ): Result<List<String>> {
         return getPreSignedUrlListUseCase(
-            count = imageUri.size
+            count = imageUriList.size
         ).map { preSignedUrlList ->
             preSignedUrlList.mapIndexed { index, preSignedUrl ->
                 uploadImageUseCase(
                     preSignedUrl = preSignedUrl.preSignedUrl,
-                    imageUri = imageUri.getOrNull(index).orEmpty()
+                    imageUri = imageUriList.getOrNull(index).orEmpty()
                 ).getOrThrow()
 
                 preSignedUrl.uploadFileUrl

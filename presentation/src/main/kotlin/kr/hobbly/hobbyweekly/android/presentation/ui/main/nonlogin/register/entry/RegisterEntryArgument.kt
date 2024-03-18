@@ -19,6 +19,11 @@ sealed interface RegisterEntryState {
 }
 
 
-sealed interface RegisterEntryEvent
+sealed interface RegisterEntryEvent {
+    data object NeedNickname : RegisterEntryEvent
+    data object NeedTermAgreement : RegisterEntryEvent
+    data object NeedHobbyList : RegisterEntryEvent
+    data object NoProblem : RegisterEntryEvent
+}
 
 sealed interface RegisterEntryIntent

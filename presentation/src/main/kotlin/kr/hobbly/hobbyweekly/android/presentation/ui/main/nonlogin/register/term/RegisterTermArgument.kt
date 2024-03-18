@@ -20,8 +20,8 @@ sealed interface RegisterTermState {
 
 
 sealed interface RegisterTermEvent {
-    sealed interface PatchTerm : RegisterTermEvent {
-        data object Success : PatchTerm
+    sealed interface AgreeTerm : RegisterTermEvent {
+        data object Success : AgreeTerm
     }
 }
 

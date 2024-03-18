@@ -48,7 +48,23 @@ fun RegisterEntryScreen(
 
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
+            when (event) {
+                RegisterEntryEvent.NeedNickname -> {
+                    navigateToRegisterProfile()
+                }
 
+                RegisterEntryEvent.NeedTermAgreement -> {
+                    navigateToRegisterTerm()
+                }
+
+                RegisterEntryEvent.NeedHobbyList -> {
+                    navigateToRegisterHobby()
+                }
+
+                RegisterEntryEvent.NoProblem -> {
+                    
+                }
+            }
         }
     }
 }

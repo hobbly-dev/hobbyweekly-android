@@ -22,6 +22,7 @@ sealed interface LoginState {
 
 sealed interface LoginEvent {
     sealed interface Login : LoginEvent {
+        data object NeedRegister : Login
         data object Success : Login
     }
 }

@@ -9,11 +9,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.SetHobbyListUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
+import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class RegisterHobbyViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val setHobbyListUseCase: SetHobbyListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RegisterHobbyState> =
@@ -58,9 +62,23 @@ class RegisterHobbyViewModel @Inject constructor(
     private fun patchHobby(checkedHobbyList: List<String>) {
         launch {
             _state.value = RegisterHobbyState.Loading
-            // TODO
-            _event.emit(RegisterHobbyEvent.PatchHobby.Success)
-            _state.value = RegisterHobbyState.Init
+            setHobbyListUseCase(
+                hobbyList = checkedHobbyList
+            ).onSuccess {
+                _state.value = RegisterHobbyState.Init
+                _event.emit(RegisterHobbyEvent.PatchHobby.Success)
+            }.onFailure { exception ->
+                _state.value = RegisterHobbyState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 }

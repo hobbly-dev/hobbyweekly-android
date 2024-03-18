@@ -4,7 +4,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
-import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.AgreedTerm
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
@@ -53,31 +52,10 @@ class MockUserRepository @Inject constructor(
         return Result.success(Unit)
     }
 
-    override suspend fun getTermListAgreeState(): Result<List<AgreedTerm>> {
+    override suspend fun getAgreedTermList(): Result<List<Long>> {
         randomShortDelay()
         return Result.success(
-            listOf(
-                AgreedTerm(
-                    id = 0L,
-                    name = "개인정보 수집 이용동의",
-                    isAgreed = true
-                ),
-                AgreedTerm(
-                    id = 1L,
-                    name = "고유식별 정보처리 동의",
-                    isAgreed = true
-                ),
-                AgreedTerm(
-                    id = 2L,
-                    name = "통신사 이용약관 동의",
-                    isAgreed = true
-                ),
-                AgreedTerm(
-                    id = 3L,
-                    name = "서비스 이용약관 동의",
-                    isAgreed = true
-                ),
-            )
+            listOf(0L, 1L, 2L, 3L)
         )
     }
 

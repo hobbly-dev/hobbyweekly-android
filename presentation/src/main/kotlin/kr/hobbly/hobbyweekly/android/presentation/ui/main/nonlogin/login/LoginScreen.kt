@@ -1,6 +1,5 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.login
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -45,9 +43,9 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.RegisterConstant
 import timber.log.Timber
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -61,6 +59,14 @@ fun LoginScreen(
 
     fun navigateToHome() {
         navController.navigate(HomeConstant.ROUTE) {
+            popUpTo(LoginConstant.ROUTE) {
+                inclusive = true
+            }
+        }
+    }
+
+    fun navigateToRegister() {
+        navController.navigate(RegisterConstant.ROUTE) {
             popUpTo(LoginConstant.ROUTE) {
                 inclusive = true
             }
@@ -127,6 +133,10 @@ fun LoginScreen(
         when (event) {
             LoginEvent.Login.Success -> {
                 navigateToHome()
+            }
+
+            LoginEvent.Login.NeedRegister -> {
+                navigateToRegister()
             }
         }
     }

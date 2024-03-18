@@ -139,9 +139,9 @@ fun RegisterTermScreen(
         }
     }
 
-    fun patchTerm(event: RegisterTermEvent.PatchTerm) {
+    fun patchTerm(event: RegisterTermEvent.AgreeTerm) {
         when (event) {
-            RegisterTermEvent.PatchTerm.Success -> {
+            RegisterTermEvent.AgreeTerm.Success -> {
                 navigateToRegisterProfile()
             }
         }
@@ -150,7 +150,7 @@ fun RegisterTermScreen(
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
             when (event) {
-                is RegisterTermEvent.PatchTerm -> {
+                is RegisterTermEvent.AgreeTerm -> {
                     patchTerm(event)
                 }
             }

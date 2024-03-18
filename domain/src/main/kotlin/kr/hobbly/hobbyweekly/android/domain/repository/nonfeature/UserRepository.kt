@@ -1,6 +1,5 @@
 package kr.hobbly.hobbyweekly.android.domain.repository.nonfeature
 
-import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.AgreedTerm
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
 
@@ -11,7 +10,7 @@ interface UserRepository {
         termList: List<Long>
     ): Result<Unit>
 
-    suspend fun getTermListAgreeState(): Result<List<AgreedTerm>>
+    suspend fun getAgreedTermList(): Result<List<Long>>
 
     suspend fun setHobbyList(
         hobbyList: List<String>

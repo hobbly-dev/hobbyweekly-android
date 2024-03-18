@@ -3,19 +3,27 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.ter
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.AgreeTermListUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetAgreedTermListUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetTermListUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
+import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class RegisterTermViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getTermListUseCase: GetTermListUseCase,
+    private val getAgreedTermListUseCase: GetAgreedTermListUseCase,
+    private val agreeTermListUseCase: AgreeTermListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RegisterTermState> =
@@ -29,51 +37,63 @@ class RegisterTermViewModel @Inject constructor(
     val termList: StateFlow<List<Term>> = _termList.asStateFlow()
 
     init {
-        _termList.value = listOf(
-            Term(
-                id = 0L,
-                name = "개인정보 수집 이용동의",
-                isRequired = true,
-                url = "https://www.naver.com"
-            ),
-            Term(
-                id = 1L,
-                name = "고유식별 정보처리 동의",
-                isRequired = true,
-                url = "https://www.naver.com"
-            ),
-            Term(
-                id = 2L,
-                name = "통신사 이용약관 동의",
-                isRequired = true,
-                url = "https://www.naver.com"
-            ),
-            Term(
-                id = 3L,
-                name = "서비스 이용약관 동의",
-                isRequired = true,
-                url = "https://www.naver.com"
-            ),
-        )
+        launch {
+            getTermList()
+        }
     }
 
     fun onIntent(intent: RegisterTermIntent) {
         when (intent) {
             is RegisterTermIntent.OnConfirm -> {
-                patchTermState(intent.checkedTermList)
+                agreeTermState(intent.checkedTermList)
             }
         }
     }
 
-    private fun patchTermState(
+    private suspend fun getTermList() {
+        zip(
+            { getTermListUseCase() },
+            { getAgreedTermListUseCase() }
+        ).onSuccess { (termList, agreedTermList) ->
+            _termList.value = termList.filter { term ->
+                term.id !in agreedTermList
+            }
+        }.onFailure { exception ->
+            _state.value = RegisterTermState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                }
+            }
+        }
+    }
+
+    private fun agreeTermState(
         checkedTermList: List<Long>
     ) {
         launch {
             _state.value = RegisterTermState.Loading
-            // TODO
-            delay(1000L)
-            _event.emit(RegisterTermEvent.PatchTerm.Success)
-            _state.value = RegisterTermState.Init
+            agreeTermListUseCase(
+                termList = checkedTermList
+            ).onSuccess {
+                _event.emit(RegisterTermEvent.AgreeTerm.Success)
+                _state.value = RegisterTermState.Init
+            }.onFailure { exception ->
+                _state.value = RegisterTermState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 }

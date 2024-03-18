@@ -3,7 +3,6 @@ package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.user
 import javax.inject.Inject
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.nonfeature.UserApi
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.toDomain
-import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.AgreedTerm
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.UserRepository
@@ -23,7 +22,7 @@ class RealUserRepository @Inject constructor(
         )
     }
 
-    override suspend fun getTermListAgreeState(): Result<List<AgreedTerm>> {
+    override suspend fun getAgreedTermList(): Result<List<Long>> {
         return userApi.getTermListAgreeState().toDomain()
     }
 
