@@ -321,7 +321,7 @@ private fun MyPageScreen(
             ) {
                 Spacer(modifier = Modifier.height(Space60))
                 Text(
-                    text = data.profile.name,
+                    text = data.profile.nickname,
                     modifier = Modifier
                         .padding(horizontal = Space20)
                         .fillMaxWidth(),
@@ -419,7 +419,7 @@ private fun MyPageScreen(
                             }
                     ) {
                         AsyncImage(
-                            model = data.profile.thumbnail,
+                            model = data.profile.image,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -499,10 +499,9 @@ private fun MyPageScreenPreview() {
         data = MyPageData(
             profile = Profile(
                 id = 1,
-                name = "장성혁",
                 nickname = "장성혁",
-                email = "ajou4095@gmail.com",
-                thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                image = "https://avatars.githubusercontent.com/u/48707913?v=4",
+                isHobbyChecked = true
             ),
             myBlockList = listOf(
                 Block(

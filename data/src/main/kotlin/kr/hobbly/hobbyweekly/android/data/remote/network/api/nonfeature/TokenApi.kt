@@ -21,8 +21,8 @@ class TokenApi @Inject constructor(
     suspend fun getAccessToken(
         refreshToken: String
     ): Result<GetAccessTokenRes> {
-        return noAuthClient.post("$baseUrl/api/v1/auth/refresh") {
-            header("Token-Refresh", refreshToken)
+        return noAuthClient.post("$baseUrl/v1/auth/refresh") {
+            header("refreshToken", refreshToken)
         }.convert(errorMessageMapper::map)
     }
 }

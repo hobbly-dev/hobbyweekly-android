@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.LoginUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
@@ -42,8 +43,8 @@ class LoginViewModel @Inject constructor(
             _state.value = LoginState.Loading
 
             loginUseCase(
-                username = "username",
-                password = "password"
+                socialId = token.idToken.orEmpty(),
+                socialType = SocialType.Kakao
             ).onSuccess {
                 _event.emit(LoginEvent.Login.Success)
             }.onFailure { exception ->

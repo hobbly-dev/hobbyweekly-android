@@ -677,10 +677,9 @@ private fun PostScreenPreview() {
             ),
             profile = Profile(
                 id = 1,
-                name = "장성혁",
                 nickname = "장성혁",
-                email = "ajou4095@gmail.com",
-                thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                image = "https://avatars.githubusercontent.com/u/48707913?v=4",
+                isHobbyChecked = true
             ),
             commentList = MutableStateFlow<PagingData<Comment>>(PagingData.empty()).collectAsLazyPagingItems(),
         )

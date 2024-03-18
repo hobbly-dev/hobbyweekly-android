@@ -1,19 +1,16 @@
 package kr.hobbly.hobbyweekly.android.domain.repository.nonfeature
 
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
+
 interface AuthenticationRepository {
 
-    // TODO : password encrypt
     suspend fun login(
-        username: String,
-        password: String
-    ): Result<Long>
+        socialId: String,
+        socialType: SocialType,
+        firebaseToken: String
+    ): Result<Unit>
 
     suspend fun logout(): Result<Unit>
-
-    suspend fun register(
-        username: String,
-        password: String
-    ): Result<Long>
 
     suspend fun withdraw(): Result<Unit>
 }

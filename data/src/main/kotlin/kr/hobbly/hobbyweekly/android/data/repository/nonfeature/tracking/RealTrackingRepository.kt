@@ -21,23 +21,17 @@ class RealTrackingRepository @Inject constructor() : TrackingRepository {
             Sentry.setUser(
                 User().apply {
                     this.id = profile.id.toString()
-                    this.name = profile.name
                     this.username = profile.nickname
-                    this.email = profile.email
                 }
             )
             Firebase.analytics.run {
                 setUserId(profile.id.toString())
-                setUserProperty("name", profile.name)
                 setUserProperty("nickname", profile.nickname)
-                setUserProperty("email", profile.email)
             }
             Firebase.crashlytics.run {
                 setUserId(profile.id.toString())
                 setCustomKeys {
-                    key("name", profile.name)
                     key("nickname", profile.nickname)
-                    key("email", profile.email)
                 }
             }
         }

@@ -67,9 +67,3 @@ suspend inline fun HttpResponse.toThrowable(
         exception
     }
 }
-
-fun HttpRequestBuilder.parameterFiltered(key: String, value: Any?) {
-    value?.toString()?.ifEmpty { null }?.let {
-        url.parameters.append(key, it)
-    }
-}

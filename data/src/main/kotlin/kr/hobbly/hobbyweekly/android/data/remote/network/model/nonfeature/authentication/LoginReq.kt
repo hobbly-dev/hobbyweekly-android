@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LoginReq(
-    @SerialName("username")
-    val username: String,
-    @SerialName("password")
-    val password: String
+    @SerialName("socialId")
+    val socialId: String,
+    @SerialName("socialType")
+    val socialType: String,
+    @SerialName("firebaseToken")
+    val firebaseToken: String
 )

@@ -20,10 +20,9 @@ class MockUserRepository @Inject constructor(
             Result.success(
                 Profile(
                     id = 1,
-                    name = "장성혁",
                     nickname = "Ray Jang",
-                    email = "ajou4095@gmail.com",
-                    thumbnail = "https://avatars.githubusercontent.com/u/20411648?v=4"
+                    image = "https://avatars.githubusercontent.com/u/20411648?v=4",
+                    isHobbyChecked = true
                 )
             )
         } else {

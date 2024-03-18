@@ -6,25 +6,22 @@ import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 
 @Serializable
-data class ProfileRes(
+data class GetProfileRes(
     @SerialName("id")
     val id: Long,
-    @SerialName("name")
-    val name: String,
     @SerialName("nickname")
-    val nickname: String,
-    @SerialName("email")
-    val email: String,
-    @SerialName("thumbnail")
-    val thumbnail: String
+    val nickname: String = "",
+    @SerialName("image")
+    val image: String = "",
+    @SerialName("isHobbyChecked")
+    val isHobbyChecked: Boolean
 ) : DataMapper<Profile> {
     override fun toDomain(): Profile {
         return Profile(
             id = id,
-            name = name,
             nickname = nickname,
-            email = email,
-            thumbnail = thumbnail
+            image = image,
+            isHobbyChecked = isHobbyChecked
         )
     }
 }

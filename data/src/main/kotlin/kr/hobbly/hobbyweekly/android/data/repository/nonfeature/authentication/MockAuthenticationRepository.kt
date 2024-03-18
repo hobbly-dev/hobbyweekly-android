@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.authentication
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.AuthenticationRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
@@ -17,13 +18,15 @@ class MockAuthenticationRepository @Inject constructor(
         get() = sharedPreferencesManager.getBoolean(IS_REGISTERED, false)
 
     override suspend fun login(
-        username: String,
-        password: String
-    ): Result<Long> {
+        socialId: String,
+        socialType: SocialType,
+        firebaseToken: String
+    ): Result<Unit> {
         randomShortDelay()
-        return Result.success(0L).onSuccess { token ->
+        return Result.success(Unit).onSuccess { token ->
             tokenRepository.refreshToken = "mock_access_token"
             tokenRepository.accessToken = "mock_refresh_token"
+            isRegistered = true
         }
     }
 
@@ -44,22 +47,6 @@ class MockAuthenticationRepository @Inject constructor(
         }.onSuccess {
             tokenRepository.refreshToken = ""
             tokenRepository.accessToken = ""
-        }
-    }
-
-    override suspend fun register(
-        username: String,
-        password: String
-    ): Result<Long> {
-        randomLongDelay()
-        return if (isRegistered) {
-            Result.failure(ServerException("MOCK_ERROR", "이미 가입된 사용자입니다."))
-        } else {
-            Result.success(0L)
-        }.onSuccess {
-            tokenRepository.refreshToken = "mock_access_token"
-            tokenRepository.accessToken = "mock_refresh_token"
-            isRegistered = true
         }
     }
 
