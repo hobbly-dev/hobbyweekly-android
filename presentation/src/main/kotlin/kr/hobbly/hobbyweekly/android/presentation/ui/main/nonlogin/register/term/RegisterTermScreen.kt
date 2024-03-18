@@ -72,10 +72,10 @@ fun RegisterTermScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
-    val checkedTermList = remember { mutableStateListOf<String>() }
+    val checkedTermList = remember { mutableStateListOf<Long>() }
 
     val isNecessaryTermChecked = data.termList.all { term ->
-        !term.isNecessary || checkedTermList.contains(term.id)
+        !term.isRequired || checkedTermList.contains(term.id)
     }
     val isConfirmButtonEnabled = state != RegisterTermState.Loading && isNecessaryTermChecked
 
@@ -166,15 +166,15 @@ fun RegisterTermScreenItem(
 ) {
     val context = LocalContext.current
 
-    val text = if (term.isNecessary) {
-        "[필수] ${term.title}"
+    val text = if (term.isRequired) {
+        "[필수] ${term.name}"
     } else {
-        "[선택] ${term.title}"
+        "[선택] ${term.name}"
     }
 
     fun navigateToTermLink() {
         runCatching {
-            val link = Uri.parse(term.link)
+            val link = Uri.parse(term.url)
             val browserIntent = Intent(Intent.ACTION_VIEW, link)
             ContextCompat.startActivity(context, browserIntent, null)
         }.onFailure { exception ->
@@ -193,7 +193,7 @@ fun RegisterTermScreenItem(
             .padding(horizontal = Space32, vertical = Space10),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (term.link.isEmpty()) {
+        if (term.url.isEmpty()) {
             Text(
                 text = text,
                 style = TitleMedium.merge(
@@ -243,29 +243,29 @@ private fun RegisterTermScreenPreview() {
         data = RegisterTermData(
             termList = listOf(
                 Term(
-                    id = "AA001",
-                    title = "개인정보 수집 이용동의",
-                    link = "https://www.naver.com",
-                    isNecessary = true
+                    id = 0L,
+                    name = "개인정보 수집 이용동의",
+                    isRequired = true,
+                    url = "https://www.naver.com"
                 ),
                 Term(
-                    id = "AA002",
-                    title = "고유식별 정보처리 동의",
-                    link = "https://www.naver.com",
-                    isNecessary = true
+                    id = 1L,
+                    name = "고유식별 정보처리 동의",
+                    isRequired = true,
+                    url = "https://www.naver.com"
                 ),
                 Term(
-                    id = "AA003",
-                    title = "통신사 이용약관 동의",
-                    link = "https://www.naver.com",
-                    isNecessary = true
+                    id = 2L,
+                    name = "통신사 이용약관 동의",
+                    isRequired = true,
+                    url = "https://www.naver.com"
                 ),
                 Term(
-                    id = "AA004",
-                    title = "14세 이상 동의",
-                    link = "",
-                    isNecessary = false
-                )
+                    id = 3L,
+                    name = "서비스 이용약관 동의",
+                    isRequired = true,
+                    url = "https://www.naver.com"
+                ),
             )
         )
     )

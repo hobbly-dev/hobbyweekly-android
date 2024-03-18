@@ -31,29 +31,29 @@ class RegisterTermViewModel @Inject constructor(
     init {
         _termList.value = listOf(
             Term(
-                id = "AA001",
-                title = "개인정보 수집 이용동의",
-                link = "https://www.naver.com",
-                isNecessary = true
+                id = 0L,
+                name = "개인정보 수집 이용동의",
+                isRequired = true,
+                url = "https://www.naver.com"
             ),
             Term(
-                id = "AA002",
-                title = "고유식별 정보처리 동의",
-                link = "https://www.naver.com",
-                isNecessary = true
+                id = 1L,
+                name = "고유식별 정보처리 동의",
+                isRequired = true,
+                url = "https://www.naver.com"
             ),
             Term(
-                id = "AA003",
-                title = "통신사 이용약관 동의",
-                link = "https://www.naver.com",
-                isNecessary = true
+                id = 2L,
+                name = "통신사 이용약관 동의",
+                isRequired = true,
+                url = "https://www.naver.com"
             ),
             Term(
-                id = "AA004",
-                title = "14세 이상 동의",
-                link = "",
-                isNecessary = false
-            )
+                id = 3L,
+                name = "서비스 이용약관 동의",
+                isRequired = true,
+                url = "https://www.naver.com"
+            ),
         )
     }
 
@@ -66,7 +66,7 @@ class RegisterTermViewModel @Inject constructor(
     }
 
     private fun patchTermState(
-        checkedTermList: List<String>
+        checkedTermList: List<Long>
     ) {
         launch {
             _state.value = RegisterTermState.Loading

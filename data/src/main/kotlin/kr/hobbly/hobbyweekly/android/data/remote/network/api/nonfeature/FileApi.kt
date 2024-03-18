@@ -15,7 +15,7 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.di.AuthHttpClient
 import kr.hobbly.hobbyweekly.android.data.remote.network.di.NoAuthHttpClient
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProvider
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.file.GetPreSignedUrlRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.file.GetPreSignedUrlListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.convert
 
 class FileApi @Inject constructor(
@@ -27,9 +27,9 @@ class FileApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun getPreSignedUrl(
+    suspend fun getPreSignedUrlList(
         count: Int
-    ): Result<GetPreSignedUrlRes> {
+    ): Result<GetPreSignedUrlListRes> {
         return client.get("$baseUrl/v1/utils/s3") {
             parameter("count", count)
         }.convert(errorMessageMapper::map)

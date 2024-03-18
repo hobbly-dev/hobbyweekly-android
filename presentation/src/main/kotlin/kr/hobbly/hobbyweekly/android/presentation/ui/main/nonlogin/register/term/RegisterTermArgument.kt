@@ -26,5 +26,5 @@ sealed interface RegisterTermEvent {
 }
 
 sealed interface RegisterTermIntent {
-    data class OnConfirm(val checkedTermList: List<String>) : RegisterTermIntent
+    data class OnConfirm(val checkedTermList: List<Long>) : RegisterTermIntent
 }

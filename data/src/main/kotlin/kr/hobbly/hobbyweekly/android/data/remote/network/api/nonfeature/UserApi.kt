@@ -12,9 +12,9 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProv
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.AgreeTermListReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.EditProfileReq
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermAgreeStateItemRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetProfileRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermListAgreeStateListRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.SetHobbyListReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.convert
 
@@ -43,7 +43,7 @@ class UserApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getTermAgreeState(): Result<GetTermAgreeStateItemRes> {
+    suspend fun getTermListAgreeState(): Result<GetTermListAgreeStateListRes> {
         return client.get("$baseUrl/v1/member/term")
             .convert(errorMessageMapper::map)
     }
