@@ -1,6 +1,8 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine
 
+import androidx.annotation.FloatRange
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -24,6 +26,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kr.hobbly.hobbyweekly.android.common.util.orZero
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Green
@@ -33,21 +36,55 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Pink
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Purple
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Yellow
+import kr.hobbly.hobbyweekly.android.presentation.model.routine.RoutineStatisticsItem
+import kr.hobbly.hobbyweekly.android.presentation.model.routine.RoutineStatisticsModel
 
 @Composable
 fun RoutineScreenBlock(
     modifier: Modifier,
-    isConfirmedDayOfWeek: List<Int>
+    routineStatisticsList: List<RoutineStatisticsItem>
 ) {
     val density = LocalDensity.current
 
-    val isMondayVisible: Boolean = isConfirmedDayOfWeek.contains(0)
-    val isTuesdayVisible: Boolean = isConfirmedDayOfWeek.contains(1)
-    val isWednesdayVisible: Boolean = isConfirmedDayOfWeek.contains(2)
-    val isThursdayVisible: Boolean = isConfirmedDayOfWeek.contains(3)
-    val isFridayVisible: Boolean = isConfirmedDayOfWeek.contains(4)
-    val isSaturdayVisible: Boolean = isConfirmedDayOfWeek.contains(5)
-    val isSundayVisible: Boolean = isConfirmedDayOfWeek.contains(6)
+    val modelList: List<RoutineStatisticsModel> = (0..6).map { dayOfWeek ->
+        val color = when (dayOfWeek) {
+            0 -> Red
+            1 -> Orange
+            2 -> Yellow
+            3 -> Green
+            4 -> Blue
+            5 -> Purple
+            6 -> Pink
+            else -> Neutral100
+        }.copy(alpha = getAlpha(routineStatisticsList, dayOfWeek))
+
+        val animatedColor by animateColorAsState(
+            targetValue = color,
+            label = "color state $dayOfWeek"
+        )
+
+        RoutineStatisticsModel(
+            dayOfWeek = dayOfWeek,
+            color = animatedColor,
+            x = when (dayOfWeek) {
+                0, 1, 2 -> (-27).dp
+                3 -> 0.dp
+                4, 5, 6 -> 27.dp
+                else -> 0.dp
+            },
+            y = when (dayOfWeek) {
+                0, 4 -> (-35).dp
+                1, 3, 5 -> 0.dp
+                2, 6 -> 35.dp
+                else -> 0.dp
+            }
+        )
+    }.sortedWith(
+        compareBy(
+            { it.y },
+            { it.x }
+        )
+    )
 
     Box(
         modifier = modifier
@@ -55,140 +92,55 @@ fun RoutineScreenBlock(
         val blockModifier = Modifier
             .size(35.dp, 45.dp)
             .align(Alignment.Center)
-        Icon(
-            modifier = blockModifier.offset(),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (-27).dp, y = (-35).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (27).dp, y = (-35).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (-27).dp, y = (0).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (27).dp, y = (0).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (-27).dp, y = (35).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
-        Icon(
-            modifier = blockModifier.offset(x = (27).dp, y = (35).dp),
-            painter = painterResource(R.drawable.ic_block),
-            contentDescription = null,
-            tint = Neutral100
-        )
 
-        AnimatedVisibility(
-            modifier = blockModifier.offset(),
-            visible = isThursdayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
+        modelList.forEach { model ->
             Icon(
+                modifier = blockModifier.offset(x = model.x, y = model.y),
                 painter = painterResource(R.drawable.ic_block),
                 contentDescription = null,
-                tint = Green
+                tint = Neutral100
             )
         }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (-27).dp, y = (-35).dp),
-            visible = isMondayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Red
-            )
-        }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (27).dp, y = (-35).dp),
-            visible = isFridayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Blue
-            )
-        }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (-27).dp, y = (0).dp),
-            visible = isTuesdayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Orange
-            )
-        }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (27).dp, y = (0).dp),
-            visible = isSaturdayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Purple
-            )
-        }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (-27).dp, y = (35).dp),
-            visible = isWednesdayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Yellow
-            )
-        }
-        AnimatedVisibility(
-            modifier = blockModifier.offset(x = (27).dp, y = (35).dp),
-            visible = isSundayVisible,
-            enter = slideInVertically() + fadeIn(),
-            exit = slideOutVertically() + fadeOut()
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = Pink
-            )
+
+        modelList.forEach { model ->
+            val isVisible = getAlpha(routineStatisticsList, model.dayOfWeek) > 0f
+            AnimatedVisibility(
+                modifier = blockModifier.offset(x = model.x, y = model.y),
+                visible = isVisible,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_block),
+                    contentDescription = null,
+                    tint = model.color
+                )
+            }
         }
     }
+}
+
+@FloatRange(from = 0.0, to = 1.0)
+private fun getAlpha(
+    itemList: List<RoutineStatisticsItem>,
+    dayOfWeek: Int
+): Float {
+    return itemList.find { it.dayOfWeek == dayOfWeek }?.let {
+        val confirmedRoutineCount = it.confirmedRoutineCount
+        val routineCount = it.routineCount
+
+        if (routineCount == 0) {
+            0f
+        } else {
+            (confirmedRoutineCount.toFloat() / routineCount.toFloat())
+        }
+    }.orZero()
 }
 
 @Preview
 @Composable
 private fun RoutineScreenBlockPreview() {
-    val isConfirmedDayOfWeek = remember { mutableStateListOf<Int>() }
+    val routineStatisticsList = remember { mutableStateListOf<RoutineStatisticsItem>() }
     var counter by remember { mutableIntStateOf(0) }
 
     RoutineScreenBlock(
@@ -196,13 +148,20 @@ private fun RoutineScreenBlockPreview() {
             .fillMaxWidth()
             .height(300.dp)
             .clickable {
-                if (isConfirmedDayOfWeek.contains(counter)) {
-                    isConfirmedDayOfWeek.remove(counter)
+                val item = routineStatisticsList.find { it.dayOfWeek == counter }
+                if (item != null) {
+                    routineStatisticsList.remove(item)
                 } else {
-                    isConfirmedDayOfWeek.add(counter)
+                    routineStatisticsList.add(
+                        RoutineStatisticsItem(
+                            dayOfWeek = counter,
+                            routineCount = 1,
+                            confirmedRoutineCount = 1
+                        )
+                    )
                 }
                 counter = (counter + 1) % 7
             },
-        isConfirmedDayOfWeek = isConfirmedDayOfWeek
+        routineStatisticsList = routineStatisticsList
     )
 }

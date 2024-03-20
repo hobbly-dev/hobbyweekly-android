@@ -90,6 +90,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
+import kr.hobbly.hobbyweekly.android.presentation.model.routine.RoutineStatisticsItem
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeIntent
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeState
@@ -154,14 +155,15 @@ private fun RoutineScreen(
     val currentRoutineList: List<Routine> = routineList.filter {
         it.dayOfWeekList.any { it == selectedDate.dayOfWeek.ordinal }
     }
-    val isConfirmedDayOfWeek: List<Int> = routineList.map { routine ->
+    val routineStatisticsList: List<RoutineStatisticsItem> = routineList.map { routine ->
         routine.dayOfWeekList.map { it to routine.isConfirmedList.contains(it) }
     }.flatten().groupBy { it.first }.map { (key, value) ->
-        Triple(key, value.count(), value.count { it.second })
-    }.map { (key, count, confirmedCount) ->
-        val isConfirmed = count == confirmedCount
-        if (isConfirmed) key else null
-    }.filterNotNull()
+        RoutineStatisticsItem(
+            dayOfWeek = key,
+            routineCount = value.count(),
+            confirmedRoutineCount = value.count { it.second }
+        )
+    }
 
     var isRoutineBlockShowing: Boolean by remember { mutableStateOf(false) }
 
@@ -245,7 +247,7 @@ private fun RoutineScreen(
                         .fillMaxWidth()
                         .background(Neutral030)
                         .height(250.dp),
-                    isConfirmedDayOfWeek = isConfirmedDayOfWeek
+                    routineStatisticsList = routineStatisticsList
                 )
 
                 Box(
