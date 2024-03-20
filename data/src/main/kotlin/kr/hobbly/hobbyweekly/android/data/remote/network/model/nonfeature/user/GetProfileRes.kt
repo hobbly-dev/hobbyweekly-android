@@ -7,8 +7,8 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 
 @Serializable
 data class GetProfileRes(
-    @SerialName("id")
-    val id: Long,
+    @SerialName("memberId")
+    val memberId: Long,
     @SerialName("nickname")
     val nickname: String = "",
     @SerialName("image")
@@ -18,7 +18,7 @@ data class GetProfileRes(
 ) : DataMapper<Profile> {
     override fun toDomain(): Profile {
         return Profile(
-            id = id,
+            id = memberId,
             nickname = nickname,
             image = image,
             isHobbyChecked = isHobbyChecked

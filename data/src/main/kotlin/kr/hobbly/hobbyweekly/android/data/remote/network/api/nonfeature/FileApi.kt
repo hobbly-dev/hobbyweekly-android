@@ -31,7 +31,7 @@ class FileApi @Inject constructor(
         count: Int
     ): Result<GetPreSignedUrlListRes> {
         return client.get("$baseUrl/v1/utils/s3") {
-            parameter("count", count)
+            parameter("imageNum", count)
         }.convert(errorMessageMapper::map)
     }
 

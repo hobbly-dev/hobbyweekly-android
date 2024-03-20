@@ -34,7 +34,7 @@ class UserApi @Inject constructor(
     suspend fun agreeTermList(
         termList: List<Long>
     ): Result<Unit> {
-        return client.post("$baseUrl/v1/member/term") {
+        return client.post("$baseUrl/v1/member/terms") {
             setBody(
                 AgreeTermListReq(
                     terms = termList
@@ -44,7 +44,7 @@ class UserApi @Inject constructor(
     }
 
     suspend fun getTermListAgreeState(): Result<GetTermListAgreeStateListRes> {
-        return client.get("$baseUrl/v1/member/term")
+        return client.get("$baseUrl/v1/member/terms")
             .convert(errorMessageMapper::map)
     }
 
