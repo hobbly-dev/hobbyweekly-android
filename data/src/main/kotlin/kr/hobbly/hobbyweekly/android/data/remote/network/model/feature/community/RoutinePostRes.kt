@@ -8,6 +8,10 @@ import kotlinx.serialization.Serializable
 data class RoutinePostRes(
     @SerialName("postId")
     val postId: Long,
+    @SerialName("blockId")
+    val blockId: Long,
+    @SerialName("boardId")
+    val boardId: Long,
     @SerialName("member")
     val member: MemberRes,
     @SerialName("title")

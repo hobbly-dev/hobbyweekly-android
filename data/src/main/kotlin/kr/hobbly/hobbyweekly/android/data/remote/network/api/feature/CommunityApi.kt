@@ -61,17 +61,17 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun getPopularBlock(): Result<GetPopularBlockRes> {
+    suspend fun getPopularBlockList(): Result<GetPopularBlockRes> {
         return client.get("$baseUrl/v1/blocks/popular")
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun getRecommendBlock(): Result<GetRecommendBlockRes> {
+    suspend fun getRecommendBlockList(): Result<GetRecommendBlockRes> {
         return client.get("$baseUrl/v1/blocks/recommend")
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun searchBlock(
+    suspend fun searchBlockList(
         keyword: String,
         page: Int,
         pageSize: Int
@@ -90,7 +90,7 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun getMyBlock(): Result<GetMyBlockRes> {
+    suspend fun getMyBlockList(): Result<GetMyBlockRes> {
         return client.get("$baseUrl/v1/blocks/subscribe")
             .convert(errorMessageMapper::map)
     }
@@ -187,7 +187,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun searchBoardPost(
+    suspend fun searchBoardPostList(
         id: Long,
         keyword: String,
         page: Int,
@@ -200,7 +200,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun searchRoutinePost(
+    suspend fun searchRoutinePostList(
         id: Long,
         keyword: String,
         page: Int,
@@ -213,7 +213,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun searchNoticePost(
+    suspend fun searchNoticePostList(
         id: Long,
         keyword: String,
         page: Int,
@@ -389,7 +389,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun loadBoardComment(
+    suspend fun loadBoardCommentList(
         id: Long,
         keyword: String,
         page: Int,
@@ -402,7 +402,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun loadRoutineComment(
+    suspend fun loadRoutineCommentList(
         id: Long,
         keyword: String,
         page: Int,
@@ -415,7 +415,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun loadNoticeComment(
+    suspend fun loadNoticeCommentList(
         id: Long,
         keyword: String,
         page: Int,

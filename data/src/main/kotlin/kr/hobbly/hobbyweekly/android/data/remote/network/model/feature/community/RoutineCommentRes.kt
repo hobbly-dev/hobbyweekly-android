@@ -8,6 +8,12 @@ import kotlinx.serialization.Serializable
 data class RoutineCommentRes(
     @SerialName("commentId")
     val commentId: Long,
+    @SerialName("blockId")
+    val blockId: Long,
+    @SerialName("boardId")
+    val boardId: Long,
+    @SerialName("postId")
+    val postId: Long,
     @SerialName("content")
     val content: String,
     @SerialName("createdAt")
@@ -20,6 +26,6 @@ data class RoutineCommentRes(
     val likeCount: Int,
     @SerialName("childComments")
     val childComments: List<RoutineCommentRes>,
-    @SerialName("anonymous")
-    val anonymous: Boolean
+    @SerialName("isAnonymous")
+    val isAnonymous: Boolean
 )
