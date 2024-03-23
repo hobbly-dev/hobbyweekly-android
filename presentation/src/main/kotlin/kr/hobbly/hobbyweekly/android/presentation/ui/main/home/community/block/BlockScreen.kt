@@ -57,8 +57,8 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -120,12 +120,13 @@ fun BlockScreen(
     }
 
     fun navigateToBoard(
+        block: Block,
         board: Board
     ) {
         val route = makeRoute(
             BoardConstant.ROUTE,
             listOf(
-                BoardConstant.ROUTE_ARGUMENT_BLOCK_ID to board.blockId,
+                BoardConstant.ROUTE_ARGUMENT_BLOCK_ID to block.id,
                 BoardConstant.ROUTE_ARGUMENT_BOARD_ID to board.id
             )
         )
@@ -133,7 +134,7 @@ fun BlockScreen(
     }
 
     fun navigateToPost(
-        post: Post
+        post: BoardPost
     ) {
         val route = makeRoute(
             PostConstant.ROUTE,
@@ -365,7 +366,10 @@ fun BlockScreen(
                             BlockScreenBoardItem(
                                 board = board,
                                 onClick = {
-                                    navigateToBoard(it)
+                                    navigateToBoard(
+                                        block = data.block,
+                                        board = it
+                                    )
                                 }
                             )
                         }
@@ -490,7 +494,7 @@ fun BlockScreenBoardItem(
             )
             Spacer(modifier = Modifier.width(Space12))
             Text(
-                text = board.name,
+                text = board.title,
                 style = LabelMedium.merge(Neutral900)
             )
             Spacer(modifier = Modifier.width(Space12))
@@ -508,8 +512,8 @@ fun BlockScreenBoardItem(
 
 @Composable
 private fun BlockScreenPostItem(
-    post: Post,
-    onClick: (Post) -> Unit
+    post: BoardPost,
+    onClick: (BoardPost) -> Unit
 ) {
     val maxImageCount = 2
 
@@ -534,12 +538,12 @@ private fun BlockScreenPostItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileImage(
-                    data = post.member.thumbnail,
+                    data = post.member.image,
                     modifier = Modifier.size(Space24)
                 )
                 Spacer(modifier = Modifier.width(Space8))
                 Text(
-                    text = post.member.name,
+                    text = post.member.nickname,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = LabelMedium.merge(Neutral900)
@@ -609,42 +613,48 @@ private fun BlockScreenPreview() {
             block = Block(
                 id = 1,
                 name = "영어 블록",
-                description = "영어를 공부하고 인증하는 모임",
+                content = "영어를 공부하고 인증하는 모임",
+                image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                memberCount = 100
             ),
             isMyBlock = false,
             boardList = listOf(
                 Board(
                     id = 1,
                     blockId = 1,
-                    name = "자유게시판",
+                    title = "자유게시판",
                     hasNewPost = true
                 ),
                 Board(
                     id = 2,
                     blockId = 1,
-                    name = "인증게시판",
+                    title = "인증게시판",
                     hasNewPost = true
                 ),
                 Board(
                     id = 3,
                     blockId = 1,
-                    name = "기타게시판",
+                    title = "기타게시판",
                     hasNewPost = false
                 )
             ),
             noticePostList = listOf(
-                Post(
+                BoardPost(
                     id = 1,
                     member = Member(
                         id = 1,
-                        name = "히카루",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "히카루",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "영어 인증합니다",
-                    description = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
@@ -653,69 +663,74 @@ private fun BlockScreenPreview() {
                     ),
                     commentCount = 99,
                     likeCount = 99,
-                    scrapCount = 99,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 2,
                     member = Member(
                         id = 1,
-                        name = "박상준",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "박상준",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "개발 인증합니다",
-                    description = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                     ),
                     commentCount = 1,
                     likeCount = 1,
-                    scrapCount = 1,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 3,
                     member = Member(
                         id = 1,
-                        name = "장성혁",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "장성혁",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "휴식 인증합니다",
-                    description = "휴식 했습니다.",
+                    content = "휴식 했습니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(),
                     commentCount = 0,
                     likeCount = 0,
-                    scrapCount = 0,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.WEEK)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 )
             ),
             popularPostList = listOf(
-                Post(
+                BoardPost(
                     id = 1,
                     member = Member(
                         id = 1,
-                        name = "히카루",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "히카루",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "영어 인증합니다",
-                    description = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
@@ -724,55 +739,56 @@ private fun BlockScreenPreview() {
                     ),
                     commentCount = 99,
                     likeCount = 99,
-                    scrapCount = 99,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 2,
                     member = Member(
                         id = 1,
-                        name = "박상준",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "박상준",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "개발 인증합니다",
-                    description = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                     ),
                     commentCount = 1,
                     likeCount = 1,
-                    scrapCount = 1,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 3,
                     member = Member(
                         id = 1,
-                        name = "장성혁",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "장성혁",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "휴식 인증합니다",
-                    description = "휴식 했습니다.",
+                    content = "휴식 했습니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(),
                     commentCount = 0,
                     likeCount = 0,
-                    scrapCount = 0,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.WEEK)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 )
             )
         )

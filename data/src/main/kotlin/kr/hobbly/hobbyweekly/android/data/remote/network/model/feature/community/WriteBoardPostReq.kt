@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WriteUserPostReq(
+data class WriteBoardPostReq(
     @SerialName("title")
     val title: String,
     @SerialName("content")

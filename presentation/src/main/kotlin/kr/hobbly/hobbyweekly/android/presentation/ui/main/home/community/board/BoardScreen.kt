@@ -41,9 +41,10 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -93,7 +94,7 @@ fun BoardScreen(
     }
 
     fun navigateToPost(
-        post: Post
+        post: BoardPost
     ) {
         val route = makeRoute(
             PostConstant.ROUTE,
@@ -107,12 +108,13 @@ fun BoardScreen(
     }
 
     fun navigateToPostAdd(
+        block: Block,
         board: Board
     ) {
         val route = makeRoute(
             PostEditConstant.ROUTE,
             listOf(
-                PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to board.blockId,
+                PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to block.id,
                 PostEditConstant.ROUTE_ARGUMENT_BOARD_ID to board.id
             )
         )
@@ -205,7 +207,10 @@ fun BoardScreen(
                     shape = CircleShape,
                     containerColor = Red,
                     onClick = {
-                        navigateToPostAdd(data.board)
+                        navigateToPostAdd(
+                            block = data.block,
+                            board = data.board
+                        )
                     }
                 ) {
                     Icon(
@@ -228,8 +233,8 @@ fun BoardScreen(
 
 @Composable
 private fun BoardScreenPostItem(
-    post: Post,
-    onClick: (Post) -> Unit
+    post: BoardPost,
+    onClick: (BoardPost) -> Unit
 ) {
     val formattedDate = post.createdAt.toDurationString()
 
@@ -245,7 +250,7 @@ private fun BoardScreenPostItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileImage(
-                    data = post.member.thumbnail,
+                    data = post.member.image,
                     modifier = Modifier.size(Space24)
                 )
                 Spacer(modifier = Modifier.width(Space8))
@@ -271,7 +276,7 @@ private fun BoardScreenPostItem(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = post.description,
+                        text = post.content,
                         modifier = Modifier.padding(end = Space20),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -297,23 +302,11 @@ private fun BoardScreenPostItem(
                             modifier = Modifier.size(Space12),
                             painter = painterResource(R.drawable.ic_like),
                             contentDescription = null,
-                            tint = if (post.isLike) Red else Neutral900
+                            tint = Neutral900
                         )
                         Spacer(modifier = Modifier.width(Space4))
                         Text(
                             text = if (post.likeCount > 99) "99+" else post.likeCount.toString(),
-                            style = BodyRegular.merge(Neutral900)
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_bookmark),
-                            contentDescription = null,
-                            tint = if (post.isScrap) Red else Neutral900
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                        Text(
-                            text = if (post.scrapCount > 99) "99+" else post.scrapCount.toString(),
                             style = BodyRegular.merge(Neutral900)
                         )
                         Spacer(modifier = Modifier.width(Space4))
@@ -361,24 +354,37 @@ private fun BoardScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardData(
+            block =
+            Block(
+                id = 5,
+                name = "코딩 블록",
+                content = "코딩을 취미로 하는 사람들의 모임",
+                image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                memberCount = 100
+            ),
             board = Board(
                 id = 1,
                 blockId = 1,
-                name = "자유게시판",
+                title = "자유게시판",
                 hasNewPost = true
             ),
             postList = listOf(
-                Post(
+                BoardPost(
                     id = 1,
                     member = Member(
                         id = 1,
-                        name = "히카루",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "히카루",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "영어 인증합니다",
-                    description = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
@@ -387,55 +393,56 @@ private fun BoardScreenPreview() {
                     ),
                     commentCount = 99,
                     likeCount = 99,
-                    scrapCount = 99,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 2,
                     member = Member(
                         id = 1,
-                        name = "박상준",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "박상준",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "개발 인증합니다",
-                    description = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(1, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                     ),
                     commentCount = 1,
                     likeCount = 1,
-                    scrapCount = 1,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 ),
-                Post(
+                BoardPost(
                     id = 3,
                     member = Member(
                         id = 1,
-                        name = "장성혁",
-                        thumbnail = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        nickname = "장성혁",
+                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                     ),
                     blockId = 1,
                     boardId = 1,
                     title = "휴식 인증합니다",
-                    description = "휴식 했습니다.",
+                    content = "휴식 했습니다.",
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
+                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                        .minus(7, DateTimeUnit.DAY)
+                        .atTime(0, 0, 0),
                     images = listOf(),
                     commentCount = 0,
                     likeCount = 0,
-                    scrapCount = 0,
-                    isLike = false,
-                    isScrap = false,
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.WEEK)
-                        .atTime(0, 0, 0)
+                    isAnonymous = false,
+                    isSecret = false
                 )
             )
         )

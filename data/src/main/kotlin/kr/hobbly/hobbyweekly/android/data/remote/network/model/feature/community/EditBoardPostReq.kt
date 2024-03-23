@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EditUserPostReq(
+data class EditBoardPostReq(
     @SerialName("title")
     val title: String,
     @SerialName("content")

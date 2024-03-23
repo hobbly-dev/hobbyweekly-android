@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WriteUserCommentReq(
-    @SerialName("content")
-    val content: String,
-    @SerialName("isAnonymous")
-    val isAnonymous: Boolean
+data class ReportBoardPostReq(
+    @SerialName("reason")
+    val reason: String
 )

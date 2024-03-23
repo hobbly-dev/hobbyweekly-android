@@ -13,28 +13,30 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.di.AuthHttpClient
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProvider
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.BlockRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.BoardPostRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditBoardPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditNoticePostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditRoutinePostReq
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditUserPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetBoardListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetMyBlockRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetPopularBlockRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetPopularPostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetRecommendBlockRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.LoadBoardCommentRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.LoadNoticeCommentRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.LoadRoutineCommentRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.LoadUserCommentRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.NoticePostRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportBoardPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportCommentReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportNoticePostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportRoutinePostReq
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportUserPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.RoutinePostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchBlockRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchBoardPostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchNoticePostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchRoutinePostRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchUserPostRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.UserPostRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteBoardCommentReq
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteBoardPostReq
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteBoardPostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteCommentReplyReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteNoticeCommentReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteNoticePostReq
@@ -42,9 +44,6 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteRoutineCommentReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteRoutinePostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteRoutinePostRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteUserCommentReq
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteUserPostReq
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.WriteUserPostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.convert
 
 class CommunityApi @Inject constructor(
@@ -55,7 +54,7 @@ class CommunityApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun getUserBlock(
+    suspend fun getBlock(
         id: Long
     ): Result<BlockRes> {
         return client.get("$baseUrl/v1/blocks/$id")
@@ -110,26 +109,34 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun getPopularPost(
-        id: Long
-    ): Result<GetPopularPostRes> {
-        return client.get("$baseUrl/v1/blocks/$id/popular")
-            .convert(errorMessageMapper::map)
-    }
+    // TODO : Common Post Model
+//    suspend fun getPopularPost(
+//        id: Long
+//    ): Result<GetPopularPostRes> {
+//        TODO()
+//    }
 
     // TODO : 통합 검색 결과 불러오기 ( 일반 + 루틴 )
+//    suspend fun searchPost(
+//        id: Long,
+//        keyword: String,
+//        page: Int,
+//        pageSize: Int
+//    ): Result<GetPopularPostRes> {
+//        TODO()
+//    }
 
-    suspend fun writeUserPost(
+    suspend fun writeBoardPost(
         id: Long,
         title: String,
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
         images: List<String>
-    ): Result<WriteUserPostRes> {
+    ): Result<WriteBoardPostRes> {
         return client.post("$baseUrl/v1/posts/board/$id") {
             setBody(
-                WriteUserPostReq(
+                WriteBoardPostReq(
                     title = title,
                     content = content,
                     isAnonymous = isAnonymous,
@@ -180,12 +187,12 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun searchUserPost(
+    suspend fun searchBoardPost(
         id: Long,
         keyword: String,
         page: Int,
         pageSize: Int
-    ): Result<SearchUserPostRes> {
+    ): Result<SearchBoardPostRes> {
         return client.get("$baseUrl/v1/posts/list/board/$id") {
             parameter("keyword", keyword.takeIfNotEmpty())
             parameter("page", page)
@@ -219,9 +226,9 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun loadUserPost(
+    suspend fun loadBoardPost(
         id: Long
-    ): Result<UserPostRes> {
+    ): Result<BoardPostRes> {
         return client.get("$baseUrl/v1/posts/board/$id")
             .convert(errorMessageMapper::map)
     }
@@ -240,7 +247,7 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun editUserPost(
+    suspend fun editBoardPost(
         id: Long,
         title: String,
         content: String,
@@ -250,7 +257,7 @@ class CommunityApi @Inject constructor(
     ): Result<Unit> {
         return client.put("$baseUrl/v1/posts/board/$id") {
             setBody(
-                EditUserPostReq(
+                EditBoardPostReq(
                     title = title,
                     content = content,
                     isAnonymous = isAnonymous,
@@ -301,7 +308,7 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun removeUserPost(
+    suspend fun removeBoardPost(
         id: Long
     ): Result<Unit> {
         return client.delete("$baseUrl/v1/posts/board/$id")
@@ -322,7 +329,7 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun likeUserPost(
+    suspend fun likeBoardPost(
         id: Long
     ): Result<Unit> {
         return client.put("$baseUrl/v1/posts/board/$id/like")
@@ -343,13 +350,13 @@ class CommunityApi @Inject constructor(
             .convert(errorMessageMapper::map)
     }
 
-    suspend fun reportUserPost(
+    suspend fun reportBoardPost(
         id: Long,
         reason: String
     ): Result<Unit> {
         return client.post("$baseUrl/v1/posts/board/$id/report") {
             setBody(
-                ReportUserPostReq(
+                ReportBoardPostReq(
                     reason = reason
                 )
             )
@@ -382,12 +389,12 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun loadUserComment(
+    suspend fun loadBoardComment(
         id: Long,
         keyword: String,
         page: Int,
         pageSize: Int
-    ): Result<LoadUserCommentRes> {
+    ): Result<LoadBoardCommentRes> {
         return client.get("$baseUrl/v1/comments/board/$id") {
             parameter("keyword", keyword.takeIfNotEmpty())
             parameter("page", page)
@@ -421,14 +428,14 @@ class CommunityApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun writeUserComment(
+    suspend fun writeBoardComment(
         id: Long,
         content: String,
         isAnonymous: Boolean
     ): Result<Unit> {
         return client.post("$baseUrl/v1/comments/board/$id") {
             setBody(
-                WriteUserCommentReq(
+                WriteBoardCommentReq(
                     content = content,
                     isAnonymous = isAnonymous
                 )

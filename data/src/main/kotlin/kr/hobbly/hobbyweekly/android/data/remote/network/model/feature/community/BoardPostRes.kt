@@ -3,11 +3,17 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.communit
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 
 @Serializable
-data class RoutinePostRes(
+data class BoardPostRes(
     @SerialName("postId")
     val postId: Long,
+    @SerialName("blockId")
+    val blockId: Long,
+    @SerialName("boardId")
+    val boardId: Long,
     @SerialName("member")
     val member: MemberRes,
     @SerialName("title")
@@ -28,4 +34,22 @@ data class RoutinePostRes(
     val isAnonymous: Boolean,
     @SerialName("isSecret")
     val isSecret: Boolean
-)
+) : DataMapper<BoardPost> {
+    override fun toDomain(): BoardPost {
+        return BoardPost(
+            id = postId,
+            blockId = blockId,
+            boardId = boardId,
+            member = member.toDomain(),
+            title = title,
+            content = content,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+            images = images,
+            likeCount = likeCount,
+            commentCount = commentCount,
+            isAnonymous = isAnonymous,
+            isSecret = isSecret
+        )
+    }
+}

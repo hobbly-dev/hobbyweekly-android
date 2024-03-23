@@ -2,6 +2,8 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.communit
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 
 @Serializable
 data class BlockRes(
@@ -17,4 +19,15 @@ data class BlockRes(
     val thumbnail: String,
     @SerialName("memberCount")
     val memberCount: Int
-)
+) : DataMapper<Block> {
+    override fun toDomain(): Block {
+        return Block(
+            id = blockId,
+            name = name,
+            content = content,
+            image = image,
+            thumbnail = thumbnail,
+            memberCount = memberCount
+        )
+    }
+}

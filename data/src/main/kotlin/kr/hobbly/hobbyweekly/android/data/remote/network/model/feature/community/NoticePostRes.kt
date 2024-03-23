@@ -1,5 +1,6 @@
 package kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,10 @@ data class NoticePostRes(
     val title: String,
     @SerialName("content")
     val content: String,
+    @SerialName("createdAt")
+    val createdAt: LocalDateTime,
+    @SerialName("updatedAt")
+    val updatedAt: LocalDateTime,
     @SerialName("images")
     val images: List<String>,
     @SerialName("likeCount")

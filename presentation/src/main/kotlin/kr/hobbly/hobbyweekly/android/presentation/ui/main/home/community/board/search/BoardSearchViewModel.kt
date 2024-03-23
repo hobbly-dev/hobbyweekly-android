@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
@@ -24,8 +24,8 @@ class BoardSearchViewModel @Inject constructor(
     private val _event: MutableEventFlow<BoardSearchEvent> = MutableEventFlow()
     val event: EventFlow<BoardSearchEvent> = _event.asEventFlow()
 
-    private val _searchPostList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-    val searchPostList: StateFlow<List<Post>> = _searchPostList.asStateFlow()
+    private val _searchPostList: MutableStateFlow<List<BoardPost>> = MutableStateFlow(emptyList())
+    val searchPostList: StateFlow<List<BoardPost>> = _searchPostList.asStateFlow()
 
     fun onIntent(intent: BoardSearchIntent) {
         when (intent) {
