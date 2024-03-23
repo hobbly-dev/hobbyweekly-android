@@ -4,23 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostRes(
-    @SerialName("postId")
-    val postId: Long,
-    @SerialName("member")
-    val member: MemberRes,
+data class EditUserPostReq(
     @SerialName("title")
     val title: String,
     @SerialName("content")
     val content: String,
-    @SerialName("images")
-    val images: List<String>,
-    @SerialName("likeCount")
-    val likeCount: Int,
-    @SerialName("commentCount")
-    val commentCount: Int,
     @SerialName("isAnonymous")
     val isAnonymous: Boolean,
     @SerialName("isSecret")
-    val isSecret: Boolean
+    val isSecret: Boolean,
+    @SerialName("images")
+    val images: List<String>
 )

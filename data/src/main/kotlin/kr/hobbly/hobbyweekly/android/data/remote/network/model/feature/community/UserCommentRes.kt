@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CommentRes(
+data class UserCommentRes(
     @SerialName("commentId")
     val commentId: Long,
     @SerialName("content")
@@ -19,7 +19,7 @@ data class CommentRes(
     @SerialName("likeCount")
     val likeCount: Int,
     @SerialName("childComments")
-    val childComments: List<CommentRes>,
+    val childComments: List<UserCommentRes>,
     @SerialName("anonymous")
     val anonymous: Boolean
 )

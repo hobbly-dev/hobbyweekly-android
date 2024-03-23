@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ReportPostReq(
+data class ReportNoticePostReq(
     @SerialName("reason")
     val reason: String
 )

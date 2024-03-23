@@ -1,0 +1,28 @@
+package kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class SearchUserPostRes(
+    @SerialName("result")
+    val result: List<UserPostRes>,
+    @SerialName("hasPrevious")
+    val hasPrevious: Boolean,
+    @SerialName("hasNext")
+    val hasNext: Boolean,
+    @SerialName("currentPage")
+    val currentPage: Int,
+    @SerialName("sort")
+    val sort: SearchUserPostSortRes
+)
+
+@Serializable
+data class SearchUserPostSortRes(
+    @SerialName("sorted")
+    val sorted: Boolean,
+    @SerialName("direction")
+    val direction: String,
+    @SerialName("orderProperty")
+    val orderProperty: String
+)

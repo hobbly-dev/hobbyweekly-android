@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GetPopularPostRes(
-    @SerialName("posts")
-    val posts: List<UserPostRes>
+data class ReportUserPostReq(
+    @SerialName("reason")
+    val reason: String
 )

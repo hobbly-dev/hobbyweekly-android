@@ -4,7 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GetPopularPostRes(
-    @SerialName("posts")
-    val posts: List<UserPostRes>
+data class WriteRoutineCommentReq(
+    @SerialName("content")
+    val content: String,
+    @SerialName("isAnonymous")
+    val isAnonymous: Boolean
 )

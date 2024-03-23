@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SearchPostRes(
+data class SearchNoticePostRes(
     @SerialName("result")
-    val result: List<PostRes>,
+    val result: List<NoticePostRes>,
     @SerialName("hasPrevious")
     val hasPrevious: Boolean,
     @SerialName("hasNext")
@@ -14,11 +14,11 @@ data class SearchPostRes(
     @SerialName("currentPage")
     val currentPage: Int,
     @SerialName("sort")
-    val sort: SearchPostSortRes
+    val sort: SearchNoticePostSortRes
 )
 
 @Serializable
-data class SearchPostSortRes(
+data class SearchNoticePostSortRes(
     @SerialName("sorted")
     val sorted: Boolean,
     @SerialName("direction")
