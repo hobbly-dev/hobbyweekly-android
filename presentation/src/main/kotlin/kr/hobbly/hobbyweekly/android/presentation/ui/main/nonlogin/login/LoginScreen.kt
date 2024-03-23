@@ -24,6 +24,7 @@ import com.google.firebase.ktx.Firebase
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
@@ -106,20 +107,22 @@ fun LoginScreen(
             ),
             isEnabled = isConfirmButtonEnabled,
             onClick = {
-                loginWithKakao(
-                    context = context,
-                    onSuccess = { token ->
-                        intent(LoginIntent.Login(token))
-                    },
-                    onFailure = { exception ->
-                        Timber.d(exception)
-                        Sentry.withScope {
-                            it.level = SentryLevel.INFO
-                            Sentry.captureException(exception)
+                scope.launch {
+                    loginWithKakao(
+                        context = context,
+                        onSuccess = { token ->
+                            intent(LoginIntent.Login(token))
+                        },
+                        onFailure = { exception ->
+                            Timber.d(exception)
+                            Sentry.withScope {
+                                it.level = SentryLevel.INFO
+                                Sentry.captureException(exception)
+                            }
+                            Firebase.crashlytics.recordException(exception)
                         }
-                        Firebase.crashlytics.recordException(exception)
-                    }
-                )
+                    )
+                }
             }
         ) { style ->
             Text(
