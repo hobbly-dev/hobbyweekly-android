@@ -87,7 +87,7 @@ class RealCommunityRepository @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         return communityApi.writeBoardPost(
             id = id,
@@ -95,7 +95,7 @@ class RealCommunityRepository @Inject constructor(
             content = content,
             isAnonymous = isAnonymous,
             isSecret = isSecret,
-            images = images
+            imageList = imageList
         ).toDomain()
     }
 
@@ -105,7 +105,7 @@ class RealCommunityRepository @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         return communityApi.writeRoutinePost(
             id = id,
@@ -113,7 +113,7 @@ class RealCommunityRepository @Inject constructor(
             content = content,
             isAnonymous = isAnonymous,
             isSecret = isSecret,
-            images = images
+            imageList = imageList
         ).toDomain()
     }
 
@@ -122,14 +122,14 @@ class RealCommunityRepository @Inject constructor(
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         return communityApi.writeNoticePost(
             id = id,
             title = title,
             content = content,
             isAnonymous = isAnonymous,
-            images = images
+            imageList = imageList
         ).toDomain()
     }
 
@@ -166,7 +166,7 @@ class RealCommunityRepository @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return communityApi.editBoardPost(
             id = id,
@@ -174,7 +174,7 @@ class RealCommunityRepository @Inject constructor(
             content = content,
             isAnonymous = isAnonymous,
             isSecret = isSecret,
-            images = images
+            imageList = imageList
         )
     }
 
@@ -184,7 +184,7 @@ class RealCommunityRepository @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return communityApi.editRoutinePost(
             id = id,
@@ -192,7 +192,7 @@ class RealCommunityRepository @Inject constructor(
             content = content,
             isAnonymous = isAnonymous,
             isSecret = isSecret,
-            images = images
+            imageList = imageList
         )
     }
 
@@ -201,14 +201,14 @@ class RealCommunityRepository @Inject constructor(
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return communityApi.editNoticePost(
             id = id,
             title = title,
             content = content,
             isAnonymous = isAnonymous,
-            images = images
+            imageList = imageList
         )
     }
 

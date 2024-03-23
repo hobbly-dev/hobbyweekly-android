@@ -132,7 +132,7 @@ class CommunityApi @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<WriteBoardPostRes> {
         return client.post("$baseUrl/v1/posts/board/$id") {
             setBody(
@@ -141,7 +141,7 @@ class CommunityApi @Inject constructor(
                     content = content,
                     isAnonymous = isAnonymous,
                     isSecret = isSecret,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)
@@ -153,7 +153,7 @@ class CommunityApi @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<WriteRoutinePostRes> {
         return client.post("$baseUrl/v1/posts/routine/$id") {
             setBody(
@@ -162,7 +162,7 @@ class CommunityApi @Inject constructor(
                     content = content,
                     isAnonymous = isAnonymous,
                     isSecret = isSecret,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)
@@ -173,7 +173,7 @@ class CommunityApi @Inject constructor(
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<WriteNoticePostRes> {
         return client.post("$baseUrl/v1/posts/notice/$id") {
             setBody(
@@ -181,7 +181,7 @@ class CommunityApi @Inject constructor(
                     title = title,
                     content = content,
                     isAnonymous = isAnonymous,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)
@@ -253,7 +253,7 @@ class CommunityApi @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return client.put("$baseUrl/v1/posts/board/$id") {
             setBody(
@@ -262,7 +262,7 @@ class CommunityApi @Inject constructor(
                     content = content,
                     isAnonymous = isAnonymous,
                     isSecret = isSecret,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)
@@ -274,7 +274,7 @@ class CommunityApi @Inject constructor(
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return client.put("$baseUrl/v1/posts/routine/$id") {
             setBody(
@@ -283,7 +283,7 @@ class CommunityApi @Inject constructor(
                     content = content,
                     isAnonymous = isAnonymous,
                     isSecret = isSecret,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)
@@ -294,7 +294,7 @@ class CommunityApi @Inject constructor(
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         return client.put("$baseUrl/v1/posts/notice/$id") {
             setBody(
@@ -302,7 +302,7 @@ class CommunityApi @Inject constructor(
                     title = title,
                     content = content,
                     isAnonymous = isAnonymous,
-                    images = images
+                    images = imageList
                 )
             )
         }.convert(errorMessageMapper::map)

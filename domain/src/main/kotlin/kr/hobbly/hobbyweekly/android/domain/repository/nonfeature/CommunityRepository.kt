@@ -41,7 +41,7 @@ interface CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long>
 
     suspend fun writeRoutinePost(
@@ -50,7 +50,7 @@ interface CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long>
 
     suspend fun writeNoticePost(
@@ -58,7 +58,7 @@ interface CommunityRepository {
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long>
 
     suspend fun searchBoardPostPaging(
@@ -94,7 +94,7 @@ interface CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit>
 
     suspend fun editRoutinePost(
@@ -103,7 +103,7 @@ interface CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit>
 
     suspend fun editNoticePost(
@@ -111,7 +111,7 @@ interface CommunityRepository {
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit>
 
     suspend fun removeBoardPost(

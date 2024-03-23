@@ -287,7 +287,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         randomShortDelay()
 
@@ -300,7 +300,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         randomShortDelay()
 
@@ -312,7 +312,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Long> {
         randomShortDelay()
 
@@ -448,7 +448,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         randomShortDelay()
 
@@ -461,7 +461,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         content: String,
         isAnonymous: Boolean,
         isSecret: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         randomShortDelay()
 
@@ -473,7 +473,7 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         title: String,
         content: String,
         isAnonymous: Boolean,
-        images: List<String>
+        imageList: List<String>
     ): Result<Unit> {
         randomShortDelay()
 
