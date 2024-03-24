@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.e
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
 @Immutable
@@ -21,8 +22,12 @@ sealed interface PostEditState {
 
 
 sealed interface PostEditEvent {
+    sealed interface Load : PostEditEvent {
+        data class Success(val post: BoardPost) : Load
+    }
+
     sealed interface Post : PostEditEvent {
-        data object Success : Post
+        data class Success(val id: Long) : Post
     }
 
     sealed interface Edit : PostEditEvent {
@@ -34,7 +39,8 @@ sealed interface PostEditIntent {
     data class OnPost(
         val title: String,
         val content: String,
-        val imageList: List<GalleryImage>,
+        val originalImageList: List<String>,
+        val newImageList: List<GalleryImage>,
         val isSecret: Boolean,
         val isAnonymous: Boolean
     ) : PostEditIntent

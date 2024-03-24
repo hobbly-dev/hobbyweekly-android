@@ -112,15 +112,17 @@ fun CommunityScreen(
         )
     }
 
-//    val data: CommunityData = Unit.let {
-//        val initialData = viewModel.initialData
-//
-//        CommunityData(
-//            initialData = initialData
-//        )
-//    }
+    val data: CommunityData = Unit.let {
+        val myBlockList by viewModel.myBlockList.collectAsStateWithLifecycle()
+        val popularBlockList by viewModel.popularBlockList.collectAsStateWithLifecycle()
+        val popularPostList by viewModel.popularPostList.collectAsStateWithLifecycle()
 
-    val data by viewModel.communityData.collectAsStateWithLifecycle()
+        CommunityData(
+            myBlockList = myBlockList,
+            popularBlockList = popularBlockList,
+            popularPostList = popularPostList
+        )
+    }
 
     ErrorObserver(viewModel)
     CommunityScreen(
@@ -510,7 +512,7 @@ private fun CommunityScreenPopularPostItem(
 ) {
     val maxImageCount = 2
 
-    val leftImageCount = max(0, post.images.size - maxImageCount)
+    val leftImageCount = max(0, post.imageList.size - maxImageCount)
 
     val formattedDate = post.createdAt.toDurationString()
 
@@ -564,7 +566,7 @@ private fun CommunityScreenPopularPostItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Space6)
             ) {
-                post.images.take(maxImageCount).forEach { image ->
+                post.imageList.take(maxImageCount).forEach { image ->
                     PostImage(
                         data = image,
                         modifier = Modifier.size(Space60)
@@ -679,7 +681,7 @@ private fun CommunityScreenPreview() {
                         .atTime(0, 0, 0),
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .atTime(0, 0, 0),
-                    images = listOf(),
+                    imageList = listOf(),
                     commentCount = 0,
                     likeCount = 0,
                     isAnonymous = false,
@@ -702,7 +704,7 @@ private fun CommunityScreenPreview() {
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(1, DateTimeUnit.DAY)
                         .atTime(0, 0, 0),
-                    images = listOf(
+                    imageList = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
@@ -730,7 +732,7 @@ private fun CommunityScreenPreview() {
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(7, DateTimeUnit.DAY)
                         .atTime(0, 0, 0),
-                    images = listOf(
+                    imageList = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                     ),
                     commentCount = 1,

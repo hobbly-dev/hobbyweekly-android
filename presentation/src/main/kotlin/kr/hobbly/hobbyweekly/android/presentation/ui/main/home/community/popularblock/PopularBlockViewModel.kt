@@ -10,11 +10,15 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetPopularBlockListUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
+import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class PopularBlockViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getPopularBlockListUseCase: GetPopularBlockListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<PopularBlockState> =
@@ -27,7 +31,33 @@ class PopularBlockViewModel @Inject constructor(
     private val _popularBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val popularBlockList: StateFlow<List<Block>> = _popularBlockList.asStateFlow()
 
+    init {
+        refresh()
+    }
+
     fun onIntent(intent: PopularBlockIntent) {
 
+    }
+
+    private fun refresh() {
+        _state.value = PopularBlockState.Loading
+        launch {
+            getPopularBlockListUseCase()
+                .onSuccess { popularBlockList ->
+                    _state.value = PopularBlockState.Init
+                    _popularBlockList.value = popularBlockList
+                }.onFailure { exception ->
+                    _state.value = PopularBlockState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+        }
     }
 }

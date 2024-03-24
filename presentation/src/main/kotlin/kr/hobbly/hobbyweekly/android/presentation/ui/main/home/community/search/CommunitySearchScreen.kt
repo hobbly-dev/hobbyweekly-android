@@ -36,7 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
@@ -61,6 +64,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmal
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.isEmpty
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
@@ -164,12 +168,12 @@ fun CommunitySearchScreen(
                     )
                 }
             } else {
-                Text(
-                    text = "검색결과 ${data.searchBlockList.size}개",
-                    modifier = Modifier.padding(horizontal = Space20),
-                    style = TitleSemiBoldXSmall.merge(Neutral900)
-                )
-                Spacer(modifier = Modifier.height(Space20))
+//                Text(
+//                    text = "검색결과 ${data.searchBlockList.size}개",
+//                    modifier = Modifier.padding(horizontal = Space20),
+//                    style = TitleSemiBoldXSmall.merge(Neutral900)
+//                )
+//                Spacer(modifier = Modifier.height(Space20))
                 LazyColumn(
                     modifier = Modifier
                         .padding(horizontal = Space20)
@@ -178,9 +182,10 @@ fun CommunitySearchScreen(
                     verticalArrangement = Arrangement.spacedBy(Space16)
                 ) {
                     items(
-                        items = data.searchBlockList,
-                        key = { it.id }
-                    ) { block ->
+                        count = data.searchBlockList.itemCount,
+                        key = { data.searchBlockList[it]?.id ?: -1 }
+                    ) { index ->
+                        val block = data.searchBlockList[index] ?: return@items
                         CommunitySearchScreenBlockItem(
                             block = block,
                             onClick = {
@@ -342,48 +347,52 @@ private fun CommunitySearchScreenPreview() {
                     memberCount = 100
                 )
             ),
-            searchBlockList = listOf(
-                Block(
-                    id = 1,
-                    name = "영어 블록",
-                    content = "영어를 공부하고 인증하는 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 2,
-                    name = "요리 블록",
-                    content = "취미로 요리를 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 3,
-                    name = "여행 블록",
-                    content = "여행을 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 4,
-                    name = "공부 블록",
-                    content = "공부를 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 5,
-                    name = "코딩 블록",
-                    content = "코딩을 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
+            searchBlockList = MutableStateFlow(
+                PagingData.from(
+                    listOf(
+                        Block(
+                            id = 1,
+                            name = "영어 블록",
+                            content = "영어를 공부하고 인증하는 모임",
+                            image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            memberCount = 100
+                        ),
+                        Block(
+                            id = 2,
+                            name = "요리 블록",
+                            content = "취미로 요리를 하는 사람들의 모임",
+                            image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            memberCount = 100
+                        ),
+                        Block(
+                            id = 3,
+                            name = "여행 블록",
+                            content = "여행을 취미로 하는 사람들의 모임",
+                            image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            memberCount = 100
+                        ),
+                        Block(
+                            id = 4,
+                            name = "공부 블록",
+                            content = "공부를 취미로 하는 사람들의 모임",
+                            image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            memberCount = 100
+                        ),
+                        Block(
+                            id = 5,
+                            name = "코딩 블록",
+                            content = "코딩을 취미로 하는 사람들의 모임",
+                            image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            memberCount = 100
+                        )
+                    )
                 )
-            )
+            ).collectAsLazyPagingItems()
         )
     )
 }

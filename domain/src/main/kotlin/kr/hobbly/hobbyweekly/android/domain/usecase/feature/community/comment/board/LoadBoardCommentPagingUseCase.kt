@@ -10,12 +10,10 @@ class LoadBoardCommentPagingUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(
-        id: Long,
-        keyword: String
+        id: Long
     ): Flow<PagingData<BoardComment>> {
         return communityRepository.loadBoardCommentPaging(
-            id = id,
-            keyword = keyword
+            id = id
         )
     }
 }

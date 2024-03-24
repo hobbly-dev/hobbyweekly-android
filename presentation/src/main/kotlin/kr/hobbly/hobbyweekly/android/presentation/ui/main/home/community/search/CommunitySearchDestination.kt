@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.paging.compose.collectAsLazyPagingItems
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.communitySearchDestination(
@@ -30,7 +31,7 @@ fun NavGraphBuilder.communitySearchDestination(
 
         val data: CommunitySearchData = let {
             val suggestBlockList by viewModel.suggestBlockList.collectAsStateWithLifecycle()
-            val searchBlockList by viewModel.searchBlockList.collectAsStateWithLifecycle()
+            val searchBlockList = viewModel.searchBlockPaging.collectAsLazyPagingItems()
 
             CommunitySearchData(
                 suggestBlockList = suggestBlockList,

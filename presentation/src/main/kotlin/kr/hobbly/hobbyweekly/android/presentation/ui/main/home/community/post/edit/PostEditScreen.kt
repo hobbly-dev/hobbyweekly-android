@@ -88,6 +88,7 @@ fun PostEditScreen(
 
     var title: String by rememberSaveable { mutableStateOf("") }
     var content: String by rememberSaveable { mutableStateOf("") }
+    var originalImageList: List<String> by rememberSaveable { mutableStateOf(emptyList()) } // TODO
     var imageList: List<GalleryImage> by rememberSaveable { mutableStateOf(emptyList()) }
     val isPostButtonEnabled =
         title.isNotEmpty() && content.isNotEmpty() && state != PostEditState.Loading
@@ -120,6 +121,7 @@ fun PostEditScreen(
             },
             onConfirm = {
                 navController.safeNavigateUp()
+                // TODO : 이동
             }
         )
     }
@@ -204,7 +206,8 @@ fun PostEditScreen(
                             PostEditIntent.OnPost(
                                 title = title,
                                 content = content,
-                                imageList = imageList,
+                                originalImageList = emptyList(), // TODO
+                                newImageList = imageList,
                                 isSecret = isSecret,
                                 isAnonymous = isAnonymous
                             )
@@ -468,6 +471,18 @@ fun PostEditScreen(
         }
     }
 
+    fun load(event: PostEditEvent.Load) {
+        when (event) {
+            is PostEditEvent.Load.Success -> {
+                title = event.post.title
+                content = event.post.content
+                originalImageList = event.post.imageList
+                isSecret = event.post.isSecret
+                isAnonymous = event.post.isAnonymous
+            }
+        }
+    }
+
     fun post(event: PostEditEvent.Post) {
         when (event) {
             is PostEditEvent.Post.Success -> {
@@ -487,6 +502,10 @@ fun PostEditScreen(
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
             when (event) {
+                is PostEditEvent.Load -> {
+                    load(event)
+                }
+
                 is PostEditEvent.Post -> {
                     post(event)
                 }

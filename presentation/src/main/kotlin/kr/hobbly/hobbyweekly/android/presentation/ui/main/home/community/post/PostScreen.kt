@@ -50,8 +50,8 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
@@ -182,7 +182,7 @@ fun PostScreen(
                                 navigateToPostEdit(data.post)
                             }
                             if (text == "삭제하기") {
-                                intent(PostIntent.Post.OnDelete(data.post.id))
+                                intent(PostIntent.Post.OnRemove)
                             }
                         }
                     )
@@ -237,14 +237,14 @@ fun PostScreen(
                         modifier = Modifier.padding(horizontal = Space24),
                         style = LabelRegular.merge(Neutral600)
                     )
-                    if (data.post.images.isNotEmpty()) {
+                    if (data.post.imageList.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(Space20))
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(Space16),
                             contentPadding = PaddingValues(start = Space20, end = Space20)
                         ) {
                             items(
-                                items = data.post.images
+                                items = data.post.imageList
                             ) { image ->
                                 PostImage(
                                     data = image,
@@ -296,7 +296,7 @@ fun PostScreen(
                         ) {
                             Box(
                                 modifier = Modifier.clickable {
-                                    intent(PostIntent.Post.OnLike(data.post.id))
+                                    intent(PostIntent.Post.OnLike)
                                 }
                             ) {
                                 Row(
@@ -385,7 +385,7 @@ fun PostScreen(
                             // TODO : 아직 UI 미정의
                         },
                         onDelete = {
-                            intent(PostIntent.Comment.OnDelete(it.id))
+                            intent(PostIntent.Comment.OnRemove(it.id))
                         }
                     )
                 }
@@ -463,6 +463,7 @@ fun PostScreen(
                             onClick = {
                                 intent(
                                     PostIntent.Comment.OnComment(
+                                        parentId = -1, // TODO
                                         commentText = commentText,
                                         isAnonymous = isAnonymous
                                     )
@@ -482,13 +483,50 @@ fun PostScreen(
         }
     }
 
+    fun post(event: PostEvent.Post) {
+        when (event) {
+            PostEvent.Post.Remove.Success -> {
+                // TODO
+            }
+
+            PostEvent.Post.Report.Success -> {
+                // TODO
+            }
+        }
+    }
+
+    fun comment(event: PostEvent.Comment) {
+        when (event) {
+            is PostEvent.Comment.Write.Success -> {
+                // TODO
+            }
+
+            PostEvent.Comment.Remove.Success -> {
+                // TODO
+            }
+
+            PostEvent.Comment.Report.Success -> {
+                // TODO
+            }
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
+            when (event) {
+                is PostEvent.Post -> {
+                    post(event)
+                }
 
+                is PostEvent.Comment -> {
+                    comment(event)
+                }
+            }
         }
     }
 }
 
+// TODO : Paging State Loading
 @Composable
 fun PostScreenCommentItem(
     comment: BoardComment,
@@ -651,7 +689,7 @@ private fun PostScreenPreview() {
                 ),
                 title = "휴식 인증합니다",
                 content = "휴식 했습니다.",
-                images = listOf(),
+                imageList = listOf(),
                 createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                     .minus(1, DateTimeUnit.WEEK)
                     .atTime(

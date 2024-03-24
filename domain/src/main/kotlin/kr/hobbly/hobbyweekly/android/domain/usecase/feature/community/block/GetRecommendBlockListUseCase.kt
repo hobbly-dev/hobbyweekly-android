@@ -7,9 +7,7 @@ import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepos
 class GetRecommendBlockListUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
-    suspend operator fun invoke(
-        id: Long
-    ): Result<List<Block>> {
+    suspend operator fun invoke(): Result<List<Block>> {
         return communityRepository.getRecommendBlockList()
     }
 }

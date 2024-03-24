@@ -391,12 +391,10 @@ class CommunityApi @Inject constructor(
 
     suspend fun loadBoardCommentList(
         id: Long,
-        keyword: String,
         page: Int,
         pageSize: Int
     ): Result<LoadBoardCommentRes> {
         return client.get("$baseUrl/v1/comments/board/$id") {
-            parameter("keyword", keyword.takeIfNotEmpty())
             parameter("page", page)
             parameter("pageSize", pageSize)
         }.convert(errorMessageMapper::map)

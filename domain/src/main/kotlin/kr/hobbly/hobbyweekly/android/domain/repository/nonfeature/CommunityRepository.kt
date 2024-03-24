@@ -155,7 +155,6 @@ interface CommunityRepository {
 
     suspend fun loadBoardCommentPaging(
         id: Long,
-        keyword: String
     ): Flow<PagingData<BoardComment>>
 
 //    suspend fun loadRoutineCommentPaging(

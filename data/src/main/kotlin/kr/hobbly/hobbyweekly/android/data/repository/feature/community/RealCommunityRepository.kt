@@ -291,8 +291,7 @@ class RealCommunityRepository @Inject constructor(
     }
 
     override suspend fun loadBoardCommentPaging(
-        id: Long,
-        keyword: String
+        id: Long
     ): Flow<PagingData<BoardComment>> {
         return Pager(
             config = PagingConfig(
@@ -302,8 +301,7 @@ class RealCommunityRepository @Inject constructor(
             pagingSourceFactory = {
                 SearchBoardCommentPagingSource(
                     communityApi = communityApi,
-                    id = id,
-                    keyword = keyword
+                    id = id
                 )
             },
         ).flow

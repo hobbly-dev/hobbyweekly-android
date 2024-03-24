@@ -26,5 +26,6 @@ sealed interface BlockEvent {
 }
 
 sealed interface BlockIntent {
+    data object Refresh : BlockIntent
     data object OnRemove : BlockIntent
 }

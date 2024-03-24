@@ -36,7 +36,21 @@ fun NavGraphBuilder.blockDestination(
             )
         }
 
-        val data by viewModel.blockData.collectAsStateWithLifecycle()
+        val data = Unit.let {
+            val block by viewModel.block.collectAsStateWithLifecycle()
+            val isMyBlock by viewModel.isMyBlock.collectAsStateWithLifecycle()
+            val boardList by viewModel.boardList.collectAsStateWithLifecycle()
+            val noticePostList by viewModel.noticePostList.collectAsStateWithLifecycle()
+            val popularPostList by viewModel.popularPostList.collectAsStateWithLifecycle()
+
+            BlockData(
+                block = block,
+                isMyBlock = isMyBlock,
+                boardList = boardList,
+                noticePostList = noticePostList,
+                popularPostList = popularPostList
+            )
+        }
 
         ErrorObserver(viewModel)
         BlockScreen(

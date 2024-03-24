@@ -8,8 +8,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
 
 class SearchBoardCommentPagingSource(
     private val communityApi: CommunityApi,
-    private val id: Long,
-    private val keyword: String
+    private val id: Long
 ) : PagingSource<Int, BoardComment>() {
 
     override fun getRefreshKey(state: PagingState<Int, BoardComment>): Int? {
@@ -25,7 +24,6 @@ class SearchBoardCommentPagingSource(
 
         return communityApi.loadBoardCommentList(
             id = id,
-            keyword = keyword,
             page = page,
             pageSize = pageSize,
         ).map { data ->

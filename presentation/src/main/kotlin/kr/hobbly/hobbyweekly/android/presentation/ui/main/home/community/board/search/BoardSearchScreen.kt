@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.HorizontalDivider
@@ -37,7 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -70,9 +72,9 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space60
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.isEmpty
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
@@ -165,7 +167,7 @@ fun BoardSearchScreen(
             },
         )
         Spacer(modifier = Modifier.height(Space40))
-        if (data.searchPostList.isEmpty()) {
+        if (data.searchPostPaging.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -179,12 +181,12 @@ fun BoardSearchScreen(
                 )
             }
         } else {
-            Text(
-                text = "검색결과 ${data.searchPostList.size}개",
-                modifier = Modifier.padding(horizontal = Space20),
-                style = TitleSemiBoldXSmall.merge(Neutral900)
-            )
-            Spacer(modifier = Modifier.height(Space20))
+//            Text(
+//                text = "검색결과 ${data.searchPostList.size}개",
+//                modifier = Modifier.padding(horizontal = Space20),
+//                style = TitleSemiBoldXSmall.merge(Neutral900)
+//            )
+//            Spacer(modifier = Modifier.height(Space20))
             HorizontalDivider(
                 thickness = 1.dp,
                 color = Neutral050
@@ -195,9 +197,10 @@ fun BoardSearchScreen(
                     .weight(1f)
             ) {
                 items(
-                    items = data.searchPostList,
-                    key = { it.id }
-                ) { post ->
+                    count = data.searchPostPaging.itemCount,
+                    key = { data.searchPostPaging[it]?.id ?: -1 }
+                ) { index ->
+                    val post = data.searchPostPaging[index] ?: return@items
                     BoardSearchScreenPostItem(
                         post = post,
                         onClick = {
@@ -301,7 +304,7 @@ private fun BoardSearchScreenPostItem(
                         Spacer(modifier = Modifier.width(Space4))
                     }
                 }
-                if (post.images.size > 1) {
+                if (post.imageList.size > 1) {
                     Box(
                         modifier = Modifier
                             .size(Space60)
@@ -310,13 +313,13 @@ private fun BoardSearchScreenPostItem(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "+${post.images.size}",
+                            text = "+${post.imageList.size}",
                             style = BodyRegular.merge(Neutral500)
                         )
                     }
-                } else if (post.images.size == 1) {
+                } else if (post.imageList.size == 1) {
                     PostImage(
-                        data = post.images.firstOrNull(),
+                        data = post.imageList.firstOrNull(),
                         modifier = Modifier.size(Space60)
                     )
                 }
@@ -343,82 +346,86 @@ private fun BoardSearchScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardSearchData(
-            searchPostList = listOf(
-                BoardPost(
-                    id = 1,
-                    member = Member(
-                        id = 1,
-                        nickname = "히카루",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    blockId = 1,
-                    boardId = 1,
-                    title = "영어 인증합니다",
-                    content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0),
-                    images = listOf(
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
-                    ),
-                    commentCount = 99,
-                    likeCount = 99,
-                    isAnonymous = false,
-                    isSecret = false
-                ),
-                BoardPost(
-                    id = 2,
-                    member = Member(
-                        id = 1,
-                        nickname = "박상준",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    blockId = 1,
-                    boardId = 1,
-                    title = "개발 인증합니다",
-                    content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    images = listOf(
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    ),
-                    commentCount = 1,
-                    likeCount = 1,
-                    isAnonymous = false,
-                    isSecret = false
-                ),
-                BoardPost(
-                    id = 3,
-                    member = Member(
-                        id = 1,
-                        nickname = "장성혁",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    blockId = 1,
-                    boardId = 1,
-                    title = "휴식 인증합니다",
-                    content = "휴식 했습니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(7, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(7, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    images = listOf(),
-                    commentCount = 0,
-                    likeCount = 0,
-                    isAnonymous = false,
-                    isSecret = false
+            searchPostPaging = MutableStateFlow(
+                PagingData.from(
+                    listOf(
+                        BoardPost(
+                            id = 1,
+                            member = Member(
+                                id = 1,
+                                nickname = "히카루",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            blockId = 1,
+                            boardId = 1,
+                            title = "영어 인증합니다",
+                            content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            imageList = listOf(
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
+                            ),
+                            commentCount = 99,
+                            likeCount = 99,
+                            isAnonymous = false,
+                            isSecret = false
+                        ),
+                        BoardPost(
+                            id = 2,
+                            member = Member(
+                                id = 1,
+                                nickname = "박상준",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            blockId = 1,
+                            boardId = 1,
+                            title = "개발 인증합니다",
+                            content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(1, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(1, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            imageList = listOf(
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            ),
+                            commentCount = 1,
+                            likeCount = 1,
+                            isAnonymous = false,
+                            isSecret = false
+                        ),
+                        BoardPost(
+                            id = 3,
+                            member = Member(
+                                id = 1,
+                                nickname = "장성혁",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            blockId = 1,
+                            boardId = 1,
+                            title = "휴식 인증합니다",
+                            content = "휴식 했습니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(7, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(7, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            imageList = listOf(),
+                            commentCount = 0,
+                            likeCount = 0,
+                            isAnonymous = false,
+                            isSecret = false
+                        )
+                    )
                 )
-            )
+            ).collectAsLazyPagingItems()
         )
     )
 }

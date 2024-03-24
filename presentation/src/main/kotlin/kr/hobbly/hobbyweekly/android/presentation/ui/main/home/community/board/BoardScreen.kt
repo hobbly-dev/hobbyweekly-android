@@ -312,7 +312,7 @@ private fun BoardScreenPostItem(
                         Spacer(modifier = Modifier.width(Space4))
                     }
                 }
-                if (post.images.size > 1) {
+                if (post.imageList.size > 1) {
                     Box(
                         modifier = Modifier
                             .size(Space60)
@@ -321,13 +321,13 @@ private fun BoardScreenPostItem(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "+${post.images.size}",
+                            text = "+${post.imageList.size}",
                             style = BodyRegular.merge(Neutral500)
                         )
                     }
-                } else if (post.images.size == 1) {
+                } else if (post.imageList.size == 1) {
                     PostImage(
-                        data = post.images.firstOrNull(),
+                        data = post.imageList.firstOrNull(),
                         modifier = Modifier.size(Space60)
                     )
                 }
@@ -385,7 +385,7 @@ private fun BoardScreenPreview() {
                         .atTime(0, 0, 0),
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .atTime(0, 0, 0),
-                    images = listOf(
+                    imageList = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
@@ -413,7 +413,7 @@ private fun BoardScreenPreview() {
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(1, DateTimeUnit.DAY)
                         .atTime(0, 0, 0),
-                    images = listOf(
+                    imageList = listOf(
                         "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                     ),
                     commentCount = 1,
@@ -438,7 +438,7 @@ private fun BoardScreenPreview() {
                     updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                         .minus(7, DateTimeUnit.DAY)
                         .atTime(0, 0, 0),
-                    images = listOf(),
+                    imageList = listOf(),
                     commentCount = 0,
                     likeCount = 0,
                     isAnonymous = false,

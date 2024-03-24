@@ -21,4 +21,6 @@ sealed interface CommunityState {
 
 sealed interface CommunityEvent
 
-sealed interface CommunityIntent
+sealed interface CommunityIntent {
+    data object Refresh : CommunityIntent
+}

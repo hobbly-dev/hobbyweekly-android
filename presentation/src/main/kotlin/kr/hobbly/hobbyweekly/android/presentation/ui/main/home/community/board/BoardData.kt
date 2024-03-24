@@ -10,12 +10,4 @@ data class BoardData(
     val block: Block,
     val board: Board,
     val postList: List<BoardPost>
-) {
-    companion object {
-        val empty = BoardData(
-            block = Block.empty,
-            board = Board.empty,
-            postList = emptyList()
-        )
-    }
-}
+)

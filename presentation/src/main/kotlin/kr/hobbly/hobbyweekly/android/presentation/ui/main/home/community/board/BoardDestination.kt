@@ -40,7 +40,17 @@ fun NavGraphBuilder.boardDestination(
             )
         }
 
-        val data: BoardData by viewModel.boardData.collectAsStateWithLifecycle()
+        val data: BoardData = Unit.let {
+            val block by viewModel.block.collectAsStateWithLifecycle()
+            val board by viewModel.board.collectAsStateWithLifecycle()
+            val postList by viewModel.postList.collectAsStateWithLifecycle()
+
+            BoardData(
+                block = block,
+                board = board,
+                postList = postList
+            )
+        }
 
         ErrorObserver(viewModel)
         BoardScreen(

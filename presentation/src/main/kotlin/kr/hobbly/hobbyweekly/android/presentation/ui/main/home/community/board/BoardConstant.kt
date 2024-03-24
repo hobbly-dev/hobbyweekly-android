@@ -7,7 +7,7 @@ object BoardConstant {
 
     const val ROUTE_ARGUMENT_BLOCK_ID = "block_id"
     const val ROUTE_ARGUMENT_BOARD_ID = "board_id"
-    const val ROUTE_STRUCTURE = "$ROUTE" +
+    const val ROUTE_STRUCTURE = ROUTE +
             "?${ROUTE_ARGUMENT_BLOCK_ID}={${ROUTE_ARGUMENT_BLOCK_ID}}" +
             "&${ROUTE_ARGUMENT_BOARD_ID}={${ROUTE_ARGUMENT_BOARD_ID}}"
 }

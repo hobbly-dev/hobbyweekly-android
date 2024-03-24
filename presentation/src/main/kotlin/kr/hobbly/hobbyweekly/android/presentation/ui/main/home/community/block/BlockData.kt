@@ -12,14 +12,4 @@ data class BlockData(
     val boardList: List<Board>,
     val noticePostList: List<BoardPost>,
     val popularPostList: List<BoardPost>
-) {
-    companion object {
-        val empty = BlockData(
-            block = Block.empty,
-            isMyBlock = false,
-            boardList = emptyList(),
-            noticePostList = emptyList(),
-            popularPostList = emptyList()
-        )
-    }
-}
+)

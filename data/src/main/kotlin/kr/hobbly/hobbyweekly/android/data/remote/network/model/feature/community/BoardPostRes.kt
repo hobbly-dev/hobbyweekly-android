@@ -45,7 +45,7 @@ data class BoardPostRes(
             content = content,
             createdAt = createdAt,
             updatedAt = updatedAt,
-            images = images,
+            imageList = images,
             likeCount = likeCount,
             commentCount = commentCount,
             isAnonymous = isAnonymous,
