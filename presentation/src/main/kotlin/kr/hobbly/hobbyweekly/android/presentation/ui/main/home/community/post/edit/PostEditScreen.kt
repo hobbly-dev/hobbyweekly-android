@@ -88,8 +88,8 @@ fun PostEditScreen(
 
     var title: String by rememberSaveable { mutableStateOf("") }
     var content: String by rememberSaveable { mutableStateOf("") }
-    var originalImageList: List<String> by rememberSaveable { mutableStateOf(emptyList()) } // TODO
-    var imageList: List<GalleryImage> by rememberSaveable { mutableStateOf(emptyList()) }
+    var originalImageList: List<String> by rememberSaveable { mutableStateOf(emptyList()) }
+    var newImageList: List<GalleryImage> by rememberSaveable { mutableStateOf(emptyList()) }
     val isPostButtonEnabled =
         title.isNotEmpty() && content.isNotEmpty() && state != PostEditState.Loading
     var isAnonymous: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -104,10 +104,10 @@ fun PostEditScreen(
         GalleryScreen(
             navController = navController,
             onDismissRequest = { isGalleryShowing = false },
-            selectedImageList = imageList,
+            selectedImageList = newImageList,
             maxSelectCount = 10,
             onResult = {
-                imageList = it
+                newImageList = it
             }
         )
     }
@@ -206,8 +206,8 @@ fun PostEditScreen(
                             PostEditIntent.OnPost(
                                 title = title,
                                 content = content,
-                                originalImageList = emptyList(), // TODO
-                                newImageList = imageList,
+                                originalImageList = originalImageList,
+                                newImageList = newImageList,
                                 isSecret = isSecret,
                                 isAnonymous = isAnonymous
                             )
@@ -355,36 +355,23 @@ fun PostEditScreen(
                 horizontalArrangement = Arrangement.spacedBy(Space16),
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
-                items(imageList) { item ->
-                    Box {
-                        PostImage(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .align(Alignment.Center),
-                            data = item.filePath
-                        )
-                        Box(
-                            modifier = Modifier
-                                .padding(Space4)
-                                .align(Alignment.TopStart)
-                        ) {
-                            RippleBox(
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(Red),
-                                onClick = {
-                                    imageList = imageList.filter { it != item }
-                                }
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(Space20),
-                                    painter = painterResource(R.drawable.ic_close),
-                                    contentDescription = null,
-                                    tint = White
-                                )
-                            }
+                items(originalImageList) { item ->
+                    PostEditScreenImageItem(
+                        item = item,
+                        itemToData = { it },
+                        onRemove = {
+                            originalImageList = originalImageList.filter { it != item }
                         }
-                    }
+                    )
+                }
+                items(newImageList) { item ->
+                    PostEditScreenImageItem(
+                        item = item,
+                        itemToData = { item.filePath },
+                        onRemove = {
+                            newImageList = newImageList.filter { it != item }
+                        }
+                    )
                 }
             }
             Row(
@@ -513,6 +500,43 @@ fun PostEditScreen(
                 is PostEditEvent.Edit -> {
                     edit(event)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun <T> PostEditScreenImageItem(
+    item: T,
+    itemToData: (T) -> Any?,
+    onRemove: (T) -> Unit
+) {
+    Box {
+        PostImage(
+            modifier = Modifier
+                .size(100.dp)
+                .align(Alignment.Center),
+            data = itemToData(item)
+        )
+        Box(
+            modifier = Modifier
+                .padding(Space4)
+                .align(Alignment.TopStart)
+        ) {
+            RippleBox(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(Red),
+                onClick = {
+                    onRemove(item)
+                }
+            ) {
+                Icon(
+                    modifier = Modifier.size(Space20),
+                    painter = painterResource(R.drawable.ic_close),
+                    contentDescription = null,
+                    tint = White
+                )
             }
         }
     }
