@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
@@ -11,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -39,7 +42,9 @@ fun <T> TextDropdownMenu(
             DropdownMenuItem(
                 text = {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Space20),
                         text = label(item),
                         style = TitleMedium.merge(Neutral900)
                     )
@@ -52,4 +57,15 @@ fun <T> TextDropdownMenu(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun TextDropdownMenuPreview() {
+    TextDropdownMenu(
+        items = listOf("Item1", "Item2", "Item3"),
+        isExpanded = true,
+        onDismissRequest = {},
+        onClick = {}
+    )
 }

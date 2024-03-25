@@ -1,5 +1,6 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +69,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral500
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral600
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
@@ -357,11 +359,8 @@ fun BlockScreen(
                         color = Neutral200
                     )
                     Column(
-                        modifier = Modifier
-                            .padding(horizontal = Space20)
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        // TODO : LazyColumn 으로 변경
                         data.boardList.forEach { board ->
                             BlockScreenBoardItem(
                                 board = board,
@@ -431,23 +430,25 @@ fun BlockScreen(
                 }
                 Spacer(modifier = Modifier.height(Space12))
             }
-            ConfirmButton(
-                modifier = Modifier
-                    .padding(start = Space20, end = Space20, bottom = Space12)
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter),
-                properties = ConfirmButtonProperties(
-                    size = ConfirmButtonSize.Large,
-                    type = ConfirmButtonType.Primary
-                ),
-                onClick = {
-                    navigateToRoutineEdit()
+            if (!data.isMyBlock) {
+                ConfirmButton(
+                    modifier = Modifier
+                        .padding(start = Space20, end = Space20, bottom = Space12)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                    properties = ConfirmButtonProperties(
+                        size = ConfirmButtonSize.Large,
+                        type = ConfirmButtonType.Primary
+                    ),
+                    onClick = {
+                        navigateToRoutineEdit()
+                    }
+                ) { style ->
+                    Text(
+                        text = "블록 추가하기",
+                        style = style
+                    )
                 }
-            ) { style ->
-                Text(
-                    text = "블록 추가하기",
-                    style = style
-                )
             }
         }
     }
@@ -476,37 +477,37 @@ fun BlockScreenBoardItem(
     board: Board,
     onClick: (Board) -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier.clickable {
             onClick(board)
         }
     ) {
-        Spacer(modifier = Modifier.height(Space6))
         Row(
+            modifier = Modifier
+                .padding(horizontal = Space20, vertical = Space12),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(Space20))
             Icon(
                 modifier = Modifier.size(Space16),
                 painter = painterResource(R.drawable.ic_talk),
                 contentDescription = null,
-                tint = Neutral900
+                tint = Neutral600
             )
             Spacer(modifier = Modifier.width(Space12))
             Text(
                 text = board.title,
                 style = LabelMedium.merge(Neutral900)
             )
-            Spacer(modifier = Modifier.width(Space12))
-            Icon(
-                modifier = Modifier.size(Space12),
-                painter = painterResource(R.drawable.ic_new),
-                contentDescription = null,
-                tint = Neutral300
-            )
+            if (board.hasNewPost) {
+                Spacer(modifier = Modifier.width(Space12))
+                Image(
+                    modifier = Modifier.size(Space12),
+                    painter = painterResource(R.drawable.ic_new),
+                    contentDescription = null
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
         }
-        Spacer(modifier = Modifier.height(Space6))
     }
 }
 
