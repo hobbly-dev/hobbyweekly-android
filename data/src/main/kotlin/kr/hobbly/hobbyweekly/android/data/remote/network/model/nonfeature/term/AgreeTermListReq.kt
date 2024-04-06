@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user
+package kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.term
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

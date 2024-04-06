@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user
+package kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.term
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,8 +17,8 @@ data class GetTermListRes(
 
 @Serializable
 data class GetTermItemRes(
-    @SerialName("id")
-    val id: Long,
+    @SerialName("termId")
+    val termId: Long,
     @SerialName("name")
     val name: String,
     @SerialName("isRequired")
@@ -28,7 +28,7 @@ data class GetTermItemRes(
 ) : DataMapper<Term> {
     override fun toDomain(): Term {
         return Term(
-            id = id,
+            id = termId,
             name = name,
             isRequired = isRequired,
             url = url

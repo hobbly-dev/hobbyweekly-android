@@ -10,11 +10,8 @@ import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
 import kr.hobbly.hobbyweekly.android.data.remote.network.di.AuthHttpClient
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProvider
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.AgreeTermListReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.EditProfileReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetProfileRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermListAgreeStateListRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.GetTermListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.user.SetHobbyListReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.convert
 
@@ -26,32 +23,10 @@ class UserApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun getTermList(): Result<GetTermListRes> {
-        return client.get("$baseUrl/v1/terms")
-            .convert(errorMessageMapper::map)
-    }
-
-    suspend fun agreeTermList(
-        termList: List<Long>
-    ): Result<Unit> {
-        return client.post("$baseUrl/v1/member/terms") {
-            setBody(
-                AgreeTermListReq(
-                    terms = termList
-                )
-            )
-        }.convert(errorMessageMapper::map)
-    }
-
-    suspend fun getTermListAgreeState(): Result<GetTermListAgreeStateListRes> {
-        return client.get("$baseUrl/v1/member/terms")
-            .convert(errorMessageMapper::map)
-    }
-
     suspend fun setHobbyList(
         hobbyList: List<String>
     ): Result<Unit> {
-        return client.post("$baseUrl/v1/member/hobbies") {
+        return client.post("$baseUrl/v1/hobbies/me") {
             setBody(
                 SetHobbyListReq(
                     hobbies = hobbyList
@@ -64,7 +39,7 @@ class UserApi @Inject constructor(
         nickname: String,
         image: String
     ): Result<Unit> {
-        return client.patch("$baseUrl/v1/member/profile") {
+        return client.patch("$baseUrl/v1/profiles/me") {
             setBody(
                 EditProfileReq(
                     nickname = nickname.takeIfNotEmpty(),
@@ -75,7 +50,7 @@ class UserApi @Inject constructor(
     }
 
     suspend fun getProfile(): Result<GetProfileRes> {
-        return client.get("$baseUrl/v1/member/profile")
+        return client.get("$baseUrl/v1/profiles/me")
             .convert(errorMessageMapper::map)
     }
 }
