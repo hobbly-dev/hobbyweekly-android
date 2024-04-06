@@ -4,10 +4,16 @@ import kotlinx.datetime.LocalTime
 
 data class Routine(
     val id: Long,
+    val title: String,
+    val blockId: Long,
     val blockName: String,
-    val dayOfWeekList: List<Int>,
-    val description: String,
     val alarmTime: LocalTime?,
+    val description: String,
     val isEnabled: Boolean,
-    val isConfirmedList: List<Int>
+    val smallRoutine: List<SmallRoutine>
+)
+
+data class SmallRoutine(
+    val dayOfWeek: Int,
+    val isDone: Boolean
 )

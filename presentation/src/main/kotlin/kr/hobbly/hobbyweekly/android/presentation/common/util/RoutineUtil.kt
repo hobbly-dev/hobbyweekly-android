@@ -27,8 +27,8 @@ fun Context.registerRoutineList(
         val month = now.date.month.number
         val alarmTime = routine.alarmTime ?: return@forEach
 
-        routine.dayOfWeekList.forEach { dayOfWeek ->
-            val day = now.date.dayOfMonth + (dayOfWeek - now.date.dayOfWeek.ordinal)
+        routine.smallRoutine.forEach { smallRoutine ->
+            val day = now.date.dayOfMonth + (smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal)
             val time = LocalDateTime(LocalDate(year, month, day), alarmTime)
             val intent = makeRoutineToIntent(routine)
 

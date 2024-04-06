@@ -9,3 +9,18 @@ data class RoutineStatistics(
         )
     }
 }
+
+// TODO
+//data class RoutineStatistics(
+//    val title: String = "",
+//    val totalCount: Int,
+//    val completedCount: Int
+//) {
+//    companion object {
+//        val empty = RoutineStatistics(
+//            title = "",
+//            totalCount = 0,
+//            completedCount = 0
+//        )
+//    }
+//}

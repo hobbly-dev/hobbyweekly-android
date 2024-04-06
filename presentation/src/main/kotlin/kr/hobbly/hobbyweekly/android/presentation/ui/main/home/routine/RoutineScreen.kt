@@ -50,6 +50,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.SmallRoutine
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
@@ -153,13 +154,14 @@ private fun RoutineScreen(
     val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
 
     val currentRoutineList: List<Routine> = routineList.filter {
-        it.dayOfWeekList.any { it == selectedDate.dayOfWeek.ordinal }
+        it.smallRoutine.any { it.dayOfWeek == selectedDate.dayOfWeek.ordinal }
     }
+    // TODO
     val routineStatisticsList: List<RoutineStatisticsItem> = routineList.map { routine ->
-        routine.dayOfWeekList.map { it to routine.isConfirmedList.contains(it) }
+        routine.smallRoutine.map { it to it.isDone }
     }.flatten().groupBy { it.first }.map { (key, value) ->
         RoutineStatisticsItem(
-            dayOfWeek = key,
+            dayOfWeek = key.dayOfWeek,
             routineCount = value.count(),
             confirmedRoutineCount = value.count { it.second }
         )
@@ -311,10 +313,15 @@ private fun RoutineScreen(
                     },
                     onConfirm = {
                         val index = routineList.indexOfFirst { it.id == routine.id }
-                        val fixedConfirmedList = routine.isConfirmedList.toMutableList().apply {
-                            add(selectedDate.dayOfWeek.ordinal)
-                        }
-                        val fixedRoutine = routine.copy(isConfirmedList = fixedConfirmedList)
+                        val fixedRoutine = routine.copy(
+                            smallRoutine = routine.smallRoutine.map {
+                                if (it.dayOfWeek == selectedDate.dayOfWeek.ordinal) {
+                                    it.copy(isDone = true)
+                                } else {
+                                    it
+                                }
+                            }
+                        )
                         routineList[index] = fixedRoutine
                         intent(RoutineIntent.OnEditRoutine(fixedRoutine))
                     },
@@ -558,7 +565,7 @@ fun RoutineScreenItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = routine.blockName,
+                        text = routine.title,
                         style = BodyRegular.merge(White)
                     )
                     Spacer(modifier = Modifier.width(Space10))
@@ -576,7 +583,7 @@ fun RoutineScreenItem(
                     ) {
                         Box(
                             modifier = Modifier.clickable {
-                                if (!routine.isConfirmedList.contains(selectedDayOfWeek)) {
+                                if (routine.smallRoutine.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == false) {
                                     onConfirm()
                                 }
                             }
@@ -586,7 +593,7 @@ fun RoutineScreenItem(
                                     horizontal = Space12,
                                     vertical = Space4
                                 ),
-                                text = if (routine.isConfirmedList.contains(selectedDayOfWeek)) "인증완료" else "인증하기",
+                                text = if (routine.smallRoutine.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == true) "인증완료" else "인증하기",
                                 style = BodyRegular.merge(containerColor)
                             )
                         }
@@ -621,13 +628,27 @@ private fun RoutineScreenPreview() {
         data = RoutineData(
             routineList = listOf(
                 Routine(
-                    id = 0,
-                    blockName = "블록 이름",
-                    dayOfWeekList = listOf(0, 1, 2),
+                    id = 0L,
+                    title = "블록 이름",
+                    blockId = 0L,
+                    blockName = "영어 블록",
                     description = "설명",
                     alarmTime = null,
                     isEnabled = true,
-                    isConfirmedList = listOf(0, 1)
+                    smallRoutine = listOf(
+                        SmallRoutine(
+                            dayOfWeek = 0,
+                            isDone = true
+                        ),
+                        SmallRoutine(
+                            dayOfWeek = 1,
+                            isDone = true
+                        ),
+                        SmallRoutine(
+                            dayOfWeek = 2,
+                            isDone = false
+                        )
+                    )
                 )
             )
         )
