@@ -49,8 +49,10 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardType
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -98,13 +100,13 @@ fun BoardSearchScreen(
     var keyword: String by remember { mutableStateOf("") }
 
     fun navigateToPost(
-        post: BoardPost
+        post: Post
     ) {
         val route = makeRoute(
             PostConstant.ROUTE,
             listOf(
                 PostConstant.ROUTE_ARGUMENT_BLOCK_ID to post.blockId,
-                PostConstant.ROUTE_ARGUMENT_BOARD_ID to post.boardId,
+                PostConstant.ROUTE_ARGUMENT_BOARD_ID to post.board.id,
                 PostConstant.ROUTE_ARGUMENT_POST_ID to post.id
             )
         )
@@ -225,8 +227,8 @@ fun BoardSearchScreen(
 
 @Composable
 private fun BoardSearchScreenPostItem(
-    post: BoardPost,
-    onClick: (BoardPost) -> Unit
+    post: Post,
+    onClick: (Post) -> Unit
 ) {
     val formattedDate = post.createdAt.toDurationString()
 
@@ -349,15 +351,9 @@ private fun BoardSearchScreenPreview() {
             searchPostPaging = MutableStateFlow(
                 PagingData.from(
                     listOf(
-                        BoardPost(
+                        Post(
                             id = 1,
-                            member = Member(
-                                id = 1,
-                                nickname = "히카루",
-                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                            ),
                             blockId = 1,
-                            boardId = 1,
                             title = "영어 인증합니다",
                             content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -373,17 +369,23 @@ private fun BoardSearchScreenPreview() {
                             commentCount = 99,
                             likeCount = 99,
                             isAnonymous = false,
-                            isSecret = false
-                        ),
-                        BoardPost(
-                            id = 2,
+                            isSecret = false,
                             member = Member(
                                 id = 1,
-                                nickname = "박상준",
+                                nickname = "히카루",
                                 image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                             ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
+                        ),
+                        Post(
+                            id = 2,
                             blockId = 1,
-                            boardId = 1,
                             title = "개발 인증합니다",
                             content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -398,17 +400,23 @@ private fun BoardSearchScreenPreview() {
                             commentCount = 1,
                             likeCount = 1,
                             isAnonymous = false,
-                            isSecret = false
-                        ),
-                        BoardPost(
-                            id = 3,
+                            isSecret = false,
                             member = Member(
                                 id = 1,
-                                nickname = "장성혁",
+                                nickname = "박상준",
                                 image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                             ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
+                        ),
+                        Post(
+                            id = 3,
                             blockId = 1,
-                            boardId = 1,
                             title = "휴식 인증합니다",
                             content = "휴식 했습니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -421,7 +429,19 @@ private fun BoardSearchScreenPreview() {
                             commentCount = 0,
                             likeCount = 0,
                             isAnonymous = false,
-                            isSecret = false
+                            isSecret = false,
+                            member = Member(
+                                id = 1,
+                                nickname = "장성혁",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
                         )
                     )
                 )

@@ -8,7 +8,7 @@ class AddMyBlockUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         id: Long
-    ): Result<Unit> {
+    ): Result<Long> {
         return communityRepository.addMyBlock(
             id = id
         )

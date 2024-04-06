@@ -7,14 +7,14 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardType
 
 @Serializable
-data class BoardRes(
+data class GetBoardRes(
     @SerialName("boardId")
     val boardId: Long,
     @SerialName("blockId")
     val blockId: Long,
     @SerialName("boardType")
     val boardType: String,
-    @SerialName("title")
+    @SerialName("boardName")
     val boardName: String,
     @SerialName("hasNewPost")
     val hasNewPost: Boolean

@@ -10,7 +10,7 @@ class ReportBoardPostUseCase @Inject constructor(
         id: Long,
         reason: String
     ): Result<Unit> {
-        return communityRepository.reportBoardPost(
+        return communityRepository.reportPost(
             id = id,
             reason = reason
         )

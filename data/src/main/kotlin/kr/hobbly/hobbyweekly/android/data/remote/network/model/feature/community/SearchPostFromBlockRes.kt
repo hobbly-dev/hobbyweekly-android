@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoadRoutineCommentRes(
+data class SearchPostFromBoardRes(
     @SerialName("result")
-    val result: List<RoutineCommentRes>,
+    val result: List<BoardPostRes>,
     @SerialName("hasPrevious")
     val hasPrevious: Boolean,
     @SerialName("hasNext")
@@ -14,11 +14,11 @@ data class LoadRoutineCommentRes(
     @SerialName("currentPage")
     val currentPage: Int,
     @SerialName("sort")
-    val sort: LoadRoutineCommentSortRes
+    val sort: SearchPostFromBoardSortRes
 )
 
 @Serializable
-data class LoadRoutineCommentSortRes(
+data class SearchPostFromBoardSortRes(
     @SerialName("sorted")
     val sorted: Boolean,
     @SerialName("direction")

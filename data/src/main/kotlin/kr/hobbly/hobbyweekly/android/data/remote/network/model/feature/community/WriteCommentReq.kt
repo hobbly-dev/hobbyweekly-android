@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class WriteNoticeCommentReq(
+data class WriteCommentReq(
     @SerialName("content")
     val content: String,
     @SerialName("isAnonymous")

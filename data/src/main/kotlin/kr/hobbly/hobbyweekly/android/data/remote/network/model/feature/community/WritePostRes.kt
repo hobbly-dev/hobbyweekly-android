@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 
 @Serializable
-data class WriteBoardPostRes(
+data class WritePostRes(
     @SerialName("postId")
     val postId: Long
 ) : DataMapper<Long> {

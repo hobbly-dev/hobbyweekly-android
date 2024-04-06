@@ -10,7 +10,7 @@ class WriteCommentReplyUseCase @Inject constructor(
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit> {
+    ): Result<Long> {
         return communityRepository.writeCommentReply(
             id = id,
             content = content,

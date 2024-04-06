@@ -9,7 +9,7 @@ class LikeBoardPostUseCase @Inject constructor(
     suspend operator fun invoke(
         id: Long
     ): Result<Unit> {
-        return communityRepository.likeBoardPost(
+        return communityRepository.likePost(
             id = id
         )
     }

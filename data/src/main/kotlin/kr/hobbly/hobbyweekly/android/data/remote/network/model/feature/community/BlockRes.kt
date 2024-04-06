@@ -9,8 +9,8 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 data class BlockRes(
     @SerialName("blockId")
     val blockId: Long,
-    @SerialName("name")
-    val name: String,
+    @SerialName("blockName")
+    val blockName: String,
     @SerialName("content")
     val content: String,
     @SerialName("image")
@@ -23,7 +23,7 @@ data class BlockRes(
     override fun toDomain(): Block {
         return Block(
             id = blockId,
-            name = name,
+            name = blockName,
             content = content,
             image = image,
             thumbnail = thumbnail,

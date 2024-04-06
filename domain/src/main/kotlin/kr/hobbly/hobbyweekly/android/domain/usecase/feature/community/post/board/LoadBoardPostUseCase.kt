@@ -1,7 +1,7 @@
 package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board
 
 import javax.inject.Inject
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
 
 class LoadBoardPostUseCase @Inject constructor(
@@ -9,8 +9,8 @@ class LoadBoardPostUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         id: Long
-    ): Result<BoardPost> {
-        return communityRepository.loadBoardPost(
+    ): Result<Post> {
+        return communityRepository.loadPost(
             id = id
         )
     }

@@ -14,7 +14,7 @@ class EditBoardPostUseCase @Inject constructor(
         isSecret: Boolean,
         imageList: List<String>
     ): Result<Unit> {
-        return communityRepository.editBoardPost(
+        return communityRepository.editPost(
             id = id,
             title = title,
             content = content,

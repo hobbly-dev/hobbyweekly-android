@@ -14,7 +14,7 @@ class WriteBoardPostUseCase @Inject constructor(
         isSecret: Boolean,
         imageList: List<String>
     ): Result<Long> {
-        return communityRepository.writeBoardPost(
+        return communityRepository.writePost(
             id = id,
             title = title,
             content = content,

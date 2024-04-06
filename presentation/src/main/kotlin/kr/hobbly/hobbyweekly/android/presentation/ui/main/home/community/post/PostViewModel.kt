@@ -14,8 +14,8 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LikeCommentUseCase
@@ -66,15 +66,15 @@ class PostViewModel @Inject constructor(
         savedStateHandle.get<Long>(PostConstant.ROUTE_ARGUMENT_POST_ID) ?: -1L
     }
 
-    private val _post: MutableStateFlow<BoardPost> = MutableStateFlow(BoardPost.empty)
-    val post: StateFlow<BoardPost> = _post.asStateFlow()
+    private val _post: MutableStateFlow<Post> = MutableStateFlow(Post.empty)
+    val post: StateFlow<Post> = _post.asStateFlow()
 
     private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
     val profile: StateFlow<Profile> = _profile.asStateFlow()
 
-    private val _commentPaging: MutableStateFlow<PagingData<BoardComment>> =
+    private val _commentPaging: MutableStateFlow<PagingData<Comment>> =
         MutableStateFlow(PagingData.empty())
-    val commentPaging: StateFlow<PagingData<BoardComment>> = _commentPaging.asStateFlow()
+    val commentPaging: StateFlow<PagingData<Comment>> = _commentPaging.asStateFlow()
 
     init {
         refresh()

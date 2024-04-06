@@ -5,11 +5,11 @@ import kotlinx.serialization.Serializable
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 
 @Serializable
-data class WriteNoticePostRes(
-    @SerialName("postId")
-    val postId: Long
+data class WriteCommentRes(
+    @SerialName("commentId")
+    val commentId: Long
 ) : DataMapper<Long> {
     override fun toDomain(): Long {
-        return postId
+        return commentId
     }
 }

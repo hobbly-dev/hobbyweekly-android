@@ -3,13 +3,13 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block
 import androidx.compose.runtime.Immutable
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
 @Immutable
 data class BlockData(
     val block: Block,
     val isMyBlock: Boolean,
     val boardList: List<Board>,
-    val noticePostList: List<BoardPost>,
-    val popularPostList: List<BoardPost>
+    val noticePostList: List<Post>,
+    val popularPostList: List<Post>
 )

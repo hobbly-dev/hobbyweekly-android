@@ -2,36 +2,32 @@ package kr.hobbly.hobbyweekly.android.domain.model.feature.community
 
 import kotlinx.datetime.LocalDateTime
 
-data class BoardPost(
+data class Comment(
     val id: Long,
     val blockId: Long,
     val boardId: Long,
-    val member: Member,
-    val title: String,
+    val postId: Long,
     val content: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val imageList: List<String>,
+    val member: Member,
     val likeCount: Int,
-    val commentCount: Int,
-    val isAnonymous: Boolean,
-    val isSecret: Boolean
+    val child: List<Comment>,
+    val isAnonymous: Boolean
 ) {
     companion object {
-        val empty = BoardPost(
+        val empty = Comment(
             id = -1,
             blockId = -1,
             boardId = -1,
-            member = Member.empty,
-            title = "",
+            postId = -1,
             content = "",
             createdAt = LocalDateTime(0, 1, 1, 0, 0),
             updatedAt = LocalDateTime(0, 1, 1, 0, 0),
-            imageList = emptyList(),
+            member = Member.empty,
             likeCount = 0,
-            commentCount = 0,
-            isAnonymous = false,
-            isSecret = false
+            child = emptyList(),
+            isAnonymous = false
         )
     }
 }

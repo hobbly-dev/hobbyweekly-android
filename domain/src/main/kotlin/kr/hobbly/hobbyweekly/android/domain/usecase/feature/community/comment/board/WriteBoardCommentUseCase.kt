@@ -10,8 +10,8 @@ class WriteBoardCommentUseCase @Inject constructor(
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit> {
-        return communityRepository.writeBoardComment(
+    ): Result<Long> {
+        return communityRepository.writeComment(
             id = id,
             content = content,
             isAnonymous = isAnonymous

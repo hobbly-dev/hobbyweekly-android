@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
 @Serializable
 data class BoardPostRes(
@@ -12,34 +12,34 @@ data class BoardPostRes(
     val postId: Long,
     @SerialName("blockId")
     val blockId: Long,
-    @SerialName("boardId")
-    val boardId: Long,
-    @SerialName("member")
-    val member: MemberRes,
     @SerialName("title")
     val title: String,
     @SerialName("content")
-    val content: String,
-    @SerialName("createdAt")
-    val createdAt: LocalDateTime,
-    @SerialName("updatedAt")
-    val updatedAt: LocalDateTime,
+    val content: String = "",
     @SerialName("images")
     val images: List<String>,
     @SerialName("likeCount")
     val likeCount: Int,
     @SerialName("commentCount")
     val commentCount: Int,
+    @SerialName("createdAt")
+    val createdAt: LocalDateTime,
+    @SerialName("updatedAt")
+    val updatedAt: LocalDateTime,
     @SerialName("isAnonymous")
     val isAnonymous: Boolean,
     @SerialName("isSecret")
-    val isSecret: Boolean
-) : DataMapper<BoardPost> {
-    override fun toDomain(): BoardPost {
-        return BoardPost(
+    val isSecret: Boolean,
+    @SerialName("member")
+    val member: MemberRes,
+    @SerialName("board")
+    val board: BoardRes,
+) : DataMapper<Post> {
+    override fun toDomain(): Post {
+        return Post(
             id = postId,
             blockId = blockId,
-            boardId = boardId,
+            board = board.toDomain(),
             member = member.toDomain(),
             title = title,
             content = content,

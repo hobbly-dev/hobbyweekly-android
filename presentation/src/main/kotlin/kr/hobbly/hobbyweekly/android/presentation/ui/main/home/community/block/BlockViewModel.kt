@@ -16,7 +16,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
@@ -63,11 +63,11 @@ class BlockViewModel @Inject constructor(
     private val _boardList: MutableStateFlow<List<Board>> = MutableStateFlow(emptyList())
     val boardList: StateFlow<List<Board>> = _boardList.asStateFlow()
 
-    private val _noticePostList: MutableStateFlow<List<BoardPost>> = MutableStateFlow(emptyList())
-    val noticePostList: StateFlow<List<BoardPost>> = _noticePostList.asStateFlow()
+    private val _noticePostList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
+    val noticePostList: StateFlow<List<Post>> = _noticePostList.asStateFlow()
 
-    private val _popularPostList: MutableStateFlow<List<BoardPost>> = MutableStateFlow(emptyList())
-    val popularPostList: StateFlow<List<BoardPost>> = _popularPostList.asStateFlow()
+    private val _popularPostList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
+    val popularPostList: StateFlow<List<Post>> = _popularPostList.asStateFlow()
 
     init {
         refresh()

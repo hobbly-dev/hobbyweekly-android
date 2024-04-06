@@ -11,7 +11,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
@@ -45,8 +45,8 @@ class BoardViewModel @Inject constructor(
     private val _board: MutableStateFlow<Board> = MutableStateFlow(Board.empty)
     val board: StateFlow<Board> = _board.asStateFlow()
 
-    private val _postList: MutableStateFlow<List<BoardPost>> = MutableStateFlow(emptyList())
-    val postList: StateFlow<List<BoardPost>> = _postList.asStateFlow()
+    private val _postList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
+    val postList: StateFlow<List<Post>> = _postList.asStateFlow()
 
     init {
         refresh()

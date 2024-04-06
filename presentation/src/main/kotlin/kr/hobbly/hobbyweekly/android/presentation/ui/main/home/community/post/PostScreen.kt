@@ -43,16 +43,16 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
-import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardType
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
@@ -112,13 +112,13 @@ fun PostScreen(
     }
 
     fun navigateToPostEdit(
-        post: BoardPost
+        post: Post
     ) {
         val route = makeRoute(
             PostEditConstant.ROUTE,
             listOf(
                 PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to post.blockId,
-                PostEditConstant.ROUTE_ARGUMENT_BOARD_ID to post.boardId,
+                PostEditConstant.ROUTE_ARGUMENT_BOARD_ID to post.board.id,
                 PostEditConstant.ROUTE_ARGUMENT_POST_ID to post.id
             )
         )
@@ -529,13 +529,13 @@ fun PostScreen(
 // TODO : Paging State Loading
 @Composable
 fun PostScreenCommentItem(
-    comment: BoardComment,
+    comment: Comment,
     profile: Profile,
-    onComment: (BoardComment) -> Unit,
-    onLike: (BoardComment) -> Unit,
-    onReport: (BoardComment) -> Unit,
-    onEdit: (BoardComment) -> Unit,
-    onDelete: (BoardComment) -> Unit,
+    onComment: (Comment) -> Unit,
+    onLike: (Comment) -> Unit,
+    onReport: (Comment) -> Unit,
+    onEdit: (Comment) -> Unit,
+    onDelete: (Comment) -> Unit,
 ) {
     val isMyComment = comment.member.id == comment.id
     val formattedDate = comment.createdAt.toDurationString()
@@ -678,32 +678,37 @@ private fun PostScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = PostData(
-            post = BoardPost(
+            post = Post(
                 id = 1,
                 blockId = 1,
-                boardId = 1,
+                title = "영어 인증합니다",
+                content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                    .atTime(0, 0, 0),
+                updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                    .atTime(0, 0, 0),
+                imageList = listOf(
+                    "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                    "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                    "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                    "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
+                ),
+                commentCount = 99,
+                likeCount = 99,
+                isAnonymous = false,
+                isSecret = false,
                 member = Member(
                     id = 1,
-                    nickname = "장성혁",
+                    nickname = "히카루",
                     image = "https://avatars.githubusercontent.com/u/48707913?v=4"
                 ),
-                title = "휴식 인증합니다",
-                content = "휴식 했습니다.",
-                imageList = listOf(),
-                createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                    .minus(1, DateTimeUnit.WEEK)
-                    .atTime(
-                        0, 0, 0
-                    ),
-                updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                    .minus(1, DateTimeUnit.WEEK)
-                    .atTime(
-                        0, 0, 0
-                    ),
-                commentCount = 0,
-                likeCount = 0,
-                isAnonymous = false,
-                isSecret = false
+                board = Board(
+                    id = 1,
+                    blockId = 1,
+                    type = BoardType.Notice,
+                    name = "공지사항",
+                    hasNewPost = true
+                )
             ),
             profile = Profile(
                 id = 1,
@@ -711,7 +716,7 @@ private fun PostScreenPreview() {
                 image = "https://avatars.githubusercontent.com/u/48707913?v=4",
                 isHobbyChecked = true
             ),
-            commentList = MutableStateFlow<PagingData<BoardComment>>(PagingData.empty()).collectAsLazyPagingItems(),
+            commentList = MutableStateFlow<PagingData<Comment>>(PagingData.empty()).collectAsLazyPagingItems(),
         )
     )
 }

@@ -4,8 +4,8 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
 interface CommunityRepository {
 
@@ -13,82 +13,60 @@ interface CommunityRepository {
         id: Long
     ): Result<Block>
 
-    suspend fun getPopularBlockList(): Result<List<Block>>
-
-    suspend fun getRecommendBlockList(): Result<List<Block>>
-
-    suspend fun searchBlockPaging(
-        keyword: String
-    ): Flow<PagingData<Block>>
-
-    suspend fun getBoardList(
-        id: Long
-    ): Result<List<Board>>
-
     suspend fun getMyBlockList(): Result<List<Block>>
 
     suspend fun addMyBlock(
         id: Long
-    ): Result<Unit>
+    ): Result<Long>
 
     suspend fun removeMyBlock(
         id: Long
     ): Result<Unit>
 
-    suspend fun writeBoardPost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Long>
+    suspend fun searchBlockPaging(
+        keyword: String
+    ): Flow<PagingData<Block>>
 
-    suspend fun writeRoutinePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Long>
+    suspend fun getPopularBlockList(): Result<List<Block>>
 
-    suspend fun writeNoticePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        imageList: List<String>
-    ): Result<Long>
+    suspend fun getRecommendBlockList(): Result<List<Block>>
 
-    suspend fun searchBoardPostPaging(
+    suspend fun getBoardList(
+        id: Long
+    ): Result<List<Board>>
+
+    suspend fun getPopularPostPaging(
+        id: Long
+    ): Flow<PagingData<Post>>
+
+    suspend fun searchPostFromBlockPaging(
         id: Long,
         keyword: String
-    ): Flow<PagingData<BoardPost>>
+    ): Flow<PagingData<Post>>
 
-//    suspend fun searchRoutinePostPaging(
-//        id: Long,
-//        keyword: String
-//    ): Flow<PagingData<RoutinePost>>
-//
-//    suspend fun searchNoticePostPaging(
-//        id: Long,
-//        keyword: String
-//    ): Flow<PagingData<NoticePost>>
-
-    suspend fun loadBoardPost(
+    suspend fun getBoard(
         id: Long
-    ): Result<BoardPost>
+    ): Result<Board>
 
-//    suspend fun loadRoutinePost(
-//        id: Long
-//    ): Result<RoutinePost>
-//
-//    suspend fun loadNoticePost(
-//        id: Long
-//    ): Result<NoticePost>
+    suspend fun searchPostFromBoardPaging(
+        id: Long,
+        keyword: String
+    ): Flow<PagingData<Post>>
 
-    suspend fun editBoardPost(
+    suspend fun writePost(
+        id: Long,
+        title: String,
+        content: String,
+        isAnonymous: Boolean,
+        isSecret: Boolean,
+        imageList: List<String>
+    ): Result<Long>
+
+    suspend fun loadPost(
+        id: Long
+    ): Result<Post>
+
+    suspend fun editPost(
         id: Long,
         title: String,
         content: String,
@@ -97,95 +75,34 @@ interface CommunityRepository {
         imageList: List<String>
     ): Result<Unit>
 
-    suspend fun editRoutinePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Unit>
-
-    suspend fun editNoticePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        imageList: List<String>
-    ): Result<Unit>
-
-    suspend fun removeBoardPost(
+    suspend fun removePost(
         id: Long
     ): Result<Unit>
 
-    suspend fun removeRoutinePost(
+    suspend fun likePost(
         id: Long
     ): Result<Unit>
 
-    suspend fun removeNoticePost(
-        id: Long
-    ): Result<Unit>
-
-    suspend fun likeBoardPost(
-        id: Long
-    ): Result<Unit>
-
-    suspend fun likeRoutinePost(
-        id: Long
-    ): Result<Unit>
-
-    suspend fun likeNoticePost(
-        id: Long
-    ): Result<Unit>
-
-    suspend fun reportBoardPost(
+    suspend fun reportPost(
         id: Long,
         reason: String
     ): Result<Unit>
 
-    suspend fun reportRoutinePost(
+    suspend fun loadCommentPaging(
         id: Long,
-        reason: String
-    ): Result<Unit>
+    ): Flow<PagingData<Comment>>
 
-    suspend fun reportNoticePost(
-        id: Long,
-        reason: String
-    ): Result<Unit>
-
-    suspend fun loadBoardCommentPaging(
-        id: Long,
-    ): Flow<PagingData<BoardComment>>
-
-//    suspend fun loadRoutineCommentPaging(
-//        id: Long,
-//        keyword: String
-//    ): Flow<PagingData<RoutineComment>>
-//
-//    suspend fun loadNoticeCommentPaging(
-//        id: Long,
-//        keyword: String
-//    ): Flow<PagingData<NoticeComment>>
-
-    suspend fun writeBoardComment(
+    suspend fun writeComment(
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit>
-
-    suspend fun writeRoutineComment(
-        id: Long,
-        content: String,
-        isAnonymous: Boolean
-    ): Result<Unit>
-
-    suspend fun writeNoticeComment(
-        id: Long,
-        content: String,
-        isAnonymous: Boolean
-    ): Result<Unit>
+    ): Result<Long>
 
     suspend fun removeComment(
+        id: Long
+    ): Result<Unit>
+
+    suspend fun likeComment(
         id: Long
     ): Result<Unit>
 
@@ -198,9 +115,5 @@ interface CommunityRepository {
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit>
-
-    suspend fun likeComment(
-        id: Long
-    ): Result<Unit>
+    ): Result<Long>
 }

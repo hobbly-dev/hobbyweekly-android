@@ -4,25 +4,27 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kr.hobbly.hobbyweekly.android.data.common.DEFAULT_PAGE_START
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.feature.CommunityApi
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
-class SearchBlockPagingSource(
+class SearchPostFromBlockPagingSource(
     private val communityApi: CommunityApi,
+    private val id: Long,
     private val keyword: String
-) : PagingSource<Int, Block>() {
+) : PagingSource<Int, Post>() {
 
-    override fun getRefreshKey(state: PagingState<Int, Block>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Block> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
         val pageNum = params.key ?: DEFAULT_PAGE_START
         val pageSize = params.loadSize
 
-        return communityApi.searchBlockList(
+        return communityApi.searchPostFromBlock(
+            id = id,
             keyword = keyword,
             pageNum = pageNum,
             pageSize = pageSize

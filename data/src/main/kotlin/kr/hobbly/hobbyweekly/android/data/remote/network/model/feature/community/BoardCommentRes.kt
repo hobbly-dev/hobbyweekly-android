@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
 
 @Serializable
 data class BoardCommentRes(
@@ -30,9 +30,9 @@ data class BoardCommentRes(
     val childComments: List<BoardCommentRes>,
     @SerialName("isAnonymous")
     val isAnonymous: Boolean
-) : DataMapper<BoardComment> {
-    override fun toDomain(): BoardComment {
-        return BoardComment(
+) : DataMapper<Comment> {
+    override fun toDomain(): Comment {
+        return Comment(
             id = commentId,
             blockId = blockId,
             boardId = boardId,

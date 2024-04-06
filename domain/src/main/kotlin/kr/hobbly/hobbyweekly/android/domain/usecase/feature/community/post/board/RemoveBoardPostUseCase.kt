@@ -9,7 +9,7 @@ class RemoveBoardPostUseCase @Inject constructor(
     suspend operator fun invoke(
         id: Long
     ): Result<Unit> {
-        return communityRepository.removeBoardPost(
+        return communityRepository.removePost(
             id = id
         )
     }

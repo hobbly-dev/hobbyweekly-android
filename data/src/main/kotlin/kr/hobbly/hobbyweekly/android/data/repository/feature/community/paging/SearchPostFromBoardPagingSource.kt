@@ -4,31 +4,33 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kr.hobbly.hobbyweekly.android.data.common.DEFAULT_PAGE_START
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.feature.CommunityApi
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
-class SearchBoardCommentPagingSource(
+class SearchPostFromBoardPagingSource(
     private val communityApi: CommunityApi,
-    private val id: Long
-) : PagingSource<Int, BoardComment>() {
+    private val id: Long,
+    private val keyword: String
+) : PagingSource<Int, Post>() {
 
-    override fun getRefreshKey(state: PagingState<Int, BoardComment>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BoardComment> {
-        val page = params.key ?: DEFAULT_PAGE_START
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Post> {
+        val pageNum = params.key ?: DEFAULT_PAGE_START
         val pageSize = params.loadSize
 
-        return communityApi.loadBoardCommentList(
+        return communityApi.searchPostFromBoard(
             id = id,
-            page = page,
-            pageSize = pageSize,
+            keyword = keyword,
+            pageNum = pageNum,
+            pageSize = pageSize
         ).map { data ->
-            val nextPage = if (data.hasNext) page + 1 else null
-            val previousPage = if (data.hasPrevious) page - 1 else null
+            val nextPage = if (data.hasNext) pageNum + 1 else null
+            val previousPage = if (data.hasPrevious) pageNum - 1 else null
 
             LoadResult.Page(
                 data = data.result.map { it.toDomain() },

@@ -8,13 +8,15 @@ import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.data.common.DEFAULT_PAGING_SIZE
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.feature.CommunityApi
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.toDomain
+import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.GetPopularPostPagingSource
 import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchBlockPagingSource
-import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchBoardCommentPagingSource
-import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchBoardPostPagingSource
+import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchCommentPagingSource
+import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchPostFromBlockPagingSource
+import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchPostFromBoardPagingSource
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardComment
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
 
 class RealCommunityRepository @Inject constructor(
@@ -28,12 +30,24 @@ class RealCommunityRepository @Inject constructor(
         ).toDomain()
     }
 
-    override suspend fun getPopularBlockList(): Result<List<Block>> {
-        return communityApi.getPopularBlockList().toDomain()
+    override suspend fun getMyBlockList(): Result<List<Block>> {
+        return communityApi.getMyBlockList().toDomain()
     }
 
-    override suspend fun getRecommendBlockList(): Result<List<Block>> {
-        return communityApi.getRecommendBlockList().toDomain()
+    override suspend fun addMyBlock(
+        id: Long
+    ): Result<Long> {
+        return communityApi.addMyBlock(
+            id = id
+        ).toDomain()
+    }
+
+    override suspend fun removeMyBlock(
+        id: Long
+    ): Result<Unit> {
+        return communityApi.removeMyBlock(
+            id = id
+        )
     }
 
     override suspend fun searchBlockPaging(
@@ -53,6 +67,14 @@ class RealCommunityRepository @Inject constructor(
         ).flow
     }
 
+    override suspend fun getPopularBlockList(): Result<List<Block>> {
+        return communityApi.getPopularBlockList().toDomain()
+    }
+
+    override suspend fun getRecommendBlockList(): Result<List<Block>> {
+        return communityApi.getRecommendBlockList().toDomain()
+    }
+
     override suspend fun getBoardList(
         id: Long
     ): Result<List<Board>> {
@@ -61,89 +83,34 @@ class RealCommunityRepository @Inject constructor(
         ).toDomain()
     }
 
-    override suspend fun getMyBlockList(): Result<List<Block>> {
-        return communityApi.getMyBlockList().toDomain()
-    }
-
-    override suspend fun addMyBlock(
+    override suspend fun getPopularPostPaging(
         id: Long
-    ): Result<Unit> {
-        return communityApi.addMyBlock(
-            id = id
-        )
-    }
-
-    override suspend fun removeMyBlock(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.removeMyBlock(
-            id = id
-        )
-    }
-
-    override suspend fun writeBoardPost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Long> {
-        return communityApi.writeBoardPost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            isSecret = isSecret,
-            imageList = imageList
-        ).toDomain()
-    }
-
-    override suspend fun writeRoutinePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Long> {
-        return communityApi.writeRoutinePost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            isSecret = isSecret,
-            imageList = imageList
-        ).toDomain()
-    }
-
-    override suspend fun writeNoticePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        imageList: List<String>
-    ): Result<Long> {
-        return communityApi.writeNoticePost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            imageList = imageList
-        ).toDomain()
-    }
-
-    override suspend fun searchBoardPostPaging(
-        id: Long,
-        keyword: String
-    ): Flow<PagingData<BoardPost>> {
+    ): Flow<PagingData<Post>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGING_SIZE,
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {
-                SearchBoardPostPagingSource(
+                GetPopularPostPagingSource(
+                    communityApi = communityApi,
+                    id = id
+                )
+            },
+        ).flow
+    }
+
+    override suspend fun searchPostFromBlockPaging(
+        id: Long,
+        keyword: String
+    ): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                SearchPostFromBlockPagingSource(
                     communityApi = communityApi,
                     id = id,
                     keyword = keyword
@@ -152,154 +119,113 @@ class RealCommunityRepository @Inject constructor(
         ).flow
     }
 
-    override suspend fun loadBoardPost(
+    override suspend fun getBoard(
         id: Long
-    ): Result<BoardPost> {
-        return communityApi.loadBoardPost(
+    ): Result<Board> {
+        return communityApi.getBoard(
             id = id
         ).toDomain()
     }
 
-    override suspend fun editBoardPost(
+    override suspend fun searchPostFromBoardPaging(
         id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Unit> {
-        return communityApi.editBoardPost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            isSecret = isSecret,
-            imageList = imageList
-        )
-    }
-
-    override suspend fun editRoutinePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        isSecret: Boolean,
-        imageList: List<String>
-    ): Result<Unit> {
-        return communityApi.editRoutinePost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            isSecret = isSecret,
-            imageList = imageList
-        )
-    }
-
-    override suspend fun editNoticePost(
-        id: Long,
-        title: String,
-        content: String,
-        isAnonymous: Boolean,
-        imageList: List<String>
-    ): Result<Unit> {
-        return communityApi.editNoticePost(
-            id = id,
-            title = title,
-            content = content,
-            isAnonymous = isAnonymous,
-            imageList = imageList
-        )
-    }
-
-    override suspend fun removeBoardPost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.removeBoardPost(
-            id = id
-        )
-    }
-
-    override suspend fun removeRoutinePost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.removeRoutinePost(
-            id = id
-        )
-    }
-
-    override suspend fun removeNoticePost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.removeNoticePost(
-            id = id
-        )
-    }
-
-    override suspend fun likeBoardPost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.likeBoardPost(
-            id = id
-        )
-    }
-
-    override suspend fun likeRoutinePost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.likeRoutinePost(
-            id = id
-        )
-    }
-
-    override suspend fun likeNoticePost(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.likeNoticePost(
-            id = id
-        )
-    }
-
-    override suspend fun reportBoardPost(
-        id: Long,
-        reason: String
-    ): Result<Unit> {
-        return communityApi.reportBoardPost(
-            id = id,
-            reason = reason
-        )
-    }
-
-    override suspend fun reportRoutinePost(
-        id: Long,
-        reason: String
-    ): Result<Unit> {
-        return communityApi.reportRoutinePost(
-            id = id,
-            reason = reason
-        )
-    }
-
-    override suspend fun reportNoticePost(
-        id: Long,
-        reason: String
-    ): Result<Unit> {
-        return communityApi.reportNoticePost(
-            id = id,
-            reason = reason
-        )
-    }
-
-    override suspend fun loadBoardCommentPaging(
-        id: Long
-    ): Flow<PagingData<BoardComment>> {
+        keyword: String
+    ): Flow<PagingData<Post>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGING_SIZE,
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {
-                SearchBoardCommentPagingSource(
+                SearchPostFromBoardPagingSource(
+                    communityApi = communityApi,
+                    id = id,
+                    keyword = keyword
+                )
+            },
+        ).flow
+    }
+
+    override suspend fun writePost(
+        id: Long,
+        title: String,
+        content: String,
+        isAnonymous: Boolean,
+        isSecret: Boolean,
+        imageList: List<String>
+    ): Result<Long> {
+        return communityApi.writePost(
+            id = id,
+            title = title,
+            content = content,
+            isAnonymous = isAnonymous,
+            isSecret = isSecret,
+            imageList = imageList
+        ).toDomain()
+    }
+
+    override suspend fun loadPost(
+        id: Long
+    ): Result<Post> {
+        return communityApi.loadPost(
+            id = id
+        ).toDomain()
+    }
+
+    override suspend fun editPost(
+        id: Long,
+        title: String,
+        content: String,
+        isAnonymous: Boolean,
+        isSecret: Boolean,
+        imageList: List<String>
+    ): Result<Unit> {
+        return communityApi.editPost(
+            id = id,
+            title = title,
+            content = content,
+            isAnonymous = isAnonymous,
+            isSecret = isSecret,
+            imageList = imageList
+        )
+    }
+
+    override suspend fun removePost(
+        id: Long
+    ): Result<Unit> {
+        return communityApi.removePost(
+            id = id
+        )
+    }
+
+    override suspend fun likePost(
+        id: Long
+    ): Result<Unit> {
+        return communityApi.likePost(
+            id = id
+        )
+    }
+
+    override suspend fun reportPost(
+        id: Long,
+        reason: String
+    ): Result<Unit> {
+        return communityApi.reportPost(
+            id = id,
+            reason = reason
+        )
+    }
+
+    override suspend fun loadCommentPaging(
+        id: Long
+    ): Flow<PagingData<Comment>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                SearchCommentPagingSource(
                     communityApi = communityApi,
                     id = id
                 )
@@ -307,46 +233,30 @@ class RealCommunityRepository @Inject constructor(
         ).flow
     }
 
-    override suspend fun writeBoardComment(
+    override suspend fun writeComment(
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit> {
-        return communityApi.writeBoardComment(
+    ): Result<Long> {
+        return communityApi.writeComment(
             id = id,
             content = content,
             isAnonymous = isAnonymous
-        )
-    }
-
-    override suspend fun writeRoutineComment(
-        id: Long,
-        content: String,
-        isAnonymous: Boolean
-    ): Result<Unit> {
-        return communityApi.writeRoutineComment(
-            id = id,
-            content = content,
-            isAnonymous = isAnonymous
-        )
-    }
-
-    override suspend fun writeNoticeComment(
-        id: Long,
-        content: String,
-        isAnonymous: Boolean
-    ): Result<Unit> {
-        return communityApi.writeNoticeComment(
-            id = id,
-            content = content,
-            isAnonymous = isAnonymous
-        )
+        ).toDomain()
     }
 
     override suspend fun removeComment(
         id: Long
     ): Result<Unit> {
         return communityApi.removeComment(
+            id = id
+        )
+    }
+
+    override suspend fun likeComment(
+        id: Long
+    ): Result<Unit> {
+        return communityApi.likeComment(
             id = id
         )
     }
@@ -365,20 +275,11 @@ class RealCommunityRepository @Inject constructor(
         id: Long,
         content: String,
         isAnonymous: Boolean
-    ): Result<Unit> {
+    ): Result<Long> {
         return communityApi.writeCommentReply(
             id = id,
             content = content,
             isAnonymous = isAnonymous
-        )
+        ).toDomain()
     }
-
-    override suspend fun likeComment(
-        id: Long
-    ): Result<Unit> {
-        return communityApi.likeComment(
-            id = id
-        )
-    }
-
 }

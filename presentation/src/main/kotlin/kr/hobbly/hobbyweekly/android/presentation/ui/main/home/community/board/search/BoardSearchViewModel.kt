@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.onStart
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.SearchBoardPostUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
@@ -41,9 +41,9 @@ class BoardSearchViewModel @Inject constructor(
         savedStateHandle.get<Long>(BoardSearchConstant.ROUTE_ARGUMENT_BOARD_ID) ?: -1L
     }
 
-    private val _searchPostPaging: MutableStateFlow<PagingData<BoardPost>> =
+    private val _searchPostPaging: MutableStateFlow<PagingData<Post>> =
         MutableStateFlow(PagingData.empty())
-    val searchPostPaging: StateFlow<PagingData<BoardPost>> = _searchPostPaging.asStateFlow()
+    val searchPostPaging: StateFlow<PagingData<Post>> = _searchPostPaging.asStateFlow()
 
     fun onIntent(intent: BoardSearchIntent) {
         when (intent) {

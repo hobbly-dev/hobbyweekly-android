@@ -11,7 +11,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardPost
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetPopularBlockListUseCase
@@ -38,8 +38,8 @@ class CommunityViewModel @Inject constructor(
     private val _popularBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val popularBlockList: StateFlow<List<Block>> = _popularBlockList.asStateFlow()
 
-    private val _popularPostList: MutableStateFlow<List<BoardPost>> = MutableStateFlow(emptyList())
-    val popularPostList: StateFlow<List<BoardPost>> = _popularPostList.asStateFlow()
+    private val _popularPostList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
+    val popularPostList: StateFlow<List<Post>> = _popularPostList.asStateFlow()
 
     init {
         refresh()
