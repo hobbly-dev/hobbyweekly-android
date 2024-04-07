@@ -33,6 +33,10 @@ interface RoutineRepository {
         alarmTime: LocalTime?
     ): Result<Unit>
 
+    suspend fun removeRoutine(
+        id: Long
+    ): Result<Unit>
+
     suspend fun switchRoutineAlarm(
         id: Long,
         isEnabled: Boolean

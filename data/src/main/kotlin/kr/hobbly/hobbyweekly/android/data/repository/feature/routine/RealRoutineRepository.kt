@@ -65,6 +65,14 @@ class RealRoutineRepository @Inject constructor(
         )
     }
 
+    override suspend fun removeRoutine(
+        id: Long
+    ): Result<Unit> {
+        return routineApi.removeRoutine(
+            id = id
+        )
+    }
+
     override suspend fun switchRoutineAlarm(
         id: Long,
         isEnabled: Boolean

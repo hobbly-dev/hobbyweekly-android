@@ -1,6 +1,7 @@
 package kr.hobbly.hobbyweekly.android.data.remote.network.api.feature
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
@@ -94,6 +95,13 @@ class RoutineApi @Inject constructor(
                 )
             )
         }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun removeRoutine(
+        id: Long
+    ): Result<Unit> {
+        return client.delete("$baseUrl/v1/routines/$id")
+            .convert(errorMessageMapper::map)
     }
 
     suspend fun switchRoutineAlarm(
