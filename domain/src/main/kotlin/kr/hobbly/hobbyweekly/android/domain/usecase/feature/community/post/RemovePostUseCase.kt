@@ -1,9 +1,9 @@
-package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board
+package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post
 
 import javax.inject.Inject
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class RemoveBoardPostUseCase @Inject constructor(
+class RemovePostUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(

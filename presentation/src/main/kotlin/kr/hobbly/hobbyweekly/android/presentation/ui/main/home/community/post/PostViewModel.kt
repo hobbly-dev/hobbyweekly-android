@@ -22,12 +22,12 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.Li
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.RemoveCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.ReportCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.WriteCommentReplyUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.board.LoadBoardCommentPagingUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.board.WriteBoardCommentUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.LikeBoardPostUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.LoadBoardPostUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.RemoveBoardPostUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.ReportBoardPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LoadCommentPagingUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.WriteCommentUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LikePostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.RemovePostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.ReportPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -35,13 +35,13 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val loadBlockPostUseCase: LoadBoardPostUseCase,
+    private val loadBlockPostUseCase: LoadPostUseCase,
     private val getProfileUseCase: GetProfileUseCase,
-    private val loadBoardCommentPagingUseCase: LoadBoardCommentPagingUseCase,
-    private val likeBoardPostUseCase: LikeBoardPostUseCase,
-    private val removeBoardPostUseCase: RemoveBoardPostUseCase,
-    private val reportBoardPostUseCase: ReportBoardPostUseCase,
-    private val writeBoardCommentUseCase: WriteBoardCommentUseCase,
+    private val loadCommentPagingUseCase: LoadCommentPagingUseCase,
+    private val likePostUseCase: LikePostUseCase,
+    private val removePostUseCase: RemovePostUseCase,
+    private val reportPostUseCase: ReportPostUseCase,
+    private val writeCommentUseCase: WriteCommentUseCase,
     private val writeCommentReplyUseCase: WriteCommentReplyUseCase,
     private val likeCommentUseCase: LikeCommentUseCase,
     private val removeCommentUseCase: RemoveCommentUseCase,
@@ -118,7 +118,7 @@ class PostViewModel @Inject constructor(
 
     private fun refresh() {
         launch {
-            loadBoardCommentPagingUseCase(id = postId)
+            loadCommentPagingUseCase(id = postId)
                 .cachedIn(viewModelScope)
                 .catch { exception ->
                     when (exception) {
@@ -160,7 +160,7 @@ class PostViewModel @Inject constructor(
 
     private fun likePost() {
         launch {
-            likeBoardPostUseCase(
+            likePostUseCase(
                 id = postId
             ).onSuccess {
                 _state.value = PostState.Init
@@ -181,7 +181,7 @@ class PostViewModel @Inject constructor(
 
     private fun removePost() {
         launch {
-            removeBoardPostUseCase(
+            removePostUseCase(
                 id = postId
             ).onSuccess {
                 _state.value = PostState.Init
@@ -205,7 +205,7 @@ class PostViewModel @Inject constructor(
         reason: String
     ) {
         launch {
-            reportBoardPostUseCase(
+            reportPostUseCase(
                 id = postId,
                 reason = reason
             ).onSuccess {
@@ -231,13 +231,13 @@ class PostViewModel @Inject constructor(
         isAnonymous: Boolean
     ) {
         launch {
-            writeBoardCommentUseCase(
+            writeCommentUseCase(
                 id = postId,
                 content = commentText,
                 isAnonymous = isAnonymous
             ).onSuccess { id ->
                 _state.value = PostState.Init
-                _event.emit(PostEvent.Comment.Write.Success(-1)) // TODO
+                _event.emit(PostEvent.Comment.Write.Success(id))
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -265,7 +265,7 @@ class PostViewModel @Inject constructor(
                 isAnonymous = isAnonymous
             ).onSuccess { id ->
                 _state.value = PostState.Init
-                _event.emit(PostEvent.Comment.Write.Success(-1)) // TODO
+                _event.emit(PostEvent.Comment.Write.Success(id))
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {

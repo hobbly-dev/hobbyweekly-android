@@ -1,9 +1,9 @@
-package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board
+package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post
 
 import javax.inject.Inject
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class WriteBoardPostUseCase @Inject constructor(
+class EditPostUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(
@@ -13,8 +13,8 @@ class WriteBoardPostUseCase @Inject constructor(
         isAnonymous: Boolean,
         isSecret: Boolean,
         imageList: List<String>
-    ): Result<Long> {
-        return communityRepository.writePost(
+    ): Result<Unit> {
+        return communityRepository.editPost(
             id = id,
             title = title,
             content = content,

@@ -12,7 +12,7 @@ import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.file.MockFileRep
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.tracking.MockTrackingRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.user.MockUserRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.AuthenticationRepository
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.FileRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingRepository

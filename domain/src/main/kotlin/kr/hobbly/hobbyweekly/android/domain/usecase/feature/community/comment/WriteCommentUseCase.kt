@@ -1,9 +1,9 @@
-package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.board
+package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment
 
 import javax.inject.Inject
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class WriteBoardCommentUseCase @Inject constructor(
+class WriteCommentUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(

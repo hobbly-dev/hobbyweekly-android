@@ -17,7 +17,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
 class RealCommunityRepository @Inject constructor(
     private val communityApi: CommunityApi

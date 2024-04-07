@@ -1,19 +1,19 @@
-package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board
+package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post
 
 import androidx.paging.PagingData
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class SearchBoardPostUseCase @Inject constructor(
+class SearchPostPagingFromBlockUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(
         id: Long,
         keyword: String
     ): Flow<PagingData<Post>> {
-        return communityRepository.searchPostFromBoardPaging(
+        return communityRepository.searchPostFromBlockPaging(
             id = id,
             keyword = keyword
         )

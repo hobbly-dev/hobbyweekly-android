@@ -1,12 +1,12 @@
-package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.board
+package kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment
 
 import androidx.paging.PagingData
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class LoadBoardCommentPagingUseCase @Inject constructor(
+class LoadCommentPagingUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
     suspend operator fun invoke(

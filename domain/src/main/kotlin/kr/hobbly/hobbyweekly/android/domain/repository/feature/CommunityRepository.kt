@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.domain.repository.nonfeature
+package kr.hobbly.hobbyweekly.android.domain.repository.feature
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow

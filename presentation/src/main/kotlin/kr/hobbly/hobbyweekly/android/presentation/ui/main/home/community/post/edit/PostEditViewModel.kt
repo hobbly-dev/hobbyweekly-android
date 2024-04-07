@@ -10,9 +10,9 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.EditBoardPostUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.LoadBoardPostUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.WriteBoardPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.EditPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.WritePostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.file.GetUrlAndUploadImageUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -21,10 +21,10 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 @HiltViewModel
 class PostEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val loadBoardPostUseCase: LoadBoardPostUseCase,
+    private val loadPostUseCase: LoadPostUseCase,
     private val getUrlAndUploadImageUseCase: GetUrlAndUploadImageUseCase,
-    private val writeBoardPostUseCase: WriteBoardPostUseCase,
-    private val editBoardPostUseCase: EditBoardPostUseCase
+    private val writePostUseCase: WritePostUseCase,
+    private val editPostUseCase: EditPostUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<PostEditState> = MutableStateFlow(PostEditState.Init)
@@ -85,7 +85,7 @@ class PostEditViewModel @Inject constructor(
         launch {
             _state.value = PostEditState.Loading
 
-            loadBoardPostUseCase(
+            loadPostUseCase(
                 id = postId
             ).onSuccess { post ->
                 _state.value = PostEditState.Init
@@ -117,7 +117,7 @@ class PostEditViewModel @Inject constructor(
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
             ).onSuccess { newImageList ->
-                editBoardPostUseCase(
+                editPostUseCase(
                     id = postId,
                     title = title,
                     content = content,
@@ -156,7 +156,7 @@ class PostEditViewModel @Inject constructor(
                 imageUriList = newImageList.map { it.filePath }
             ).onSuccess { newImageList ->
                 if (routineId == -1L) {
-                    writeBoardPostUseCase(
+                    writePostUseCase(
                         id = postId,
                         title = title,
                         content = content,

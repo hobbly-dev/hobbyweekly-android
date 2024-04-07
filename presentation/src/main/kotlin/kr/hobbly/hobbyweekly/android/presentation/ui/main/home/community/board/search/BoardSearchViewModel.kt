@@ -16,14 +16,14 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.board.SearchBoardPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.SearchPostPagingFromBoardUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class BoardSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val searchBoardPostUseCase: SearchBoardPostUseCase
+    private val searchPostPagingFromBoardUseCase: SearchPostPagingFromBoardUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<BoardSearchState> =
@@ -56,7 +56,7 @@ class BoardSearchViewModel @Inject constructor(
     private fun search(keyword: String) {
         launch {
             // TODO : Paging State 에 따라서 보여주기
-            searchBoardPostUseCase(id = boardId, keyword = keyword)
+            searchPostPagingFromBoardUseCase(id = boardId, keyword = keyword)
                 .cachedIn(viewModelScope)
                 .onStart {
                     _state.value = BoardSearchState.Loading
