@@ -1,4 +1,4 @@
-package kr.hobbly.hobbyweekly.android.domain.model.feature.mypage
+package kr.hobbly.hobbyweekly.android.domain.model.nonfeature.notification
 
 import kotlinx.datetime.LocalDateTime
 

@@ -1,5 +1,8 @@
 package kr.hobbly.hobbyweekly.android.domain.repository.nonfeature
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.notification.Notification
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
 
@@ -22,4 +25,10 @@ interface UserRepository {
     ): Result<Unit>
 
     suspend fun getProfile(): Result<Profile>
+
+    suspend fun getNotificationPaging(): Flow<PagingData<Notification>>
+
+    suspend fun checkNotification(
+        id: Long
+    ): Result<Unit>
 }

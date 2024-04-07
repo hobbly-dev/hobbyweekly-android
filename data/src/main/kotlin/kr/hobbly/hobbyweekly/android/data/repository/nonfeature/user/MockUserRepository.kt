@@ -1,9 +1,19 @@
 package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.user
 
+import androidx.paging.PagingData
 import javax.inject.Inject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.minus
+import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.notification.Notification
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Term
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
@@ -91,6 +101,48 @@ class MockUserRepository @Inject constructor(
                 ServerException("MOCK_ERROR", "로그인이 필요합니다.")
             )
         }
+    }
+
+    override suspend fun getNotificationPaging(): Flow<PagingData<Notification>> {
+        randomShortDelay()
+
+        return flowOf(
+            PagingData.from(
+                listOf(
+                    Notification(
+                        id = 1,
+                        content = "종국님이 좋아요를 눌렀습니다",
+                        isRead = false,
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .atTime(0, 0, 0),
+                    ),
+                    Notification(
+                        id = 2,
+                        content = "새로운 답글이 달렸어요: 쓴소리 고맙다",
+                        isRead = false,
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(1, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                    ),
+                    Notification(
+                        id = 3,
+                        content = "새로운 댓글이 달렸어요 : 홧팅이여!! ❤",
+                        isRead = false,
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(7, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                    )
+                )
+            )
+        )
+    }
+
+    override suspend fun checkNotification(
+        id: Long
+    ): Result<Unit> {
+        randomShortDelay()
+
+        return Result.success(Unit)
     }
 
     private suspend fun randomShortDelay() {
