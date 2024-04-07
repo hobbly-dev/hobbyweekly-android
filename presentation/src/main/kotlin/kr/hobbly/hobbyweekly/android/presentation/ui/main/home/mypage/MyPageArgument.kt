@@ -20,7 +20,15 @@ sealed interface MyPageState {
 }
 
 
-sealed interface MyPageEvent
+sealed interface MyPageEvent {
+    sealed interface Logout : MyPageEvent {
+        data object Success : Logout
+    }
+
+    sealed interface Withdraw : MyPageEvent {
+        data object Success : Withdraw
+    }
+}
 
 sealed interface MyPageIntent {
     data class OnProfileImageSet(val image: GalleryImage) : MyPageIntent

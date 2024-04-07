@@ -13,14 +13,21 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.LogoutUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.WithdrawUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.EditProfileWithUploadUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
+import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val getProfileUseCase: GetProfileUseCase
+    private val getProfileUseCase: GetProfileUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val withdrawUseCase: WithdrawUseCase,
+    private val editProfileWithUploadUseCase: EditProfileWithUploadUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyPageState> = MutableStateFlow(MyPageState.Init)
@@ -40,6 +47,89 @@ class MyPageViewModel @Inject constructor(
     val routineStatisticsList: StateFlow<List<RoutineStatistics>> = _routineStatistics.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    fun onIntent(intent: MyPageIntent) {
+        when (intent) {
+            is MyPageIntent.OnProfileImageSet -> {
+                setProfileImage(intent.image)
+            }
+
+            MyPageIntent.Logout -> logout()
+            MyPageIntent.Withdraw -> withdraw()
+        }
+    }
+
+    private fun setProfileImage(
+        image: GalleryImage
+    ) {
+        launch {
+            _state.value = MyPageState.Loading
+            editProfileWithUploadUseCase(
+                nickname = profile.value.nickname,
+                imageUri = image.filePath
+            ).onSuccess {
+                _state.value = MyPageState.Init
+                refresh()
+            }.onFailure { exception ->
+                _state.value = MyPageState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun logout() {
+        launch {
+            _state.value = MyPageState.Loading
+            logoutUseCase().onSuccess {
+                _state.value = MyPageState.Init
+                _event.emit(MyPageEvent.Logout.Success)
+            }.onFailure { exception ->
+                _state.value = MyPageState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun withdraw() {
+        launch {
+            _state.value = MyPageState.Loading
+            withdrawUseCase().onSuccess {
+                _state.value = MyPageState.Init
+                _event.emit(MyPageEvent.Withdraw.Success)
+            }.onFailure { exception ->
+                _state.value = MyPageState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun refresh() {
         launch {
             _state.value = MyPageState.Loading
             getProfileUseCase().onSuccess {
@@ -58,9 +148,5 @@ class MyPageViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun onIntent(intent: MyPageIntent) {
-
     }
 }

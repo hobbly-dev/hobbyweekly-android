@@ -122,7 +122,7 @@ class RoutineApi @Inject constructor(
         date: LocalDate
     ): Result<GetRoutineStatisticsRes> {
         return client.get("$baseUrl/v1/routines/me/statistics") {
-            parameter("blockId", id)
+            parameter("blockId", id.takeIf { it != -1L })
             parameter("date", date) // TODO : DateTime String Format 체크
         }.convert(errorMessageMapper::map)
     }

@@ -82,14 +82,17 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
+import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.splash.SplashConstant
 
 @Composable
 fun MyPageScreen(
@@ -165,6 +168,8 @@ private fun MyPageScreen(
 
     var isMenuShowing by remember { mutableStateOf(false) }
     var isGalleryShowing by remember { mutableStateOf(false) }
+    var isLogoutSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isWithdrawSuccessDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToMyBlock() {
         navController.safeNavigate(MyBlockConstant.ROUTE)
@@ -193,6 +198,42 @@ private fun MyPageScreen(
             onResult = {
                 val image = it.firstOrNull() ?: return@GalleryScreen
                 intent(MyPageIntent.OnProfileImageSet(image))
+            }
+        )
+    }
+
+    if (isLogoutSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "마이페이지 알람",
+            message = "로그아웃했습니다.\n다시 로그인해주세요.",
+            onConfirm = {
+                navController.safeNavigate(SplashConstant.ROUTE) {
+                    popUpTo(HomeConstant.ROUTE) {
+                        inclusive = true
+                    }
+                }
+            },
+            onDismissRequest = {
+                isLogoutSuccessDialogShowing = false
+            }
+        )
+    }
+
+    if (isWithdrawSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "마이페이지 알람",
+            message = "탈퇴 완료 했습니다.\n다시 회원가입해주세요.",
+            onConfirm = {
+                navController.safeNavigate(SplashConstant.ROUTE) {
+                    popUpTo(HomeConstant.ROUTE) {
+                        inclusive = true
+                    }
+                }
+            },
+            onDismissRequest = {
+                isWithdrawSuccessDialogShowing = false
             }
         )
     }
@@ -491,9 +532,33 @@ private fun MyPageScreen(
         }
     }
 
+    fun logout(event: MyPageEvent.Logout) {
+        when (event) {
+            MyPageEvent.Logout.Success -> {
+                isLogoutSuccessDialogShowing = true
+            }
+        }
+    }
+
+    fun withdraw(event: MyPageEvent.Withdraw) {
+        when (event) {
+            MyPageEvent.Withdraw.Success -> {
+                isWithdrawSuccessDialogShowing = true
+            }
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
+            when (event) {
+                is MyPageEvent.Logout -> {
+                    logout(event)
+                }
 
+                is MyPageEvent.Withdraw -> {
+                    withdraw(event)
+                }
+            }
         }
     }
 }

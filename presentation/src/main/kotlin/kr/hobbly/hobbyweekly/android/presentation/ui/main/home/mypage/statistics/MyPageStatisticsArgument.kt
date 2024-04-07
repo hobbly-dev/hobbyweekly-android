@@ -3,6 +3,8 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistic
 import androidx.compose.runtime.Immutable
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.datetime.LocalDate
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.RoutineIntent
 
 @Immutable
 data class MyPageStatisticsArgument(
@@ -21,4 +23,6 @@ sealed interface MyPageStatisticsState {
 
 sealed interface MyPageStatisticsEvent
 
-sealed interface MyPageStatisticsIntent
+sealed interface MyPageStatisticsIntent {
+    data class OnDateChanged(val date: LocalDate) : MyPageStatisticsIntent
+}
