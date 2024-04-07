@@ -6,8 +6,9 @@ import kr.hobbly.hobbyweekly.android.data.common.DEFAULT_PAGE_START
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.feature.CommunityApi
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
-class GetPopularPostPagingSource(
-    private val communityApi: CommunityApi
+class GetPopularPostFromBlockPagingSource(
+    private val communityApi: CommunityApi,
+    private val id: Long
 ) : PagingSource<Int, Post>() {
 
     override fun getRefreshKey(state: PagingState<Int, Post>): Int? {
@@ -21,7 +22,8 @@ class GetPopularPostPagingSource(
         val pageNum = params.key ?: DEFAULT_PAGE_START
         val pageSize = params.loadSize
 
-        return communityApi.getPopularPostList(
+        return communityApi.getPopularPostListFromBlock(
+            id = id,
             pageNum = pageNum,
             pageSize = pageSize
         ).map { data ->

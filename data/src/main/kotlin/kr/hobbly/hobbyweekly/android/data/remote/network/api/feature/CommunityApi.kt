@@ -101,6 +101,16 @@ class CommunityApi @Inject constructor(
     }
 
     suspend fun getPopularPostList(
+        pageNum: Int,
+        pageSize: Int
+    ): Result<GetPopularPostRes> {
+        return client.get("$baseUrl/v1/posts/popular") {
+            parameter("pageNum", pageNum)
+            parameter("pageSize", pageSize)
+        }.convert(errorMessageMapper::map)
+    }
+
+    suspend fun getPopularPostListFromBlock(
         id: Long,
         pageNum: Int,
         pageSize: Int

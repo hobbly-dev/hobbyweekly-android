@@ -1,11 +1,15 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
@@ -15,6 +19,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetPopularBlockListUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.GetPopularPostPagingUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
@@ -23,7 +28,7 @@ class CommunityViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getMyBlockListUseCase: GetMyBlockListUseCase,
     private val getPopularBlockListUseCase: GetPopularBlockListUseCase,
-//    private val getPopularPostListUseCase: GetPopularPostListUseCase TODO
+    private val getPopularPostPagingUseCase: GetPopularPostPagingUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<CommunityState> = MutableStateFlow(CommunityState.Init)
@@ -38,8 +43,9 @@ class CommunityViewModel @Inject constructor(
     private val _popularBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val popularBlockList: StateFlow<List<Block>> = _popularBlockList.asStateFlow()
 
-    private val _popularPostList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-    val popularPostList: StateFlow<List<Post>> = _popularPostList.asStateFlow()
+    private val _popularPostPaging: MutableStateFlow<PagingData<Post>> =
+        MutableStateFlow(PagingData.empty())
+    val popularPostPaging: StateFlow<PagingData<Post>> = _popularPostPaging.asStateFlow()
 
     init {
         refresh()
@@ -55,6 +61,22 @@ class CommunityViewModel @Inject constructor(
 
     private fun refresh() {
         launch {
+            getPopularPostPagingUseCase()
+                .cachedIn(viewModelScope)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }.collect { popularPostList ->
+                    _popularPostPaging.value = popularPostList
+                }
+
             _state.value = CommunityState.Loading
             zip(
                 { getMyBlockListUseCase() },
@@ -64,7 +86,6 @@ class CommunityViewModel @Inject constructor(
 
                 _myBlockList.value = myBlockList
                 _popularBlockList.value = popularBlockList
-                _popularPostList.value = listOf()
             }.onFailure { exception ->
                 _state.value = CommunityState.Init
                 when (exception) {

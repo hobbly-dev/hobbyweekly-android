@@ -1,19 +1,26 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.board.GetBoardUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.SearchPostPagingFromBoardUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
@@ -21,8 +28,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 class BoardViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getBlockUseCase: GetBlockUseCase,
-//    private val getBoardUseCase: GetBoardUseCase, TODO
-//    private val getBoardPostListUseCase: GetBoardPostListUseCase TODO
+    private val getBoardUseCase: GetBoardUseCase,
+    private val searchPostPagingFromBoardUseCase: SearchPostPagingFromBoardUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<BoardState> = MutableStateFlow(BoardState.Init)
@@ -45,8 +52,9 @@ class BoardViewModel @Inject constructor(
     private val _board: MutableStateFlow<Board> = MutableStateFlow(Board.empty)
     val board: StateFlow<Board> = _board.asStateFlow()
 
-    private val _postList: MutableStateFlow<List<Post>> = MutableStateFlow(emptyList())
-    val postList: StateFlow<List<Post>> = _postList.asStateFlow()
+    private val _postPaging: MutableStateFlow<PagingData<Post>> =
+        MutableStateFlow(PagingData.empty())
+    val postPaging: StateFlow<PagingData<Post>> = _postPaging.asStateFlow()
 
     init {
         refresh()
@@ -57,13 +65,34 @@ class BoardViewModel @Inject constructor(
     }
 
     private fun refresh() {
-        _state.value = BoardState.Loading
         launch {
-            getBlockUseCase(
-                id = blockId
-            ).onSuccess { block ->
+            searchPostPagingFromBoardUseCase(
+                id = boardId,
+                keyword = ""
+            )
+                .cachedIn(viewModelScope)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }.collect { postPaging ->
+                    _postPaging.value = postPaging
+                }
+
+            _state.value = BoardState.Loading
+            zip(
+                { getBlockUseCase(id = blockId) },
+                { getBoardUseCase(id = boardId) }
+            ).onSuccess { (block, board) ->
                 _state.value = BoardState.Init
                 _block.value = block
+                _board.value = board
             }.onFailure { exception ->
                 _state.value = BoardState.Init
                 when (exception) {

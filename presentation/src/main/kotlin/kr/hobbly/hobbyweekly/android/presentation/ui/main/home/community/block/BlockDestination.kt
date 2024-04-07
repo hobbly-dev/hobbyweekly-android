@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.paging.compose.collectAsLazyPagingItems
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.blockDestination(
@@ -40,15 +41,15 @@ fun NavGraphBuilder.blockDestination(
             val block by viewModel.block.collectAsStateWithLifecycle()
             val isMyBlock by viewModel.isMyBlock.collectAsStateWithLifecycle()
             val boardList by viewModel.boardList.collectAsStateWithLifecycle()
-            val noticePostList by viewModel.noticePostList.collectAsStateWithLifecycle()
-            val popularPostList by viewModel.popularPostList.collectAsStateWithLifecycle()
+            val noticePostPaging = viewModel.noticePostPaging.collectAsLazyPagingItems()
+            val popularPostPaging = viewModel.popularPostPaging.collectAsLazyPagingItems()
 
             BlockData(
                 block = block,
                 isMyBlock = isMyBlock,
                 boardList = boardList,
-                noticePostList = noticePostList,
-                popularPostList = popularPostList
+                noticePostPaging = noticePostPaging,
+                popularPostPaging = popularPostPaging
             )
         }
 

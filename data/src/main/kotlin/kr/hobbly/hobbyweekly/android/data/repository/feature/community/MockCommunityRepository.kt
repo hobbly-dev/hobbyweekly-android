@@ -285,7 +285,110 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         )
     }
 
-    override suspend fun getPopularPostPaging(
+    override suspend fun getPopularPostPaging(): Flow<PagingData<Post>> {
+        randomShortDelay()
+
+        return flowOf(
+            PagingData.from(
+                listOf(
+                    Post(
+                        id = 1,
+                        blockId = 1,
+                        title = "영어 인증합니다",
+                        content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .atTime(0, 0, 0),
+                        updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .atTime(0, 0, 0),
+                        imageList = listOf(
+                            "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
+                        ),
+                        commentCount = 99,
+                        likeCount = 99,
+                        isAnonymous = false,
+                        isSecret = false,
+                        member = Member(
+                            id = 1,
+                            nickname = "히카루",
+                            image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        ),
+                        board = Board(
+                            id = 1,
+                            blockId = 1,
+                            type = BoardType.Notice,
+                            name = "공지사항",
+                            hasNewPost = true
+                        )
+                    ),
+                    Post(
+                        id = 2,
+                        blockId = 1,
+                        title = "개발 인증합니다",
+                        content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(1, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                        updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(1, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                        imageList = listOf(
+                            "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                        ),
+                        commentCount = 1,
+                        likeCount = 1,
+                        isAnonymous = false,
+                        isSecret = false,
+                        member = Member(
+                            id = 1,
+                            nickname = "박상준",
+                            image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        ),
+                        board = Board(
+                            id = 1,
+                            blockId = 1,
+                            type = BoardType.Notice,
+                            name = "공지사항",
+                            hasNewPost = true
+                        )
+                    ),
+                    Post(
+                        id = 3,
+                        blockId = 1,
+                        title = "휴식 인증합니다",
+                        content = "휴식 했습니다.",
+                        createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(7, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                        updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                            .minus(7, DateTimeUnit.DAY)
+                            .atTime(0, 0, 0),
+                        imageList = listOf(),
+                        commentCount = 0,
+                        likeCount = 0,
+                        isAnonymous = false,
+                        isSecret = false,
+                        member = Member(
+                            id = 1,
+                            nickname = "장성혁",
+                            image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                        ),
+                        board = Board(
+                            id = 1,
+                            blockId = 1,
+                            type = BoardType.Notice,
+                            name = "공지사항",
+                            hasNewPost = true
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    override suspend fun getPopularPostFromBlockPaging(
         id: Long
     ): Flow<PagingData<Post>> {
         randomShortDelay()

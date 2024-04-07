@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.data.common.DEFAULT_PAGING_SIZE
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.feature.CommunityApi
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.toDomain
+import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.GetPopularPostFromBlockPagingSource
 import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.GetPopularPostPagingSource
 import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchBlockPagingSource
 import kr.hobbly.hobbyweekly.android.data.repository.feature.community.paging.SearchCommentPagingSource
@@ -83,7 +84,21 @@ class RealCommunityRepository @Inject constructor(
         ).toDomain()
     }
 
-    override suspend fun getPopularPostPaging(
+    override suspend fun getPopularPostPaging(): Flow<PagingData<Post>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGING_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = {
+                GetPopularPostPagingSource(
+                    communityApi = communityApi
+                )
+            },
+        ).flow
+    }
+
+    override suspend fun getPopularPostFromBlockPaging(
         id: Long
     ): Flow<PagingData<Post>> {
         return Pager(
@@ -92,7 +107,7 @@ class RealCommunityRepository @Inject constructor(
                 enablePlaceholders = true
             ),
             pagingSourceFactory = {
-                GetPopularPostPagingSource(
+                GetPopularPostFromBlockPagingSource(
                     communityApi = communityApi,
                     id = id
                 )

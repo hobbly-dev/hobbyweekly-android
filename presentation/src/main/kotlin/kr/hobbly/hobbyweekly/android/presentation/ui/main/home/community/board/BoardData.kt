@@ -1,6 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board
 
 import androidx.compose.runtime.Immutable
+import androidx.paging.compose.LazyPagingItems
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
@@ -9,5 +10,5 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 data class BoardData(
     val block: Block,
     val board: Board,
-    val postList: List<Post>
+    val postPaging: LazyPagingItems<Post>
 )

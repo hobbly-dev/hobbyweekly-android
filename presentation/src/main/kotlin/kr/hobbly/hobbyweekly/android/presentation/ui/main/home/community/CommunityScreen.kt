@@ -36,8 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlin.math.max
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -80,6 +83,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmal
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.isEmpty
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.toDurationString
@@ -117,12 +121,12 @@ fun CommunityScreen(
     val data: CommunityData = Unit.let {
         val myBlockList by viewModel.myBlockList.collectAsStateWithLifecycle()
         val popularBlockList by viewModel.popularBlockList.collectAsStateWithLifecycle()
-        val popularPostList by viewModel.popularPostList.collectAsStateWithLifecycle()
+        val popularPostPaging = viewModel.popularPostPaging.collectAsLazyPagingItems()
 
         CommunityData(
             myBlockList = myBlockList,
             popularBlockList = popularBlockList,
-            popularPostList = popularPostList
+            popularPostPaging = popularPostPaging
         )
     }
 
@@ -391,7 +395,7 @@ private fun CommunityScreen(
                 tint = Red
             )
         }
-        if (data.popularPostList.isEmpty()) {
+        if (data.popularPostPaging.isEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(horizontal = Space20)
@@ -411,9 +415,10 @@ private fun CommunityScreen(
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
                 items(
-                    items = data.popularPostList,
-                    key = { "${it.blockId}/${it.board.id}/${it.id}" }
-                ) { post ->
+                    count = data.popularPostPaging.itemCount,
+                    key = { index -> data.popularPostPaging[index]?.id ?: -1 }
+                ) { index ->
+                    val post = data.popularPostPaging[index] ?: return@items
                     CommunityScreenPopularPostItem(
                         post = post,
                         onClick = {
@@ -667,100 +672,104 @@ private fun CommunityScreenPreview() {
                     memberCount = 100
                 )
             ),
-            popularPostList = listOf(
-                Post(
-                    id = 1,
-                    blockId = 1,
-                    title = "영어 인증합니다",
-                    content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0),
-                    imageList = listOf(
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
-                    ),
-                    commentCount = 99,
-                    likeCount = 99,
-                    isAnonymous = false,
-                    isSecret = false,
-                    member = Member(
-                        id = 1,
-                        nickname = "히카루",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    board = Board(
-                        id = 1,
-                        blockId = 1,
-                        type = BoardType.Notice,
-                        name = "공지사항",
-                        hasNewPost = true
-                    )
-                ),
-                Post(
-                    id = 2,
-                    blockId = 1,
-                    title = "개발 인증합니다",
-                    content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(1, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    imageList = listOf(
-                        "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    ),
-                    commentCount = 1,
-                    likeCount = 1,
-                    isAnonymous = false,
-                    isSecret = false,
-                    member = Member(
-                        id = 1,
-                        nickname = "박상준",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    board = Board(
-                        id = 1,
-                        blockId = 1,
-                        type = BoardType.Notice,
-                        name = "공지사항",
-                        hasNewPost = true
-                    )
-                ),
-                Post(
-                    id = 3,
-                    blockId = 1,
-                    title = "휴식 인증합니다",
-                    content = "휴식 했습니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(7, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                        .minus(7, DateTimeUnit.DAY)
-                        .atTime(0, 0, 0),
-                    imageList = listOf(),
-                    commentCount = 0,
-                    likeCount = 0,
-                    isAnonymous = false,
-                    isSecret = false,
-                    member = Member(
-                        id = 1,
-                        nickname = "장성혁",
-                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
-                    ),
-                    board = Board(
-                        id = 1,
-                        blockId = 1,
-                        type = BoardType.Notice,
-                        name = "공지사항",
-                        hasNewPost = true
+            popularPostPaging = MutableStateFlow<PagingData<Post>>(
+                PagingData.from(
+                    listOf(
+                        Post(
+                            id = 1,
+                            blockId = 1,
+                            title = "영어 인증합니다",
+                            content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            imageList = listOf(
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp"
+                            ),
+                            commentCount = 99,
+                            likeCount = 99,
+                            isAnonymous = false,
+                            isSecret = false,
+                            member = Member(
+                                id = 1,
+                                nickname = "히카루",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
+                        ),
+                        Post(
+                            id = 2,
+                            blockId = 1,
+                            title = "개발 인증합니다",
+                            content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(1, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(1, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            imageList = listOf(
+                                "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                            ),
+                            commentCount = 1,
+                            likeCount = 1,
+                            isAnonymous = false,
+                            isSecret = false,
+                            member = Member(
+                                id = 1,
+                                nickname = "박상준",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
+                        ),
+                        Post(
+                            id = 3,
+                            blockId = 1,
+                            title = "휴식 인증합니다",
+                            content = "휴식 했습니다.",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(7, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .minus(7, DateTimeUnit.DAY)
+                                .atTime(0, 0, 0),
+                            imageList = listOf(),
+                            commentCount = 0,
+                            likeCount = 0,
+                            isAnonymous = false,
+                            isSecret = false,
+                            member = Member(
+                                id = 1,
+                                nickname = "장성혁",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            board = Board(
+                                id = 1,
+                                blockId = 1,
+                                type = BoardType.Notice,
+                                name = "공지사항",
+                                hasNewPost = true
+                            )
+                        )
                     )
                 )
-            )
+            ).collectAsLazyPagingItems(),
         )
     )
 }

@@ -35,7 +35,9 @@ interface CommunityRepository {
         id: Long
     ): Result<List<Board>>
 
-    suspend fun getPopularPostPaging(
+    suspend fun getPopularPostPaging(): Flow<PagingData<Post>>
+
+    suspend fun getPopularPostFromBlockPaging(
         id: Long
     ): Flow<PagingData<Post>>
 

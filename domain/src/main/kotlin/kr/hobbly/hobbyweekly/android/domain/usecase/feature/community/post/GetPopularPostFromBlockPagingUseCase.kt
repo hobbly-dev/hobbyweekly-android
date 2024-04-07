@@ -6,10 +6,14 @@ import kotlinx.coroutines.flow.Flow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
 
-class GetPopularPostPagingUseCase @Inject constructor(
+class GetPopularPostFromBlockPagingUseCase @Inject constructor(
     private val communityRepository: CommunityRepository
 ) {
-    suspend operator fun invoke(): Flow<PagingData<Post>> {
-        return communityRepository.getPopularPostPaging()
+    suspend operator fun invoke(
+        id: Long
+    ): Flow<PagingData<Post>> {
+        return communityRepository.getPopularPostFromBlockPaging(
+            id = id
+        )
     }
 }
