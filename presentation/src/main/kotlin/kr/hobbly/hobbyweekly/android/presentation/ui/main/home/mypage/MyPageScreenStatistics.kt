@@ -32,7 +32,7 @@ fun MyPageScreenStatistics(
     val totalCount = dataList.sumOf { it.totalCount }
     val completedCount = dataList.sumOf { it.completedCount }
     val completedPercent = if (completedCount == 0) {
-        1f
+        0f
     } else {
         completedCount.toFloat() / totalCount
     }

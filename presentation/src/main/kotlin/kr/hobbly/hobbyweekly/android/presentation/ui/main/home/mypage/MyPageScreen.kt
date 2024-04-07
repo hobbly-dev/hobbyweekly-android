@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -54,7 +55,6 @@ import kotlinx.datetime.toLocalDateTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
-import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
@@ -67,6 +67,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
@@ -88,6 +89,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.Gallery
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
 
 @Composable
 fun MyPageScreen(
@@ -142,14 +144,23 @@ private fun MyPageScreen(
         "회원탈퇴"
     )
 
-    var showingDate: LocalDate by remember { mutableStateOf(now.date) }
+    var showingDate: LocalDate by remember {
+        mutableStateOf(
+            now.date.minus(
+                now.date.dayOfWeek.ordinal,
+                DateTimeUnit.DAY
+            )
+        )
+    }
 
     val isLastMonth: Boolean =
         showingDate.year == now.date.year && showingDate.month == now.date.month
+    val week = (showingDate.dayOfMonth - 1) / 7 + 1
     val formattedDate: String = if (showingDate.year == now.date.year) {
-        "${showingDate.month.number}월"
+        "${showingDate.month.number}월 ${week}주차"
+
     } else {
-        "${showingDate.year}년 ${showingDate.month.number}월"
+        "${showingDate.year}년 ${showingDate.month.number}월 ${week}주차"
     }
 
     var isMenuShowing by remember { mutableStateOf(false) }
@@ -169,6 +180,10 @@ private fun MyPageScreen(
             )
         )
         navController.safeNavigate(route)
+    }
+
+    fun navigateToMyPageStatistics() {
+        navController.safeNavigate(MyPageStatisticsConstant.ROUTE)
     }
 
     if (isGalleryShowing) {
@@ -246,7 +261,7 @@ private fun MyPageScreen(
             ) {
                 RippleBox(
                     onClick = {
-                        showingDate = showingDate.minus(1, DateTimeUnit.MONTH)
+                        showingDate = showingDate.minus(1, DateTimeUnit.WEEK)
                     }
                 ) {
                     Icon(
@@ -270,7 +285,7 @@ private fun MyPageScreen(
                 } else {
                     RippleBox(
                         onClick = {
-                            showingDate = showingDate.plus(1, DateTimeUnit.MONTH)
+                            showingDate = showingDate.plus(1, DateTimeUnit.WEEK)
                         }
                     ) {
                         Icon(
@@ -294,14 +309,39 @@ private fun MyPageScreen(
                 )
             }
             Spacer(modifier = Modifier.height(Space12))
-            Text(
-                text = "월간 루틴 달성률",
+            Row(
                 modifier = Modifier
                     .padding(horizontal = Space20)
                     .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                style = LabelMedium.merge(Neutral400)
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "주간 챌린지 달성률",
+                    textAlign = TextAlign.Center,
+                    style = LabelMedium.merge(Neutral300)
+                )
+                Spacer(modifier = Modifier.width(Space10))
+                RippleBox(
+                    onClick = {
+                        navigateToMyPageStatistics()
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "더보기",
+                            style = LabelRegular.merge(Neutral300)
+                        )
+                        Icon(
+                            modifier = Modifier.size(21.dp),
+                            painter = painterResource(id = R.drawable.ic_chevron_right),
+                            contentDescription = null,
+                            tint = Neutral300
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(Space20))
         }
         Box(
