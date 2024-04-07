@@ -3,7 +3,7 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
-import kr.hobbly.hobbyweekly.android.domain.model.feature.mypage.RoutineStatistics
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 
 @Serializable
 data class RoutineStatisticsRes(
@@ -16,11 +16,9 @@ data class RoutineStatisticsRes(
 ) : DataMapper<RoutineStatistics> {
     override fun toDomain(): RoutineStatistics {
         return RoutineStatistics(
-            // TODO
-//            title = title,
-//            totalCount = totalCount,
-//            completedCount = completedCount
-            emptyList()
+            title = title,
+            totalCount = totalCount,
+            completedCount = completedCount
         )
     }
 }

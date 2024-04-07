@@ -1,135 +1,155 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import kr.hobbly.hobbyweekly.android.domain.model.feature.mypage.RoutineStatistics
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral100
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
+import kotlin.random.Random
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral050
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.measureTextHeight
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.measureTextWidth
 
 @Composable
 fun MyPageScreenStatistics(
-    modifier: Modifier,
-    routineStatistics: RoutineStatistics,
-    thickness: Float = 0.5f
+    modifier: Modifier = Modifier,
+    dataList: List<RoutineStatistics>,
+    @FloatRange(from = 0.0, to = 1.0) thickness: Float
 ) {
-    // TODO : Block 모양으로 변경
-
-    val dataList = routineStatistics.achievementRageList
-
-    val bottomMeasuredList: List<Pair<Dp, Dp>> = List(dataList.size) { index ->
-        val bottomTextWidth = measureTextWidth(text = "${index + 1}주", style = BodySemiBold)
-        val bottomTextHeight = measureTextHeight(text = "${index + 1}주", style = BodySemiBold)
-        Pair(bottomTextWidth, bottomTextHeight)
+    val totalCount = dataList.sumOf { it.totalCount }
+    val completedCount = dataList.sumOf { it.completedCount }
+    val completedPercent = if (completedCount == 0) {
+        1f
+    } else {
+        completedCount.toFloat() / totalCount
     }
-
+    val text = String.format("%.1f%%", completedPercent * 100)
     val textMeasurer = rememberTextMeasurer()
+    val textWidth = measureTextWidth(text = text, style = TitleMedium)
+    val textHeight = measureTextHeight(text = text, style = TitleMedium)
 
-    Canvas(
+    Box(
         modifier = modifier
     ) {
-        if (dataList.isNotEmpty()) {
-            val fixedThickness = size.width / dataList.size * thickness
-
-            val topHeight = 0
-            val bottomHeight = bottomMeasuredList.maxOf { it.second }.toPx() + 24.dp.toPx()
-
+        Canvas(
+            modifier = Modifier
+                .aspectRatio(1f)
+                .align(Alignment.Center)
+        ) {
+            val fixedThickness = size.width / 2 * thickness
+            drawArc(
+                color = Neutral050,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                topLeft = Offset(
+                    x = fixedThickness / 2,
+                    y = fixedThickness / 2
+                ),
+                size = Size(
+                    size.width - fixedThickness,
+                    size.height - fixedThickness
+                ),
+                style = Stroke(
+                    width = fixedThickness
+                )
+            )
             dataList.forEachIndexed { index, data ->
-                val backgroundHeight = (size.height - topHeight - bottomHeight)
-                val height = backgroundHeight * data
-                val centerX = size.width / dataList.size * (index + 0.5f)
-                val formattedText = "${index + 1}주"
-
-                drawRoundRect(
-                    brush = SolidColor(Neutral100),
+                val startAngle =
+                    -90f + dataList.take(index).sumOf { it.completedCount } * 360f / totalCount
+                val angle = data.completedCount * 360f / totalCount
+                val seed = data.title.sumOf { it.code }
+                val color = Color(0xFF000000 or LongRange(0x000000, 0xFFFFFF).random(Random(seed)))
+                drawArc(
+                    color = color,
+                    startAngle = startAngle,
+                    sweepAngle = angle,
+                    useCenter = false,
                     topLeft = Offset(
-                        x = centerX - fixedThickness / 2,
-                        y = size.height - bottomHeight - backgroundHeight
+                        x = fixedThickness / 2,
+                        y = fixedThickness / 2
                     ),
                     size = Size(
-                        width = fixedThickness,
-                        height = backgroundHeight
+                        size.width - fixedThickness,
+                        size.height - fixedThickness
                     ),
-                    cornerRadius = CornerRadius(8.dp.toPx())
-                )
-                drawRoundRect(
-                    brush = SolidColor(Neutral100),
-                    topLeft = Offset(
-                        x = centerX - fixedThickness / 2,
-                        y = size.height - bottomHeight - backgroundHeight / 2
-                    ),
-                    size = Size(
-                        width = fixedThickness,
-                        height = backgroundHeight / 2
+                    style = Stroke(
+                        width = fixedThickness
                     )
-                )
-                drawRoundRect(
-                    brush = SolidColor(Red),
-                    topLeft = Offset(
-                        x = centerX - fixedThickness / 2,
-                        y = size.height - bottomHeight - height
-                    ),
-                    size = Size(
-                        width = fixedThickness,
-                        height = height
-                    ),
-                    cornerRadius = CornerRadius(8.dp.toPx())
-                )
-                drawRoundRect(
-                    brush = SolidColor(Red),
-                    topLeft = Offset(
-                        x = centerX - fixedThickness / 2,
-                        y = size.height - bottomHeight - height / 2
-                    ),
-                    size = Size(
-                        width = fixedThickness,
-                        height = height / 2
-                    )
-                )
-                drawText(
-                    textMeasurer = textMeasurer,
-                    text = formattedText,
-                    topLeft = Offset(
-                        x = centerX - bottomMeasuredList[index].first.toPx() / 2,
-                        y = size.height - 10.dp.toPx() - bottomMeasuredList[index].second.toPx()
-                    ),
-                    style = BodySemiBold.merge(Neutral400)
                 )
             }
+            drawText(
+                textMeasurer = textMeasurer,
+                text = text,
+                topLeft = Offset(
+                    x = size.width / 2 - textWidth.toPx() / 2,
+                    y = size.height / 2 - textHeight.toPx() / 2
+                ),
+                style = TitleMedium
+            )
         }
     }
 }
 
 @Preview
 @Composable
-private fun MyPageScreenStatisticsPreview() {
-    val isConfirmedDayOfWeek = remember { mutableStateListOf<Int>() }
-
-    MyPageScreenStatistics(
+private fun MyPageScreenStatisticsPreview1() {
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(300.dp),
-        routineStatistics = RoutineStatistics(
-            achievementRageList = List(4) {
-                IntRange(0, 10).random() / 10f
-            }
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        MyPageScreenStatistics(
+            modifier = Modifier
+                .fillMaxSize(),
+            dataList = listOf(
+                RoutineStatistics(
+                    title = "해리포터 원문보기",
+                    totalCount = 5,
+                    completedCount = 5
+                ),
+                RoutineStatistics(
+                    title = "영화자막 번역하기",
+                    totalCount = 4,
+                    completedCount = 2
+                ),
+                RoutineStatistics(
+                    title = "해외 친구들 만나기",
+                    totalCount = 4,
+                    completedCount = 1
+                )
+            ),
+            thickness = 0.5f
         )
-    )
+    }
+}
+
+@Preview
+@Composable
+private fun MyPageScreenStatisticsPreview2() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        MyPageScreenStatistics(
+            modifier = Modifier
+                .fillMaxSize(),
+            dataList = emptyList(),
+            thickness = 0.5f
+        )
+    }
 }

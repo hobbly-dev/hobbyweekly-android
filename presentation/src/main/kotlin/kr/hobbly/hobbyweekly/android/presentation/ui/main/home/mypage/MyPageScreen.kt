@@ -54,7 +54,7 @@ import kotlinx.datetime.toLocalDateTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
-import kr.hobbly.hobbyweekly.android.domain.model.feature.mypage.RoutineStatistics
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
@@ -110,12 +110,12 @@ fun MyPageScreen(
     val data: MyPageData = Unit.let {
         val profile by viewModel.profile.collectAsStateWithLifecycle()
         val myBlockList by viewModel.myBlockList.collectAsStateWithLifecycle()
-        val routineStatistics by viewModel.routineStatistics.collectAsStateWithLifecycle()
+        val routineStatisticsList by viewModel.routineStatisticsList.collectAsStateWithLifecycle()
 
         MyPageData(
             profile = profile,
             myBlockList = myBlockList,
-            routineStatistics = routineStatistics
+            routineStatisticsList = routineStatisticsList
         )
     }
 
@@ -289,7 +289,8 @@ private fun MyPageScreen(
             ) {
                 MyPageScreenStatistics(
                     modifier = Modifier.size(150.dp),
-                    routineStatistics = data.routineStatistics
+                    dataList = data.routineStatisticsList,
+                    thickness = 0.4f
                 )
             }
             Spacer(modifier = Modifier.height(Space12))
@@ -545,11 +546,7 @@ private fun MyPageScreenPreview() {
                     memberCount = 100
                 ),
             ),
-            routineStatistics = RoutineStatistics(
-                achievementRageList = listOf(
-                    1f, 0.5f, 0f, 1f
-                )
-            )
+            routineStatisticsList = emptyList()
         )
     )
 }

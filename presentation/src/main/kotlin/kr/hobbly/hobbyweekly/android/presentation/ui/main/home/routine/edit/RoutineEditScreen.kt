@@ -425,7 +425,7 @@ fun RoutineEditScreen(
         when (event) {
             is RoutineEditEvent.LoadData.Success -> {
                 selectedDayOfWeek.clear()
-                selectedDayOfWeek.addAll(event.routine.dayOfWeekList)
+                selectedDayOfWeek.addAll(event.routine.smallRoutine.map { it.dayOfWeek })
                 description = event.routine.description
                 alarmTime = event.routine.alarmTime
             }
