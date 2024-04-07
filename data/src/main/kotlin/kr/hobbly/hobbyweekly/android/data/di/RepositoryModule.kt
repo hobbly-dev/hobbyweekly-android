@@ -6,13 +6,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import kr.hobbly.hobbyweekly.android.data.repository.feature.community.MockCommunityRepository
+import kr.hobbly.hobbyweekly.android.data.repository.feature.routine.MockRoutineRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.authentication.MockAuthenticationRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.authentication.token.MockTokenRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.file.MockFileRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.tracking.MockTrackingRepository
 import kr.hobbly.hobbyweekly.android.data.repository.nonfeature.user.MockUserRepository
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.AuthenticationRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.feature.CommunityRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.feature.RoutineRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.AuthenticationRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.FileRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingRepository
@@ -57,4 +59,10 @@ internal abstract class RepositoryModule {
     abstract fun bindsCommunityRepository(
         communityRepository: MockCommunityRepository
     ): CommunityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsRoutineRepository(
+        routineRepository: MockRoutineRepository
+    ): RoutineRepository
 }

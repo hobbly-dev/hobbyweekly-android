@@ -32,7 +32,7 @@ class RoutineApi @Inject constructor(
     private val baseUrl: String
         get() = baseUrlProvider.get()
 
-    suspend fun getCurrentRoutine(): Result<GetCurrentRoutineRes> {
+    suspend fun getCurrentRoutineList(): Result<GetCurrentRoutineRes> {
         return client.get("$baseUrl/v1/routines/me")
             .convert(errorMessageMapper::map)
     }
@@ -58,7 +58,7 @@ class RoutineApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getLatestRoutine(): Result<GetLatestRoutineRes> {
+    suspend fun getLatestRoutineList(): Result<GetLatestRoutineRes> {
         return client.get("$baseUrl/v1/routines/me/latest")
             .convert(errorMessageMapper::map)
     }
@@ -109,7 +109,7 @@ class RoutineApi @Inject constructor(
         }.convert(errorMessageMapper::map)
     }
 
-    suspend fun getRoutineStatistics(
+    suspend fun getRoutineStatisticsList(
         id: Long,
         date: LocalDate
     ): Result<GetRoutineStatisticsRes> {
