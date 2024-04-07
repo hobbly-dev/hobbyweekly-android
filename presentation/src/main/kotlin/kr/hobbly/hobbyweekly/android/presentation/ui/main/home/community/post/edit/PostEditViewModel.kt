@@ -45,6 +45,10 @@ class PostEditViewModel @Inject constructor(
         savedStateHandle.get<Long>(PostEditConstant.ROUTE_ARGUMENT_POST_ID) ?: -1L
     }
 
+    val routineId: Long by lazy {
+        savedStateHandle.get<Long>(PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1L
+    }
+
     init {
         if (postId != -1L) {
             load()

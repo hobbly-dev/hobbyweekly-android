@@ -557,7 +557,8 @@ private fun PostEditScreenPreview() {
         data = PostEditData(
             blockId = 1L,
             boardId = 1L,
-            postId = 1L
+            postId = 1L,
+            routineId = 1L
         )
     )
 }

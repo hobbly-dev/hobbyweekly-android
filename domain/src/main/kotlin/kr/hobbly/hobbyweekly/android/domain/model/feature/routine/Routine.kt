@@ -8,7 +8,6 @@ data class Routine(
     val blockId: Long,
     val blockName: String,
     val alarmTime: LocalTime?,
-    val description: String,
     val isEnabled: Boolean,
     val smallRoutine: List<SmallRoutine>
 )

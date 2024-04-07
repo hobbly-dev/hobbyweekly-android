@@ -571,7 +571,7 @@ fun RoutineScreenItem(
                     Spacer(modifier = Modifier.width(Space10))
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = routine.description,
+                        text = routine.title,
                         style = BodyRegular.merge(White),
                         maxLines = 1
                     )
@@ -632,7 +632,6 @@ private fun RoutineScreenPreview() {
                     title = "블록 이름",
                     blockId = 0L,
                     blockName = "영어 블록",
-                    description = "설명",
                     alarmTime = null,
                     isEnabled = true,
                     smallRoutine = listOf(

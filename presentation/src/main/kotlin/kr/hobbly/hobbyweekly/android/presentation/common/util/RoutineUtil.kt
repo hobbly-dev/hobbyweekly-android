@@ -73,7 +73,7 @@ private fun Context.makeRoutineToIntent(
     return Intent(this, AlarmReceiver::class.java).apply {
         putExtra(AlarmReceiver.NOTIFICATION_ID, routine.id.toInt())
         putExtra(AlarmReceiver.NOTIFICATION_TITLE, "하비위클리")
-        putExtra(AlarmReceiver.NOTIFICATION_CONTENT, routine.description)
+        putExtra(AlarmReceiver.NOTIFICATION_CONTENT, routine.title)
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,

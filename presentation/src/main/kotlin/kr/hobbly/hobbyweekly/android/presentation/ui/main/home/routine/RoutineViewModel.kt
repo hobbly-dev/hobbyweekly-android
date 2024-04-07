@@ -32,7 +32,6 @@ class RoutineViewModel @Inject constructor(
 //                id = 0,
 //                blockName = "블록 이름",
 //                dayOfWeek = 0,
-//                description = "설명",
 //                alarmTime = null,
 //                isEnabled = true,
 //                isConfirmed = false

@@ -6,5 +6,6 @@ import androidx.compose.runtime.Immutable
 data class PostEditData(
     val blockId: Long,
     val boardId: Long,
-    val postId: Long
+    val postId: Long,
+    val routineId: Long
 )

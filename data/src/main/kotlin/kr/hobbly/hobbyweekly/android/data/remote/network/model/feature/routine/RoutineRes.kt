@@ -17,8 +17,6 @@ data class RoutineRes(
     val blockId: Long,
     @SerialName("blockName")
     val blockName: String,
-    @SerialName("description")
-    val description: String,
     @SerialName("isEnabled")
     val isEnabled: Boolean,
     @SerialName("alarmTime")
@@ -33,7 +31,6 @@ data class RoutineRes(
             blockId = blockId,
             blockName = blockName,
             alarmTime = alarmTime,
-            description = description,
             isEnabled = isEnabled,
             smallRoutine = smallRoutine.map { it.toDomain() }
         )

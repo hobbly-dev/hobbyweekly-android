@@ -27,6 +27,10 @@ fun NavGraphBuilder.postEditDestination(
             navArgument(PostEditConstant.ROUTE_ARGUMENT_POST_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
+            },
+            navArgument(PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
             }
         )
     ) {
@@ -48,11 +52,13 @@ fun NavGraphBuilder.postEditDestination(
             val blockId = viewModel.blockId
             val boardId = viewModel.boardId
             val postId = viewModel.postId
+            val routineId = viewModel.postId
 
             PostEditData(
                 blockId = blockId,
                 boardId = boardId,
-                postId = postId
+                postId = postId,
+                routineId = routineId
             )
         }
 
