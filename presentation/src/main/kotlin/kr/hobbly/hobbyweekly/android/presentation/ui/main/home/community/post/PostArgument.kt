@@ -24,6 +24,7 @@ sealed interface PostEvent {
         sealed interface Remove : Post {
             data object Success : Remove
         }
+
         sealed interface Report : Post {
             data object Success : Report
         }
@@ -33,9 +34,11 @@ sealed interface PostEvent {
         sealed interface Write : Comment {
             data class Success(val id: Long) : Write
         }
+
         sealed interface Remove : Comment {
             data object Success : Remove
         }
+
         sealed interface Report : Comment {
             data object Success : Report
         }
@@ -47,6 +50,7 @@ sealed interface PostIntent {
         data object OnLike : Post
         data object OnRemove : Post
         data class OnReport(val reason: String) : Post
+        data object Refresh : Post
     }
 
     sealed interface Comment : PostIntent {
@@ -57,8 +61,8 @@ sealed interface PostIntent {
         ) : Comment
 
         data class OnLike(val commentId: Long) : Comment
-//        data class OnEdit(val commentId: Long) : Comment
         data class OnRemove(val commentId: Long) : Comment
         data class OnReport(val commentId: Long, val reason: String) : Comment
+        data object Refresh : Comment
     }
 }

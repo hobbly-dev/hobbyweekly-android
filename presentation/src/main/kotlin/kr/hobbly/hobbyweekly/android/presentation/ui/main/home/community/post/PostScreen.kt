@@ -1,5 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,7 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +49,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -75,12 +84,14 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space6
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
 import kr.hobbly.hobbyweekly.android.presentation.common.util.toDurationString
+import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
@@ -88,6 +99,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.EmptyTextField
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostScreen(
     navController: NavController,
@@ -96,20 +108,28 @@ fun PostScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val focusRequester = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
 
     val isMyPost = data.post.member.id == data.profile.id
     val formattedDate = data.post.createdAt.toDurationString()
-
-    var isAnonymous: Boolean by remember { mutableStateOf(false) }
-    var commentText: String by remember { mutableStateOf("") }
-
-    var isMenuShowing by remember { mutableStateOf(false) }
     val menu: List<String> = mutableListOf<String>().apply {
         if (isMyPost) {
             add("수정하기")
             add("삭제하기")
         }
     }
+
+    var isAnonymous: Boolean by remember { mutableStateOf(false) }
+    var commentText: String by remember { mutableStateOf("") }
+    var selectedComment: Comment? by remember { mutableStateOf(null) }
+
+    var isMenuShowing by remember { mutableStateOf(false) }
+    var isPostRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isPostReportSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isCommentWriteSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isCommentRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isCommentReportSuccessDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToPostEdit(
         post: Post
@@ -123,6 +143,72 @@ fun PostScreen(
             )
         )
         navController.safeNavigate(route)
+    }
+
+    if (isPostRemoveSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "게시글 알람",
+            message = "게시글을 삭제하였습니다.",
+            onConfirm = {
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = {
+                isPostRemoveSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isPostReportSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "게시글 알람",
+            message = "게시글을 신고하였습니다.",
+            onConfirm = {
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = {
+                isPostReportSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isCommentWriteSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "댓글 알람",
+            message = "댓글을 작성하였습니다.",
+            onConfirm = {
+                intent(PostIntent.Comment.Refresh)
+            },
+            onDismissRequest = {
+                isCommentWriteSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isCommentRemoveSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "댓글 알람",
+            message = "댓글을 삭제하였습니다.",
+            onConfirm = {
+                intent(PostIntent.Comment.Refresh)
+            },
+            onDismissRequest = {
+                isCommentRemoveSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isCommentReportSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "댓글 알람",
+            message = "댓글을 신고하였습니다.",
+            onConfirm = {
+                intent(PostIntent.Comment.Refresh)
+            },
+            onDismissRequest = {
+                isCommentReportSuccessDialogShowing = false
+            }
+        )
     }
 
     Column(
@@ -362,27 +448,32 @@ fun PostScreen(
                     data.commentList[index]?.let { comment ->
                         "${comment.blockId}/${comment.boardId}/${comment.postId}/${comment.id}"
                     }.orEmpty()
-                },
-                contentType = { index ->
-                    // TODO : 아직 Comment 구조 미정의
                 }
             ) { index ->
                 data.commentList[index]?.let { comment ->
-                    // TODO : 아직 Comment 구조 미정의
                     PostScreenCommentItem(
                         comment = comment,
                         profile = data.profile,
-                        onComment = {
-                            // TODO : 아직 UI 미정의
+                        isChild = false,
+                        selectedComment = selectedComment,
+                        onComment = { comment, bringIntoViewRequester ->
+                            selectedComment = comment
+                            scope.launch {
+                                focusRequester.requestFocus()
+                                keyboard?.show()
+                                bringIntoViewRequester.bringIntoView()
+                            }
                         },
                         onLike = {
                             intent(PostIntent.Comment.OnLike(it.id))
                         },
-                        onReport = {
-                            // TODO : 아직 UI 미정의
-                        },
-                        onEdit = {
-                            // TODO : 아직 UI 미정의
+                        onReport = { comment, reason ->
+                            intent(
+                                PostIntent.Comment.OnReport(
+                                    commentId = comment.id,
+                                    reason = reason
+                                )
+                            )
                         },
                         onDelete = {
                             intent(PostIntent.Comment.OnRemove(it.id))
@@ -440,10 +531,12 @@ fun PostScreen(
                     Spacer(modifier = Modifier.width(Space6))
                     EmptyTextField(
                         text = commentText,
+                        modifier = Modifier
+                            .weight(1f)
+                            .focusRequester(focusRequester),
                         style = BodyRegular.merge(Neutral900),
                         hintText = "댓글을 입력하세요",
                         hintStyle = BodyRegular.merge(Neutral400),
-                        modifier = Modifier.weight(1f),
                         maxLines = 1,
                         maxTextLength = Int.MAX_VALUE,
                         onValueChange = {
@@ -463,7 +556,7 @@ fun PostScreen(
                             onClick = {
                                 intent(
                                     PostIntent.Comment.OnComment(
-                                        parentId = -1, // TODO
+                                        parentId = selectedComment?.id ?: -1,
                                         commentText = commentText,
                                         isAnonymous = isAnonymous
                                     )
@@ -486,11 +579,11 @@ fun PostScreen(
     fun post(event: PostEvent.Post) {
         when (event) {
             PostEvent.Post.Remove.Success -> {
-                // TODO
+                isPostRemoveSuccessDialogShowing = true
             }
 
             PostEvent.Post.Report.Success -> {
-                // TODO
+                isPostReportSuccessDialogShowing = true
             }
         }
     }
@@ -498,15 +591,15 @@ fun PostScreen(
     fun comment(event: PostEvent.Comment) {
         when (event) {
             is PostEvent.Comment.Write.Success -> {
-                // TODO
+                isCommentWriteSuccessDialogShowing = true
             }
 
             PostEvent.Comment.Remove.Success -> {
-                // TODO
+                isCommentRemoveSuccessDialogShowing = true
             }
 
             PostEvent.Comment.Report.Success -> {
-                // TODO
+                isCommentReportSuccessDialogShowing = true
             }
         }
     }
@@ -526,142 +619,212 @@ fun PostScreen(
     }
 }
 
-// TODO : Paging State Loading
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostScreenCommentItem(
     comment: Comment,
     profile: Profile,
-    onComment: (Comment) -> Unit,
+    isChild: Boolean,
+    selectedComment: Comment?,
+    onComment: (Comment, BringIntoViewRequester) -> Unit,
     onLike: (Comment) -> Unit,
-    onReport: (Comment) -> Unit,
-    onEdit: (Comment) -> Unit,
+    onReport: (Comment, String) -> Unit,
     onDelete: (Comment) -> Unit,
 ) {
     val isMyComment = comment.member.id == comment.id
     val formattedDate = comment.createdAt.toDurationString()
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     val menu: List<String> = mutableListOf<String>().apply {
         if (isMyComment) {
-            add("수정하기")
             add("삭제하기")
         } else {
             add("신고하기")
         }
     }
 
+    // TODO
+    val reportReasonList: List<String> = listOf(
+        "욕설/비방",
+        "음란성",
+        "광고/홍보",
+        "개인정보 유출",
+        "기타"
+    )
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (comment == selectedComment) {
+            Color(
+                Red.red,
+                Red.green,
+                Red.blue,
+                0.3f
+            )
+        } else {
+            Transparent
+        },
+        label = comment.id.toString()
+    )
+
     var isMenuShowing by remember { mutableStateOf(false) }
+    var isReportReasonShowing by remember { mutableStateOf(false) }
 
     Column {
-        Spacer(modifier = Modifier.height(Space16))
-        Row(
-            modifier = Modifier.padding(horizontal = Space20),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .bringIntoViewRequester(bringIntoViewRequester)
+                .background(backgroundColor)
         ) {
-            ProfileImage(
-                data = comment.member.image,
-                modifier = Modifier.size(Space24)
-            )
-            Spacer(modifier = Modifier.width(Space8))
-            Text(
-                text = comment.member.nickname,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = LabelRegular.merge(Neutral900)
-            )
-            Spacer(modifier = Modifier.width(Space8))
-            Text(
-                text = formattedDate,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = BodyRegular.merge(Neutral400)
-            )
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(Space16))
             Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Neutral050)
+                modifier = Modifier.padding(horizontal = Space20)
             ) {
-                Box(
-                    modifier = Modifier.clickable {
-                        onComment(comment)
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier.padding(horizontal = Space12, vertical = Space4)
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_talk),
-                            contentDescription = null,
-                            tint = Neutral900
-                        )
-                    }
+                if (isChild) {
+                    Icon(
+                        modifier = Modifier.size(Space12),
+                        painter = painterResource(R.drawable.ic_reply),
+                        contentDescription = null,
+                        tint = Neutral900
+                    )
+                    Spacer(modifier = Modifier.width(Space12))
                 }
-                VerticalDivider(
-                    thickness = 1.dp,
-                    color = Neutral100
-                )
-                Box(
-                    modifier = Modifier.clickable {
-                        onComment(comment)
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier.padding(horizontal = Space12, vertical = Space4)
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_like),
-                            contentDescription = null,
-                            tint = Neutral900
+                        ProfileImage(
+                            data = comment.member.image,
+                            modifier = Modifier.size(Space24)
                         )
-                    }
-                }
-                VerticalDivider(
-                    thickness = 1.dp,
-                    color = Neutral100
-                )
-                Box(
-                    modifier = Modifier.clickable {
-                        onComment(comment)
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier.padding(horizontal = Space12, vertical = Space4)
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_more_vertical),
-                            contentDescription = null,
-                            tint = Neutral900
+                        Spacer(modifier = Modifier.width(Space8))
+                        Text(
+                            text = comment.member.nickname,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = LabelRegular.merge(Neutral900)
                         )
-                        TextDropdownMenu(
-                            items = menu,
-                            isExpanded = isMenuShowing,
-                            onDismissRequest = { isMenuShowing = false },
-                            onClick = {
-                                if (it == "수정하기") {
-                                    onEdit(comment)
+                        Spacer(modifier = Modifier.width(Space8))
+                        Text(
+                            text = formattedDate,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = BodyRegular.merge(Neutral400)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(100.dp))
+                                .background(Neutral050)
+                        ) {
+                            Box(
+                                modifier = Modifier.clickable {
+                                    onComment(comment, bringIntoViewRequester)
                                 }
-                                if (it == "삭제하기") {
-                                    onDelete(comment)
-                                }
-                                if (it == "신고하기") {
-                                    onReport(comment)
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(
+                                        horizontal = Space12,
+                                        vertical = Space4
+                                    )
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(Space12),
+                                        painter = painterResource(R.drawable.ic_talk),
+                                        contentDescription = null,
+                                        tint = Neutral900
+                                    )
                                 }
                             }
-                        )
+                            VerticalDivider(
+                                thickness = 1.dp,
+                                color = Neutral100
+                            )
+                            Box(
+                                modifier = Modifier.clickable {
+                                    onLike(comment)
+                                }
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(
+                                        horizontal = Space12,
+                                        vertical = Space4
+                                    )
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(Space12),
+                                        painter = painterResource(R.drawable.ic_like),
+                                        contentDescription = null,
+                                        tint = Neutral900
+                                    )
+                                }
+                            }
+                            VerticalDivider(
+                                thickness = 1.dp,
+                                color = Neutral100
+                            )
+                            Box(
+                                modifier = Modifier.clickable {
+                                    isMenuShowing = true
+                                }
+                            ) {
+                                Box(
+                                    modifier = Modifier.padding(
+                                        horizontal = Space12,
+                                        vertical = Space4
+                                    )
+                                ) {
+                                    Icon(
+                                        modifier = Modifier.size(Space12),
+                                        painter = painterResource(R.drawable.ic_more_vertical),
+                                        contentDescription = null,
+                                        tint = Neutral900
+                                    )
+                                    TextDropdownMenu(
+                                        items = menu,
+                                        isExpanded = isMenuShowing,
+                                        onDismissRequest = { isMenuShowing = false },
+                                        onClick = {
+                                            if (it == "삭제하기") {
+                                                onDelete(comment)
+                                            }
+                                            if (it == "신고하기") {
+                                                isReportReasonShowing = true
+                                            }
+                                        }
+                                    )
+                                    TextDropdownMenu(
+                                        items = reportReasonList,
+                                        isExpanded = isReportReasonShowing,
+                                        onDismissRequest = { isReportReasonShowing = false },
+                                        onClick = { reason ->
+                                            onReport(comment, reason)
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
+                    Spacer(modifier = Modifier.height(Space12))
+                    Text(
+                        text = comment.content,
+                        style = BodyRegular.merge(Neutral900)
+                    )
                 }
             }
+            Spacer(modifier = Modifier.height(Space16))
         }
-        Spacer(modifier = Modifier.height(Space12))
-        Text(
-            text = comment.content,
-            modifier = Modifier.padding(horizontal = Space20),
-            style = BodyRegular.merge(Neutral900)
-        )
-        Spacer(modifier = Modifier.height(Space16))
+        comment.child.forEach { child ->
+            PostScreenCommentItem(
+                comment = child,
+                profile = profile,
+                isChild = true,
+                selectedComment = selectedComment,
+                onComment = onComment,
+                onLike = onLike,
+                onReport = onReport,
+                onDelete = onDelete
+            )
+        }
     }
 }
 

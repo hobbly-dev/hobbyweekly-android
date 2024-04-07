@@ -19,10 +19,10 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LikeCommentUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LoadCommentPagingUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.RemoveCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.ReportCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.WriteCommentReplyUseCase
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LoadCommentPagingUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.WriteCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LikePostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
@@ -94,6 +94,10 @@ class PostViewModel @Inject constructor(
                 reportPost(intent.reason)
             }
 
+            is PostIntent.Post.Refresh -> {
+                refresh()
+            }
+
             is PostIntent.Comment.OnComment -> {
                 if (intent.parentId == -1L) {
                     comment(intent.commentText, intent.isAnonymous)
@@ -113,28 +117,17 @@ class PostViewModel @Inject constructor(
             is PostIntent.Comment.OnReport -> {
                 reportComment(intent.commentId, intent.reason)
             }
+
+            is PostIntent.Comment.Refresh -> {
+                refreshComment()
+            }
         }
     }
 
     private fun refresh() {
         launch {
-            loadCommentPagingUseCase(id = postId)
-                .cachedIn(viewModelScope)
-                .catch { exception ->
-                    when (exception) {
-                        is ServerException -> {
-                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        }
-
-                        else -> {
-                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        }
-                    }
-                }.collect { commentPaging ->
-                    _commentPaging.value = commentPaging
-                }
-
             _state.value = PostState.Loading
+            refreshComment()
             zip(
                 { loadBlockPostUseCase(id = postId) },
                 { getProfileUseCase() },
@@ -155,6 +148,26 @@ class PostViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun refreshComment() {
+        launch {
+            loadCommentPagingUseCase(id = postId)
+                .cachedIn(viewModelScope)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }.collect { commentPaging ->
+                    _commentPaging.value = commentPaging
+                }
         }
     }
 
