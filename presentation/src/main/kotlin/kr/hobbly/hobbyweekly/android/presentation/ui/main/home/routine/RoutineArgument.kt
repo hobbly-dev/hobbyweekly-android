@@ -30,4 +30,5 @@ sealed interface RoutineEvent {
 
 sealed interface RoutineIntent {
     data class OnSwitch(val routine: Routine) : RoutineIntent
+    data object Refresh : RoutineIntent
 }

@@ -38,14 +38,14 @@ class RoutineViewModel @Inject constructor(
     private val _latestRoutineList: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
     val latestRoutineList: StateFlow<List<Routine>> = _latestRoutineList.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun onIntent(intent: RoutineIntent) {
         when (intent) {
             is RoutineIntent.OnSwitch -> {
                 switchRoutineAlarm(intent.routine)
+            }
+
+            RoutineIntent.Refresh -> {
+                refresh()
             }
         }
     }

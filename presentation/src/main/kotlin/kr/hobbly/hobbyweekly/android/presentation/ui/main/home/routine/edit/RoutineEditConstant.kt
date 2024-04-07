@@ -9,5 +9,5 @@ object RoutineEditConstant {
     const val ROUTE_ARGUMENT_BLOCK_ID = "block_id"
     const val ROUTE_STRUCTURE = ROUTE +
             "?${ROUTE_ARGUMENT_ROUTINE_ID}={${ROUTE_ARGUMENT_ROUTINE_ID}}" +
-            "?${ROUTE_ARGUMENT_BLOCK_ID}={${ROUTE_ARGUMENT_BLOCK_ID}}"
+            "&${ROUTE_ARGUMENT_BLOCK_ID}={${ROUTE_ARGUMENT_BLOCK_ID}}"
 }

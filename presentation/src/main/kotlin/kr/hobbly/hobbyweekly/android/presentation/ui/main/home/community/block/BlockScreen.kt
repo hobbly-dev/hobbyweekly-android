@@ -481,6 +481,10 @@ fun BlockScreen(
             }
         }
     }
+
+    LaunchedEffectWithLifecycle(Unit, handler) {
+        intent(BlockIntent.Refresh)
+    }
 }
 
 @Composable

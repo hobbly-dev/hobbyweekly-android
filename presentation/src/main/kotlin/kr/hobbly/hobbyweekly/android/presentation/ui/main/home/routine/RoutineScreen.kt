@@ -412,6 +412,10 @@ private fun RoutineScreen(
             }
         }
     }
+
+    LaunchedEffectWithLifecycle(Unit, handler) {
+        intent(RoutineIntent.Refresh)
+    }
 }
 
 @Composable
@@ -592,7 +596,7 @@ fun RoutineScreenItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = routine.title,
+                        text = routine.blockName,
                         style = BodyRegular.merge(White)
                     )
                     Spacer(modifier = Modifier.width(Space10))

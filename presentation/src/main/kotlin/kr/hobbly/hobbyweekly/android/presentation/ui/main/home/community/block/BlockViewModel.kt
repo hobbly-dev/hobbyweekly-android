@@ -77,10 +77,6 @@ class BlockViewModel @Inject constructor(
         MutableStateFlow(PagingData.empty())
     val popularPostPaging: StateFlow<PagingData<Post>> = _popularPostPaging.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun onIntent(intent: BlockIntent) {
         when (intent) {
             BlockIntent.Refresh -> {

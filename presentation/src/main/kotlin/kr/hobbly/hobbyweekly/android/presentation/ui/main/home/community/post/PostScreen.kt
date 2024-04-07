@@ -617,6 +617,10 @@ fun PostScreen(
             }
         }
     }
+
+    LaunchedEffectWithLifecycle(Unit, handler) {
+        intent(PostIntent.Post.Refresh)
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

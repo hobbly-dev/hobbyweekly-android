@@ -76,10 +76,6 @@ class PostViewModel @Inject constructor(
         MutableStateFlow(PagingData.empty())
     val commentPaging: StateFlow<PagingData<Comment>> = _commentPaging.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun onIntent(intent: PostIntent) {
         when (intent) {
             is PostIntent.Post.OnLike -> {
