@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.paging.compose.collectAsLazyPagingItems
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.notificationDestination(
@@ -29,10 +30,10 @@ fun NavGraphBuilder.notificationDestination(
         }
 
         val data: NotificationData = let {
-            val initialData = viewModel.initialData
+            val notificationPaging = viewModel.notificationPaging.collectAsLazyPagingItems()
 
             NotificationData(
-                initialData = initialData
+                notificationPaging = notificationPaging
             )
         }
 

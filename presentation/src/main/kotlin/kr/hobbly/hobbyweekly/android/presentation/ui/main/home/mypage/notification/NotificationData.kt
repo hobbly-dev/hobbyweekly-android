@@ -1,8 +1,10 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification
 
 import androidx.compose.runtime.Immutable
+import androidx.paging.compose.LazyPagingItems
+import kr.hobbly.hobbyweekly.android.domain.model.feature.mypage.Notification
 
 @Immutable
 data class NotificationData(
-    val initialData: String
+    val notificationPaging: LazyPagingItems<Notification>
 )
