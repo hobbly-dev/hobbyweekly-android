@@ -50,6 +50,7 @@ fun SplashScreen(
     fun login(event: SplashEvent.Login) {
         when (event) {
             is SplashEvent.Login.Success -> {
+                // TODO : Refresh Alarm
                 navigateToHome()
             }
 

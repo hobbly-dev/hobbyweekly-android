@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.splash
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 
 @Immutable
 data class SplashArgument(
@@ -20,7 +21,11 @@ sealed interface SplashState {
 
 sealed interface SplashEvent {
     sealed interface Login : SplashEvent {
-        data object Success : Login
+        data class Success(
+            val currentRoutineList: List<Routine>,
+            val latestRoutineList: List<Routine>
+        ) : Login
+
         data object Fail : Login
     }
 }

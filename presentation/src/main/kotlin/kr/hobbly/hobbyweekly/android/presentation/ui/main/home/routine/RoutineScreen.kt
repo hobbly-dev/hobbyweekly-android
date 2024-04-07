@@ -29,7 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -89,6 +89,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRoutineList
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterRoutine
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.model.routine.RoutineStatisticsItem
@@ -121,10 +123,12 @@ fun RoutineScreen(
     }
 
     val data: RoutineData = Unit.let {
-        val routineList by viewModel.routineList.collectAsStateWithLifecycle()
+        val currentRoutineList by viewModel.currentRoutineList.collectAsStateWithLifecycle()
+        val latestRoutineList by viewModel.latestRoutineList.collectAsStateWithLifecycle()
 
         RoutineData(
-            routineList = routineList
+            currentRoutineList = currentRoutineList,
+            latestRoutineList = latestRoutineList
         )
     }
 
@@ -146,11 +150,11 @@ private fun RoutineScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
-    val localConfiguration = LocalConfiguration.current
+    val context = LocalContext.current
 
     val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
     val routineList: MutableList<Routine> =
-        remember { mutableStateListOf(*data.routineList.toTypedArray()) }
+        remember { mutableStateListOf(*data.currentRoutineList.toTypedArray()) }
     var selectedDate: LocalDate by remember { mutableStateOf(now) }
     val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
 
@@ -323,7 +327,7 @@ private fun RoutineScreen(
                         val index = routineList.indexOfFirst { it.id == routine.id }
                         val fixedRoutine = routine.copy(isEnabled = it)
                         routineList[index] = fixedRoutine
-                        intent(RoutineIntent.OnEditRoutine(fixedRoutine))
+                        intent(RoutineIntent.OnSwitch(fixedRoutine))
                     },
                     onConfirm = {
                         navigateToPostAdd(routine)
@@ -383,9 +387,29 @@ private fun RoutineScreen(
         }
     }
 
+    fun updateAlarm(event: RoutineEvent.UpdateAlarm) {
+        when (event) {
+            is RoutineEvent.UpdateAlarm.Off -> {
+                context.registerRoutineList(listOf(event.routine))
+            }
+
+            is RoutineEvent.UpdateAlarm.On -> {
+                context.unregisterRoutine(event.routine)
+            }
+
+            is RoutineEvent.UpdateAlarm.Refresh -> {
+                // TODO
+            }
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
-
+            when (event) {
+                is RoutineEvent.UpdateAlarm -> {
+                    updateAlarm(event)
+                }
+            }
         }
     }
 }
@@ -629,7 +653,31 @@ private fun RoutineScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineData(
-            routineList = listOf(
+            currentRoutineList = listOf(
+                Routine(
+                    id = 0L,
+                    title = "블록 이름",
+                    blockId = 0L,
+                    blockName = "영어 블록",
+                    alarmTime = null,
+                    isEnabled = true,
+                    smallRoutine = listOf(
+                        SmallRoutine(
+                            dayOfWeek = 0,
+                            isDone = true
+                        ),
+                        SmallRoutine(
+                            dayOfWeek = 1,
+                            isDone = true
+                        ),
+                        SmallRoutine(
+                            dayOfWeek = 2,
+                            isDone = false
+                        )
+                    )
+                )
+            ),
+            latestRoutineList = listOf(
                 Routine(
                     id = 0L,
                     title = "블록 이름",

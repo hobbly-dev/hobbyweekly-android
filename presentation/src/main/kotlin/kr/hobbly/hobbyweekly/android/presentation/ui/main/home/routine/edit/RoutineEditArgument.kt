@@ -2,6 +2,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit
 
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.datetime.LocalTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 
@@ -41,7 +42,8 @@ sealed interface RoutineEditEvent {
 sealed interface RoutineEditIntent {
     data class OnConfirm(
         val selectedDayOfWeek: List<Int>,
-        val description: String
+        val description: String,
+        val alarmTime: LocalTime?
     ) : RoutineEditIntent
 
     data object OnDelete : RoutineEditIntent

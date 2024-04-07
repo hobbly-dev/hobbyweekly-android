@@ -409,7 +409,8 @@ fun RoutineEditScreen(
                 intent(
                     RoutineEditIntent.OnConfirm(
                         selectedDayOfWeek = selectedDayOfWeek,
-                        description = description
+                        description = description,
+                        alarmTime = alarmTime
                     )
                 )
             }

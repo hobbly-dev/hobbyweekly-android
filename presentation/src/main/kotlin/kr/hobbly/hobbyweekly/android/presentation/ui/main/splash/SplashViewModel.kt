@@ -9,13 +9,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetCurrentRoutineListUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetLatestRoutineListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.token.CheckRefreshTokenFilledUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val checkRefreshTokenFilledUseCase: CheckRefreshTokenFilledUseCase
+    private val checkRefreshTokenFilledUseCase: CheckRefreshTokenFilledUseCase,
+    private val getCurrentRoutineListUseCase: GetCurrentRoutineListUseCase,
+    private val getLatestRoutineListUseCase: GetLatestRoutineListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<SplashState> = MutableStateFlow(SplashState.Init)
@@ -25,10 +30,6 @@ class SplashViewModel @Inject constructor(
     val event: EventFlow<SplashEvent> = _event.asEventFlow()
 
     init {
-        // TODO : FCM Token 처리
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-//            val refreshedToken = task.result ?: return@addOnCompleteListener
-//        }
         launch {
             login()
         }
@@ -42,7 +43,14 @@ class SplashViewModel @Inject constructor(
         val isRefreshTokenFilled = checkRefreshTokenFilledUseCase()
 
         if (isRefreshTokenFilled) {
-            _event.emit(SplashEvent.Login.Success)
+            zip(
+                { getCurrentRoutineListUseCase() },
+                { getLatestRoutineListUseCase() }
+            ).onSuccess { (currentRoutineList, latestRoutineList) ->
+                _event.emit(SplashEvent.Login.Success(currentRoutineList, latestRoutineList))
+            }.onFailure { exception ->
+                _event.emit(SplashEvent.Login.Fail)
+            }
         } else {
             _event.emit(SplashEvent.Login.Fail)
         }

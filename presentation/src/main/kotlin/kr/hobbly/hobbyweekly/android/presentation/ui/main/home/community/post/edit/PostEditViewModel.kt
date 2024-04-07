@@ -13,6 +13,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerExcepti
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.EditPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.WritePostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.WriteRoutinePostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.file.GetUrlAndUploadImageUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -24,6 +25,7 @@ class PostEditViewModel @Inject constructor(
     private val loadPostUseCase: LoadPostUseCase,
     private val getUrlAndUploadImageUseCase: GetUrlAndUploadImageUseCase,
     private val writePostUseCase: WritePostUseCase,
+    private val writeRoutinePostUseCase: WriteRoutinePostUseCase,
     private val editPostUseCase: EditPostUseCase
 ) : BaseViewModel() {
 
@@ -168,18 +170,17 @@ class PostEditViewModel @Inject constructor(
                         _event.emit(PostEditEvent.Post.Success(id))
                     }.getOrThrow()
                 } else {
-                    // TODO
-//                    writeRoutinePostUseCase(
-//                        id = postId,
-//                        title = title,
-//                        content = content,
-//                        imageList = originalImageList + newImageList,
-//                        isSecret = isSecret,
-//                        isAnonymous = isAnonymous
-//                    ).onSuccess { id ->
-//                        _state.value = PostEditState.Init
-//                        _event.emit(PostEditEvent.Post.Success(id))
-//                    }.getOrThrow()
+                    writeRoutinePostUseCase(
+                        id = postId,
+                        title = title,
+                        content = content,
+                        imageList = originalImageList + newImageList,
+                        isSecret = isSecret,
+                        isAnonymous = isAnonymous
+                    ).onSuccess { id ->
+                        _state.value = PostEditState.Init
+                        _event.emit(PostEditEvent.Post.Success(id))
+                    }.getOrThrow()
                 }
             }.onFailure { exception ->
                 _state.value = PostEditState.Init

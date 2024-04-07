@@ -5,5 +5,6 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 
 @Immutable
 data class RoutineData(
-    val routineList: List<Routine>
+    val currentRoutineList: List<Routine>,
+    val latestRoutineList: List<Routine>
 )

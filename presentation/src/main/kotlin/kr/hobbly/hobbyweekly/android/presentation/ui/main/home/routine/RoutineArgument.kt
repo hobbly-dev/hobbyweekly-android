@@ -21,9 +21,13 @@ sealed interface RoutineState {
 
 
 sealed interface RoutineEvent {
-    sealed interface UpdateRoutine : RoutineEvent
+    sealed interface UpdateAlarm : RoutineEvent {
+        data class Off(val routine: Routine) : UpdateAlarm
+        data class On(val routine: Routine) : UpdateAlarm
+        data object Refresh : UpdateAlarm
+    }
 }
 
 sealed interface RoutineIntent {
-    data class OnEditRoutine(val routine: Routine) : RoutineIntent
+    data class OnSwitch(val routine: Routine) : RoutineIntent
 }

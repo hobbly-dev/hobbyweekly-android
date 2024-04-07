@@ -6,15 +6,24 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.datetime.LocalTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.AddRoutineUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.EditRoutineUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.RemoveRoutineUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
+import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class RoutineEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val addRoutineUseCase: AddRoutineUseCase,
+    private val editRoutineUseCase: EditRoutineUseCase,
+    private val removeRoutineUseCase: RemoveRoutineUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RoutineEditState> = MutableStateFlow(RoutineEditState.Init)
@@ -38,9 +47,17 @@ class RoutineEditViewModel @Inject constructor(
         when (intent) {
             is RoutineEditIntent.OnConfirm -> {
                 if (routineId == -1L) {
-                    addRoutine(intent.selectedDayOfWeek, intent.description)
+                    addRoutine(
+                        selectedDayOfWeek = intent.selectedDayOfWeek,
+                        description = intent.description,
+                        alarmTime = intent.alarmTime
+                    )
                 } else {
-                    editRoutine(intent.selectedDayOfWeek, intent.description)
+                    editRoutine(
+                        selectedDayOfWeek = intent.selectedDayOfWeek,
+                        description = intent.description,
+                        alarmTime = intent.alarmTime
+                    )
                 }
             }
 
@@ -52,34 +69,86 @@ class RoutineEditViewModel @Inject constructor(
 
     private fun addRoutine(
         selectedDayOfWeek: List<Int>,
-        description: String
+        description: String,
+        alarmTime: LocalTime?
     ) {
         launch {
             _state.value = RoutineEditState.Loading
+            addRoutineUseCase(
+                title = description,
+                blockId = blockId,
+                daysOfWeek = selectedDayOfWeek,
+                alarmTime = alarmTime
+            ).onSuccess { id ->
+                _state.value = RoutineEditState.Init
 
-            _event.emit(RoutineEditEvent.AddRoutine.Success)
-            _state.value = RoutineEditState.Init
+                _event.emit(RoutineEditEvent.AddRoutine.Success)
+            }.onFailure { exception ->
+                _state.value = RoutineEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 
     private fun editRoutine(
         selectedDayOfWeek: List<Int>,
-        description: String
+        description: String,
+        alarmTime: LocalTime?
     ) {
         launch {
             _state.value = RoutineEditState.Loading
+            editRoutineUseCase(
+                id = routineId,
+                daysOfWeek = selectedDayOfWeek,
+                alarmTime = alarmTime
+            ).onSuccess {
+                _state.value = RoutineEditState.Init
 
-            _event.emit(RoutineEditEvent.EditRoutine.Success)
-            _state.value = RoutineEditState.Init
+                _event.emit(RoutineEditEvent.EditRoutine.Success)
+            }.onFailure { exception ->
+                _state.value = RoutineEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 
     private fun deleteRoutine() {
         launch {
             _state.value = RoutineEditState.Loading
+            removeRoutineUseCase(
+                id = routineId
+            ).onSuccess {
+                _state.value = RoutineEditState.Init
 
-            _event.emit(RoutineEditEvent.DeleteRoutine.Success)
-            _state.value = RoutineEditState.Init
+                _event.emit(RoutineEditEvent.DeleteRoutine.Success)
+            }.onFailure { exception ->
+                _state.value = RoutineEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 }
