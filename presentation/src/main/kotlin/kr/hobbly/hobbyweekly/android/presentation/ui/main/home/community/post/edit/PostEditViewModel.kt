@@ -155,17 +155,32 @@ class PostEditViewModel @Inject constructor(
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
             ).onSuccess { newImageList ->
-                writeBoardPostUseCase(
-                    id = postId,
-                    title = title,
-                    content = content,
-                    imageList = originalImageList + newImageList,
-                    isSecret = isSecret,
-                    isAnonymous = isAnonymous
-                ).onSuccess { id ->
-                    _state.value = PostEditState.Init
-                    _event.emit(PostEditEvent.Post.Success(id))
-                }.getOrThrow()
+                if (routineId == -1L) {
+                    writeBoardPostUseCase(
+                        id = postId,
+                        title = title,
+                        content = content,
+                        imageList = originalImageList + newImageList,
+                        isSecret = isSecret,
+                        isAnonymous = isAnonymous
+                    ).onSuccess { id ->
+                        _state.value = PostEditState.Init
+                        _event.emit(PostEditEvent.Post.Success(id))
+                    }.getOrThrow()
+                } else {
+                    // TODO
+//                    writeRoutinePostUseCase(
+//                        id = postId,
+//                        title = title,
+//                        content = content,
+//                        imageList = originalImageList + newImageList,
+//                        isSecret = isSecret,
+//                        isAnonymous = isAnonymous
+//                    ).onSuccess { id ->
+//                        _state.value = PostEditState.Init
+//                        _event.emit(PostEditEvent.Post.Success(id))
+//                    }.getOrThrow()
+                }
             }.onFailure { exception ->
                 _state.value = PostEditState.Init
                 when (exception) {

@@ -21,7 +21,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +50,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardType
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -77,6 +82,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.SearchTextField
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.routine.BoardRoutineScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.search.BoardSearchConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
@@ -89,6 +95,8 @@ fun BoardScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+
+    var isBoardRoutineShowing: Boolean by remember { mutableStateOf(false) }
 
     fun navigateToBoardSearch() {
         navController.safeNavigate(BoardSearchConstant.ROUTE)
@@ -120,6 +128,31 @@ fun BoardScreen(
             )
         )
         navController.safeNavigate(route)
+    }
+
+    fun navigateToPostAdd(
+        routine: Routine
+    ) {
+        val route = makeRoute(
+            PostEditConstant.ROUTE,
+            listOf(
+                PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to routine.blockId,
+                PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID to routine.id
+            )
+        )
+        navController.safeNavigate(route)
+    }
+
+    if (isBoardRoutineShowing) {
+        BoardRoutineScreen(
+            navController = navController,
+            onDismissRequest = { isBoardRoutineShowing = false },
+            onConfirm = {
+                navigateToPostAdd(
+                    routine = it
+                )
+            }
+        )
     }
 
     Column(
@@ -208,10 +241,14 @@ fun BoardScreen(
                     shape = CircleShape,
                     containerColor = Red,
                     onClick = {
-                        navigateToPostAdd(
-                            block = data.block,
-                            board = data.board
-                        )
+                        if (data.board.type == BoardType.Routine) {
+                            isBoardRoutineShowing = true
+                        } else {
+                            navigateToPostAdd(
+                                block = data.block,
+                                board = data.board
+                            )
+                        }
                     }
                 ) {
                     Icon(

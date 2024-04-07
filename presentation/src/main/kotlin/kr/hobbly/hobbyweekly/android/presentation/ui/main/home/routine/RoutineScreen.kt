@@ -96,6 +96,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeIntent
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeState
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeType
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.notification.NotificationConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.block.RoutineBlockScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit.RoutineEditConstant
@@ -195,6 +196,19 @@ private fun RoutineScreen(
 
     fun navigateToCommunity() {
         parentArgument.intent(HomeIntent.HomeTypeChange(HomeType.Community))
+    }
+
+    fun navigateToPostAdd(
+        routine: Routine
+    ) {
+        val route = makeRoute(
+            PostEditConstant.ROUTE,
+            listOf(
+                PostEditConstant.ROUTE_ARGUMENT_BLOCK_ID to routine.blockId,
+                PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID to routine.id
+            )
+        )
+        navController.safeNavigate(route)
     }
 
     if (isRoutineBlockShowing) {
@@ -312,18 +326,7 @@ private fun RoutineScreen(
                         intent(RoutineIntent.OnEditRoutine(fixedRoutine))
                     },
                     onConfirm = {
-                        val index = routineList.indexOfFirst { it.id == routine.id }
-                        val fixedRoutine = routine.copy(
-                            smallRoutine = routine.smallRoutine.map {
-                                if (it.dayOfWeek == selectedDate.dayOfWeek.ordinal) {
-                                    it.copy(isDone = true)
-                                } else {
-                                    it
-                                }
-                            }
-                        )
-                        routineList[index] = fixedRoutine
-                        intent(RoutineIntent.OnEditRoutine(fixedRoutine))
+                        navigateToPostAdd(routine)
                     },
                     onEdit = {
                         navigateToEditRoutine(routine)
