@@ -51,6 +51,8 @@ internal object KtorModule {
                 json(jsonConfiguration)
             }
 
+            // TODO : install(HttpTimeout)
+
             // TODO : 이거 왜 안 들어가고 있는지 확인
             defaultRequest {
                 header("Content-Type", "application/json")

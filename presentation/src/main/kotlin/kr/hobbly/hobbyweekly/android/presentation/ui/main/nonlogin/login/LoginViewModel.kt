@@ -88,7 +88,7 @@ class LoginViewModel @Inject constructor(
             val isHobbyChecked = profile.isHobbyChecked
 
             when {
-                !isNicknameValid || !isTermAgreed || !isHobbyChecked -> {
+                !isTermAgreed || !isNicknameValid || !isHobbyChecked -> {
                     _event.emit(LoginEvent.Login.NeedRegister)
                 }
 

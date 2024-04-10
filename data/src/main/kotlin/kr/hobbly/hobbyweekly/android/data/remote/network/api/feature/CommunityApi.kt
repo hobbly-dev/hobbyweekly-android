@@ -213,7 +213,7 @@ class CommunityApi @Inject constructor(
     suspend fun likePost(
         id: Long
     ): Result<Unit> {
-        return client.put("$baseUrl/v1/posts/$id/like")
+        return client.post("$baseUrl/v1/posts/$id/like")
             .convert(errorMessageMapper::map)
     }
 
@@ -236,7 +236,7 @@ class CommunityApi @Inject constructor(
         pageSize: Int
     ): Result<LoadBoardCommentRes> {
         return client.get("$baseUrl/v1/posts/$id/comment") {
-            parameter("page", pageNum)
+            parameter("pageNum", pageNum)
             parameter("pageSize", pageSize)
         }.convert(errorMessageMapper::map)
     }

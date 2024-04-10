@@ -59,12 +59,12 @@ class RegisterEntryViewModel @Inject constructor(
             val isHobbyChecked = profile.isHobbyChecked
 
             when {
-                !isNicknameValid -> {
-                    _event.emit(RegisterEntryEvent.NeedNickname)
-                }
-
                 !isTermAgreed -> {
                     _event.emit(RegisterEntryEvent.NeedTermAgreement)
+                }
+
+                !isNicknameValid -> {
+                    _event.emit(RegisterEntryEvent.NeedNickname)
                 }
 
                 !isHobbyChecked -> {
