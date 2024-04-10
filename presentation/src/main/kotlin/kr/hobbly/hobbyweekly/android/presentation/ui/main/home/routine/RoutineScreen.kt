@@ -159,11 +159,11 @@ private fun RoutineScreen(
     val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
 
     val currentRoutineList: List<Routine> = routineList.filter {
-        it.smallRoutine.any { it.dayOfWeek == selectedDate.dayOfWeek.ordinal }
+        it.smallRoutineList.any { it.dayOfWeek == selectedDate.dayOfWeek.ordinal }
     }
     // TODO
     val routineStatisticsList: List<RoutineStatisticsItem> = routineList.map { routine ->
-        routine.smallRoutine.map { it to it.isDone }
+        routine.smallRoutineList.map { it to it.isDone }
     }.flatten().groupBy { it.first }.map { (key, value) ->
         RoutineStatisticsItem(
             dayOfWeek = key.dayOfWeek,
@@ -325,7 +325,7 @@ private fun RoutineScreen(
                     selectedDayOfWeek = selectedDayOfWeek,
                     onEnableStateChanged = {
                         val index = routineList.indexOfFirst { it.id == routine.id }
-                        val fixedRoutine = routine.copy(isEnabled = it)
+                        val fixedRoutine = routine.copy(isAlarmEnabled = it)
                         routineList[index] = fixedRoutine
                         intent(RoutineIntent.OnSwitch(fixedRoutine))
                     },
@@ -500,7 +500,7 @@ fun RoutineScreenItem(
     onConfirm: () -> Unit,
     onEdit: () -> Unit
 ) {
-    val containerColor = if (!routine.isEnabled) {
+    val containerColor = if (!routine.isAlarmEnabled) {
         Neutral200
     } else when (selectedDayOfWeek) {
         0 -> Red
@@ -535,7 +535,7 @@ fun RoutineScreenItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     CustomSwitch(
-                        isChecked = routine.isEnabled,
+                        isChecked = routine.isAlarmEnabled,
                         onCheckedChange = {
                             onEnableStateChanged(it)
                         },
@@ -614,7 +614,7 @@ fun RoutineScreenItem(
                     ) {
                         Box(
                             modifier = Modifier.clickable {
-                                if (routine.smallRoutine.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == false) {
+                                if (routine.smallRoutineList.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == false) {
                                     onConfirm()
                                 }
                             }
@@ -624,7 +624,7 @@ fun RoutineScreenItem(
                                     horizontal = Space12,
                                     vertical = Space4
                                 ),
-                                text = if (routine.smallRoutine.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == true) "인증완료" else "인증하기",
+                                text = if (routine.smallRoutineList.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == true) "인증완료" else "인증하기",
                                 style = BodyRegular.merge(containerColor)
                             )
                         }
@@ -664,8 +664,8 @@ private fun RoutineScreenPreview() {
                     blockId = 0L,
                     blockName = "영어 블록",
                     alarmTime = null,
-                    isEnabled = true,
-                    smallRoutine = listOf(
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
                         SmallRoutine(
                             dayOfWeek = 0,
                             isDone = true
@@ -688,8 +688,8 @@ private fun RoutineScreenPreview() {
                     blockId = 0L,
                     blockName = "영어 블록",
                     alarmTime = null,
-                    isEnabled = true,
-                    smallRoutine = listOf(
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
                         SmallRoutine(
                             dayOfWeek = 0,
                             isDone = true

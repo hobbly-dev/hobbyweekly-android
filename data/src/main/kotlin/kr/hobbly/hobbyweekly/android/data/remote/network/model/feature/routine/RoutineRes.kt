@@ -17,12 +17,12 @@ data class RoutineRes(
     val blockId: Long,
     @SerialName("blockName")
     val blockName: String,
-    @SerialName("isEnabled")
-    val isEnabled: Boolean,
+    @SerialName("isAlarmEnabled")
+    val isAlarmEnabled: Boolean,
     @SerialName("alarmTime")
     val alarmTime: LocalTime? = null,
-    @SerialName("smallRoutine")
-    val smallRoutine: List<SmallRoutineRes>
+    @SerialName("smallRoutines")
+    val smallRoutines: List<SmallRoutineRes>
 ) : DataMapper<Routine> {
     override fun toDomain(): Routine {
         return Routine(
@@ -31,8 +31,8 @@ data class RoutineRes(
             blockId = blockId,
             blockName = blockName,
             alarmTime = alarmTime,
-            isEnabled = isEnabled,
-            smallRoutine = smallRoutine.map { it.toDomain() }
+            isAlarmEnabled = isAlarmEnabled,
+            smallRoutineList = smallRoutines.map { it.toDomain() }
         )
     }
 }

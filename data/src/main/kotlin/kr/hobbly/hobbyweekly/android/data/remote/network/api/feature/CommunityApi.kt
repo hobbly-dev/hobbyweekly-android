@@ -15,7 +15,7 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProv
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.AddMyBlockRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.BlockRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.BoardPostRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.PostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditBoardPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetBoardListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetBoardRes
@@ -177,7 +177,7 @@ class CommunityApi @Inject constructor(
 
     suspend fun loadPost(
         id: Long
-    ): Result<BoardPostRes> {
+    ): Result<PostRes> {
         return client.get("$baseUrl/v1/posts/$id")
             .convert(errorMessageMapper::map)
     }

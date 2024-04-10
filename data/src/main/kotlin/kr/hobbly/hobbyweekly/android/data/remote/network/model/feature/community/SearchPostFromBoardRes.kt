@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SearchPostFromBlockRes(
     @SerialName("result")
-    val result: List<BoardPostRes>,
+    val result: List<PostRes>,
     @SerialName("hasPrevious")
     val hasPrevious: Boolean,
     @SerialName("hasNext")

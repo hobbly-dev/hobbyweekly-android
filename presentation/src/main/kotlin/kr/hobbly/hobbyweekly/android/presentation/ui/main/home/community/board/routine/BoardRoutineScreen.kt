@@ -223,7 +223,7 @@ private fun BoardRoutineScreenBlockItem(
 ) {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val isRoutineDone =
-        routine.smallRoutine.any { it.dayOfWeek == now.dayOfWeek.ordinal && it.isDone }
+        routine.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal && it.isDone }
 
     Box(
         modifier = Modifier
@@ -317,8 +317,8 @@ private fun BoardRoutineScreenPreview1() {
                     blockId = 0L,
                     blockName = "헬스 블록",
                     alarmTime = null,
-                    isEnabled = true,
-                    smallRoutine = listOf(
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
                         SmallRoutine(
                             dayOfWeek = now.dayOfWeek.ordinal,
                             isDone = true

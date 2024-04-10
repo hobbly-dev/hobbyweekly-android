@@ -293,7 +293,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                 listOf(
                     Post(
                         id = 1,
-                        blockId = 1,
                         title = "영어 인증합니다",
                         content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -325,7 +324,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 2,
-                        blockId = 1,
                         title = "개발 인증합니다",
                         content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -356,7 +354,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 3,
-                        blockId = 1,
                         title = "휴식 인증합니다",
                         content = "휴식 했습니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -398,7 +395,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                 listOf(
                     Post(
                         id = 1,
-                        blockId = 1,
                         title = "영어 인증합니다",
                         content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -430,7 +426,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 2,
-                        blockId = 1,
                         title = "개발 인증합니다",
                         content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -461,7 +456,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 3,
-                        blockId = 1,
                         title = "휴식 인증합니다",
                         content = "휴식 했습니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -504,7 +498,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                 listOf(
                     Post(
                         id = 1,
-                        blockId = 1,
                         title = "영어 인증합니다",
                         content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -536,7 +529,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 2,
-                        blockId = 1,
                         title = "개발 인증합니다",
                         content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -567,7 +559,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 3,
-                        blockId = 1,
                         title = "휴식 인증합니다",
                         content = "휴식 했습니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -626,7 +617,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                 listOf(
                     Post(
                         id = 1,
-                        blockId = 1,
                         title = "영어 인증합니다",
                         content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -658,7 +648,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 2,
-                        blockId = 1,
                         title = "개발 인증합니다",
                         content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -689,7 +678,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Post(
                         id = 3,
-                        blockId = 1,
                         title = "휴식 인증합니다",
                         content = "휴식 했습니다.",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -742,7 +730,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
         return Result.success(
             Post(
                 id = 1,
-                blockId = 1,
                 title = "영어 인증합니다",
                 content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                 createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())

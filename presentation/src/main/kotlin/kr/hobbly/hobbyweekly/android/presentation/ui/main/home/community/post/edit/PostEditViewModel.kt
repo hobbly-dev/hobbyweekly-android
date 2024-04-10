@@ -61,7 +61,7 @@ class PostEditViewModel @Inject constructor(
         when (intent) {
             is PostEditIntent.OnPost -> {
                 if (postId == -1L) {
-                    edit(
+                    post(
                         title = intent.title,
                         content = intent.content,
                         originalImageList = intent.originalImageList,
@@ -70,7 +70,7 @@ class PostEditViewModel @Inject constructor(
                         isAnonymous = intent.isAnonymous
                     )
                 } else {
-                    post(
+                    edit(
                         title = intent.title,
                         content = intent.content,
                         originalImageList = intent.originalImageList,

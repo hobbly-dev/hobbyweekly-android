@@ -7,11 +7,9 @@ import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 
 @Serializable
-data class BoardPostRes(
+data class PostRes(
     @SerialName("postId")
     val postId: Long,
-    @SerialName("blockId")
-    val blockId: Long,
     @SerialName("title")
     val title: String,
     @SerialName("content")
@@ -38,7 +36,6 @@ data class BoardPostRes(
     override fun toDomain(): Post {
         return Post(
             id = postId,
-            blockId = blockId,
             board = board.toDomain(),
             member = member.toDomain(),
             title = title,

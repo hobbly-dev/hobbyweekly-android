@@ -22,8 +22,8 @@ class MockRoutineRepository @Inject constructor() : RoutineRepository {
                     blockId = 0L,
                     blockName = "영어 블록",
                     alarmTime = null,
-                    isEnabled = true,
-                    smallRoutine = listOf(
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
                         SmallRoutine(
                             dayOfWeek = 0,
                             isDone = true
@@ -66,8 +66,8 @@ class MockRoutineRepository @Inject constructor() : RoutineRepository {
                     blockId = 0L,
                     blockName = "영어 블록",
                     alarmTime = null,
-                    isEnabled = true,
-                    smallRoutine = listOf(
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
                         SmallRoutine(
                             dayOfWeek = 0,
                             isDone = true

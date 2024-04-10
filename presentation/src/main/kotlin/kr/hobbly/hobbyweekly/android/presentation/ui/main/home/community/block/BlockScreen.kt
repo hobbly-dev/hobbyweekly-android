@@ -145,7 +145,7 @@ fun BlockScreen(
         val route = makeRoute(
             PostConstant.ROUTE,
             listOf(
-                PostConstant.ROUTE_ARGUMENT_BLOCK_ID to post.blockId,
+                PostConstant.ROUTE_ARGUMENT_BLOCK_ID to post.board.blockId,
                 PostConstant.ROUTE_ARGUMENT_BOARD_ID to post.board.id,
                 PostConstant.ROUTE_ARGUMENT_POST_ID to post.id
             )
@@ -664,7 +664,6 @@ private fun BlockScreenPreview() {
                     listOf(
                         Post(
                             id = 1,
-                            blockId = 1,
                             title = "영어 인증합니다",
                             content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -696,7 +695,6 @@ private fun BlockScreenPreview() {
                         ),
                         Post(
                             id = 2,
-                            blockId = 1,
                             title = "개발 인증합니다",
                             content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -727,7 +725,6 @@ private fun BlockScreenPreview() {
                         ),
                         Post(
                             id = 3,
-                            blockId = 1,
                             title = "휴식 인증합니다",
                             content = "휴식 했습니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -763,7 +760,6 @@ private fun BlockScreenPreview() {
                     listOf(
                         Post(
                             id = 1,
-                            blockId = 1,
                             title = "영어 인증합니다",
                             content = "영어 공부 인증 올립니다 오늘 영어공부를 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -795,7 +791,6 @@ private fun BlockScreenPreview() {
                         ),
                         Post(
                             id = 2,
-                            blockId = 1,
                             title = "개발 인증합니다",
                             content = "개발 했습니다. 오늘 개발을 하면서 배운 내용입니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -826,7 +821,6 @@ private fun BlockScreenPreview() {
                         ),
                         Post(
                             id = 3,
-                            blockId = 1,
                             title = "휴식 인증합니다",
                             content = "휴식 했습니다.",
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())

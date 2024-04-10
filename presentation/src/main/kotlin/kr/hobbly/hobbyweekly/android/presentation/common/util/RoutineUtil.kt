@@ -22,12 +22,12 @@ fun Context.registerRoutineList(
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     routineList.forEach { routine ->
-        if (!routine.isEnabled) return@forEach
+        if (!routine.isAlarmEnabled) return@forEach
         val year = now.date.year
         val month = now.date.month.number
         val alarmTime = routine.alarmTime ?: return@forEach
 
-        routine.smallRoutine.forEach { smallRoutine ->
+        routine.smallRoutineList.forEach { smallRoutine ->
             val day = now.date.dayOfMonth + (smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal)
             val time = LocalDateTime(LocalDate(year, month, day), alarmTime)
             val intent = makeRoutineToIntent(routine)

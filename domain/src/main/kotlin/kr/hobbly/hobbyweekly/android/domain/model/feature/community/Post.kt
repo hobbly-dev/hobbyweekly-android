@@ -4,7 +4,6 @@ import kotlinx.datetime.LocalDateTime
 
 data class Post(
     val id: Long,
-    val blockId: Long,
     val title: String,
     val content: String,
     val createdAt: LocalDateTime,
@@ -20,7 +19,6 @@ data class Post(
     companion object {
         val empty = Post(
             id = -1,
-            blockId = -1,
             title = "",
             content = "",
             createdAt = LocalDateTime(0, 1, 1, 0, 0),

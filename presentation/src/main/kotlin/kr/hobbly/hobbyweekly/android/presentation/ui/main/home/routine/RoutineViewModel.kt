@@ -55,10 +55,10 @@ class RoutineViewModel @Inject constructor(
             _state.value = RoutineState.Loading
             switchRoutineAlarmUseCase(
                 id = routine.id,
-                isEnabled = routine.isEnabled
+                isEnabled = routine.isAlarmEnabled
             ).onSuccess {
                 _state.value = RoutineState.Init
-                if (routine.isEnabled) {
+                if (routine.isAlarmEnabled) {
                     _event.emit(RoutineEvent.UpdateAlarm.On(routine))
                 } else {
                     _event.emit(RoutineEvent.UpdateAlarm.Off(routine))
