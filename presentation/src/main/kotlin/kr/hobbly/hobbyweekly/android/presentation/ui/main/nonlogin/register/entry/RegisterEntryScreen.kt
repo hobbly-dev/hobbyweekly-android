@@ -10,6 +10,7 @@ import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.hobby.RegisterHobbyConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.profile.RegisterProfileConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.term.RegisterTermConstant
@@ -46,6 +47,14 @@ fun RegisterEntryScreen(
         }
     }
 
+    fun navigateToHome() {
+        navController.navigate(HomeConstant.ROUTE) {
+            popUpTo(RegisterEntryConstant.ROUTE) {
+                inclusive = true
+            }
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
             when (event) {
@@ -62,7 +71,7 @@ fun RegisterEntryScreen(
                 }
 
                 RegisterEntryEvent.NoProblem -> {
-                    
+                    navigateToHome()
                 }
             }
         }

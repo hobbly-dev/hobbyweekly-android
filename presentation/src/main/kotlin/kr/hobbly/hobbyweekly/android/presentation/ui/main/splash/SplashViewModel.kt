@@ -47,6 +47,7 @@ class SplashViewModel @Inject constructor(
                 { getCurrentRoutineListUseCase() },
                 { getLatestRoutineListUseCase() }
             ).onSuccess { (currentRoutineList, latestRoutineList) ->
+                // TODO : check progress
                 _event.emit(SplashEvent.Login.Success(currentRoutineList, latestRoutineList))
             }.onFailure { exception ->
                 _event.emit(SplashEvent.Login.Fail)

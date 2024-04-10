@@ -12,6 +12,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.AddRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.EditRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.RemoveRoutineUseCase
@@ -23,7 +24,8 @@ class RoutineEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val addRoutineUseCase: AddRoutineUseCase,
     private val editRoutineUseCase: EditRoutineUseCase,
-    private val removeRoutineUseCase: RemoveRoutineUseCase
+    private val removeRoutineUseCase: RemoveRoutineUseCase,
+    private val getBlockUseCase: GetBlockUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<RoutineEditState> = MutableStateFlow(RoutineEditState.Init)
@@ -41,6 +43,33 @@ class RoutineEditViewModel @Inject constructor(
 
     val routineId: Long by lazy {
         savedStateHandle.get<Long>(RoutineEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1
+    }
+
+    init {
+        refresh()
+    }
+
+    private fun refresh() {
+        launch {
+            _state.value = RoutineEditState.Loading
+            getBlockUseCase(
+                id = blockId
+            ).onSuccess { block ->
+                _state.value = RoutineEditState.Init
+                _block.value = block
+            }.onFailure { exception ->
+                _state.value = RoutineEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
     }
 
     fun onIntent(intent: RoutineEditIntent) {

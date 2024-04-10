@@ -157,7 +157,7 @@ fun BlockScreen(
         val route = makeRoute(
             RoutineEditConstant.ROUTE,
             listOf(
-                BlockConstant.ROUTE_ARGUMENT_BLOCK_ID to data.block.id
+                RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID to data.block.id
             )
         )
         navController.safeNavigate(route)
@@ -482,6 +482,7 @@ fun BlockScreen(
         }
     }
 
+    // TODO : 첫 onResume 에 작동안함. 왜?
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(BlockIntent.Refresh)
     }

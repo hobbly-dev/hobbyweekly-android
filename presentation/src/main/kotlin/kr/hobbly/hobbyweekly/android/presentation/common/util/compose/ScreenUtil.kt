@@ -92,3 +92,29 @@ fun LaunchedEffectWithLifecycle(
         }
     }
 }
+
+//@Composable
+//fun LaunchedEffectWithLifecycle(
+//    key1: Any? = null,
+//    context: CoroutineContext = EmptyCoroutineContext,
+//    block: suspend CoroutineScope.() -> Unit
+//) {
+//    val eventHandler by rememberUpdatedState(block)
+//    val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
+//
+//    DisposableEffect(lifecycleOwner) {
+//        val lifecycle = lifecycleOwner.lifecycle
+//        val observer = LifecycleEventObserver { owner, event ->
+//            if (event == Lifecycle.Event.ON_START) {
+//                owner.lifecycleScope.launch(context) {
+//                    eventHandler()
+//                }
+//            }
+//        }
+//
+//        lifecycle.addObserver(observer)
+//        onDispose {
+//            lifecycle.removeObserver(observer)
+//        }
+//    }
+//}

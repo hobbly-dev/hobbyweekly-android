@@ -83,18 +83,14 @@ fun MyPageStatisticsScreen(
     } else {
         100 * completedCount / totalCount
     }
+    val recentDate: LocalDate = now.date.minus(
+        now.date.dayOfWeek.ordinal,
+        DateTimeUnit.DAY
+    )
 
-    var showingDate: LocalDate by remember {
-        mutableStateOf(
-            now.date.minus(
-                now.date.dayOfWeek.ordinal,
-                DateTimeUnit.DAY
-            )
-        )
-    }
+    var showingDate: LocalDate by remember { mutableStateOf(recentDate) }
 
-    val isLastMonth: Boolean =
-        showingDate.year == now.date.year && showingDate.month == now.date.month
+    val isLastWeek: Boolean = showingDate == recentDate
     val week = (showingDate.dayOfMonth - 1) / 7 + 1
     val formattedDate: String = if (showingDate.year == now.date.year) {
         "${showingDate.month.number}월 ${week}주차"
@@ -166,7 +162,7 @@ fun MyPageStatisticsScreen(
                         text = formattedDate,
                         style = LabelMedium.merge(Neutral900)
                     )
-                    if (isLastMonth) {
+                    if (isLastWeek) {
                         Icon(
                             modifier = Modifier.size(Space24),
                             painter = painterResource(R.drawable.ic_arrow_right),
@@ -221,6 +217,10 @@ fun MyPageStatisticsScreen(
         event.eventObserve { event ->
 
         }
+    }
+
+    LaunchedEffectWithLifecycle(showingDate, handler) {
+        intent(MyPageStatisticsIntent.OnDateChanged(showingDate))
     }
 }
 

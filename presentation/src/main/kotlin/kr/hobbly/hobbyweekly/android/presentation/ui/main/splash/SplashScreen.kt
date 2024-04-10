@@ -20,8 +20,8 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.NonLoginConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.RegisterConstant
 
 @Composable
 fun SplashScreen(
@@ -31,8 +31,8 @@ fun SplashScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
-    fun navigateToHome() {
-        navController.navigate(HomeConstant.ROUTE) {
+    fun navigateToRegister() {
+        navController.navigate(RegisterConstant.ROUTE) {
             popUpTo(SplashConstant.ROUTE) {
                 inclusive = true
             }
@@ -51,7 +51,7 @@ fun SplashScreen(
         when (event) {
             is SplashEvent.Login.Success -> {
                 // TODO : Refresh Alarm
-                navigateToHome()
+                navigateToRegister()
             }
 
             is SplashEvent.Login.Fail -> {

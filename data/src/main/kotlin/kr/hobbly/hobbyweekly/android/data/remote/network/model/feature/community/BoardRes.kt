@@ -14,7 +14,7 @@ data class BoardRes(
     val blockId: Long,
     @SerialName("boardType")
     val boardType: String,
-    @SerialName("title")
+    @SerialName("boardName")
     val boardName: String,
     @SerialName("hasNewPost")
     val hasNewPost: Boolean

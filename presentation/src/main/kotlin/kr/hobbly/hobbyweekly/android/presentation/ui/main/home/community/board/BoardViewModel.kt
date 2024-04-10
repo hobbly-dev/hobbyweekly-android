@@ -56,35 +56,16 @@ class BoardViewModel @Inject constructor(
         MutableStateFlow(PagingData.empty())
     val postPaging: StateFlow<PagingData<Post>> = _postPaging.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun onIntent(intent: BoardIntent) {
-
+        when (intent) {
+            BoardIntent.Refresh -> {
+                refresh()
+            }
+        }
     }
 
     private fun refresh() {
         launch {
-            searchPostPagingFromBoardUseCase(
-                id = boardId,
-                keyword = ""
-            )
-                .cachedIn(viewModelScope)
-                .catch { exception ->
-                    when (exception) {
-                        is ServerException -> {
-                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        }
-
-                        else -> {
-                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        }
-                    }
-                }.collect { postPaging ->
-                    _postPaging.value = postPaging
-                }
-
             _state.value = BoardState.Loading
             zip(
                 { getBlockUseCase(id = blockId) },
@@ -105,6 +86,26 @@ class BoardViewModel @Inject constructor(
                     }
                 }
             }
+        }
+        launch {
+            searchPostPagingFromBoardUseCase(
+                id = boardId,
+                keyword = ""
+            )
+                .cachedIn(viewModelScope)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }.collect { postPaging ->
+                    _postPaging.value = postPaging
+                }
         }
     }
 }

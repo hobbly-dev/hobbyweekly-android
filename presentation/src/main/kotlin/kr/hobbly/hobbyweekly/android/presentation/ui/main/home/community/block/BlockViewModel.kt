@@ -114,6 +114,50 @@ class BlockViewModel @Inject constructor(
 
     private fun refresh() {
         launch {
+            _state.value = BlockState.Loading
+            zip(
+                { getBlockUseCase(id = blockId) },
+                { getMyBlockListUseCase() },
+                { getBoardListUseCase(id = blockId) }
+            ).onSuccess { (block, myBlockList, boardList) ->
+                _state.value = BlockState.Init
+                _block.value = block
+                _myBlockList.value = myBlockList
+                _boardList.value = boardList
+
+                boardList.find { it.type == BoardType.Notice }?.let { noticeBoard ->
+                    launch {
+                        searchPostPagingFromBoardUseCase(id = noticeBoard.id, keyword = "")
+                            .cachedIn(viewModelScope)
+                            .catch { exception ->
+                                when (exception) {
+                                    is ServerException -> {
+                                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                                    }
+
+                                    else -> {
+                                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                                    }
+                                }
+                            }.collect { popularPostPaging ->
+                                _popularPostPaging.value = popularPostPaging
+                            }
+                    }
+                }
+            }.onFailure { exception ->
+                _state.value = BlockState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+        launch {
             getPopularPostFromBlockPagingUseCase(id = blockId)
                 .cachedIn(viewModelScope)
                 .catch { exception ->
@@ -129,47 +173,6 @@ class BlockViewModel @Inject constructor(
                 }.collect { popularPostPaging ->
                     _popularPostPaging.value = popularPostPaging
                 }
-
-            _state.value = BlockState.Loading
-            zip(
-                { getBlockUseCase(id = blockId) },
-                { getMyBlockListUseCase() },
-                { getBoardListUseCase(id = blockId) }
-            ).onSuccess { (block, myBlockList, boardList) ->
-                _state.value = BlockState.Init
-                _block.value = block
-                _myBlockList.value = myBlockList
-                _boardList.value = boardList
-
-                boardList.find { it.type == BoardType.Notice }?.let { noticeBoard ->
-                    searchPostPagingFromBoardUseCase(id = noticeBoard.id, keyword = "")
-                        .cachedIn(viewModelScope)
-                        .catch { exception ->
-                            when (exception) {
-                                is ServerException -> {
-                                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                                }
-
-                                else -> {
-                                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                                }
-                            }
-                        }.collect { popularPostPaging ->
-                            _popularPostPaging.value = popularPostPaging
-                        }
-                }
-            }.onFailure { exception ->
-                _state.value = BlockState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
-
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                    }
-                }
-            }
         }
     }
 }

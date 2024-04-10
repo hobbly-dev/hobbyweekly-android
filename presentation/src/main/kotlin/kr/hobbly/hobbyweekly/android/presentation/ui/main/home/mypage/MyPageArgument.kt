@@ -2,6 +2,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage
 
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.datetime.LocalDate
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
@@ -32,6 +33,7 @@ sealed interface MyPageEvent {
 
 sealed interface MyPageIntent {
     data class OnProfileImageSet(val image: GalleryImage) : MyPageIntent
+    data class OnDateChanged(val date: LocalDate) : MyPageIntent
     data object Logout : MyPageIntent
     data object Withdraw : MyPageIntent
 }

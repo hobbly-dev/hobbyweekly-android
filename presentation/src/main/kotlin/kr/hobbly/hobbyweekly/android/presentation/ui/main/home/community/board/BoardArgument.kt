@@ -23,4 +23,6 @@ sealed interface BoardEvent {
 
 }
 
-sealed interface BoardIntent
+sealed interface BoardIntent {
+    data object Refresh : BoardIntent
+}

@@ -30,7 +30,7 @@ class FileApi @Inject constructor(
     suspend fun getPreSignedUrlList(
         count: Int
     ): Result<GetPreSignedUrlListRes> {
-        return client.get("$baseUrl/v1/utils/s3") {
+        return client.get("$baseUrl/v1/util/s3/url") {
             parameter("imageNum", count)
         }.convert(errorMessageMapper::map)
     }

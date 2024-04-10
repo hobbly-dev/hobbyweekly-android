@@ -61,22 +61,6 @@ class CommunityViewModel @Inject constructor(
 
     private fun refresh() {
         launch {
-            getPopularPostPagingUseCase()
-                .cachedIn(viewModelScope)
-                .catch { exception ->
-                    when (exception) {
-                        is ServerException -> {
-                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                        }
-
-                        else -> {
-                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                        }
-                    }
-                }.collect { popularPostList ->
-                    _popularPostPaging.value = popularPostList
-                }
-
             _state.value = CommunityState.Loading
             zip(
                 { getMyBlockListUseCase() },
@@ -98,6 +82,23 @@ class CommunityViewModel @Inject constructor(
                     }
                 }
             }
+        }
+        launch {
+            getPopularPostPagingUseCase()
+                .cachedIn(viewModelScope)
+                .catch { exception ->
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }.collect { popularPostList ->
+                    _popularPostPaging.value = popularPostList
+                }
         }
     }
 }

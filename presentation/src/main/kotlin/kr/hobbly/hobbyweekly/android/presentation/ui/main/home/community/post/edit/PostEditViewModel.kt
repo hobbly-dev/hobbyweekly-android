@@ -159,7 +159,7 @@ class PostEditViewModel @Inject constructor(
             ).onSuccess { newImageList ->
                 if (routineId == -1L) {
                     writePostUseCase(
-                        id = postId,
+                        id = boardId,
                         title = title,
                         content = content,
                         imageList = originalImageList + newImageList,
@@ -171,7 +171,7 @@ class PostEditViewModel @Inject constructor(
                     }.getOrThrow()
                 } else {
                     writeRoutinePostUseCase(
-                        id = postId,
+                        id = routineId,
                         title = title,
                         content = content,
                         imageList = originalImageList + newImageList,

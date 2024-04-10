@@ -6,6 +6,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.datetime.LocalDate
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
@@ -13,6 +14,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetRoutineStatisticsListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.LogoutUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.WithdrawUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.EditProfileWithUploadUseCase
@@ -27,7 +29,8 @@ class MyPageViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val withdrawUseCase: WithdrawUseCase,
-    private val editProfileWithUploadUseCase: EditProfileWithUploadUseCase
+    private val editProfileWithUploadUseCase: EditProfileWithUploadUseCase,
+    private val getRoutineStatisticsListUseCase: GetRoutineStatisticsListUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<MyPageState> = MutableStateFlow(MyPageState.Init)
@@ -56,8 +59,35 @@ class MyPageViewModel @Inject constructor(
                 setProfileImage(intent.image)
             }
 
+            is MyPageIntent.OnDateChanged -> {
+                refreshStatistics(intent.date)
+            }
+
             MyPageIntent.Logout -> logout()
             MyPageIntent.Withdraw -> withdraw()
+        }
+    }
+
+    private fun refreshStatistics(
+        date: LocalDate
+    ) {
+        launch {
+            getRoutineStatisticsListUseCase(
+                id = -1,
+                date = date
+            ).onSuccess { routineStatistics ->
+                _routineStatistics.value = routineStatistics
+            }.onFailure { exception ->
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 

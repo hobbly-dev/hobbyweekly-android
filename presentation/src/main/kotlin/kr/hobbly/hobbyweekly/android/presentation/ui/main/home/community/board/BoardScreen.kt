@@ -273,6 +273,10 @@ fun BoardScreen(
 
         }
     }
+
+    LaunchedEffectWithLifecycle(Unit, handler) {
+        intent(BoardIntent.Refresh)
+    }
 }
 
 @Composable

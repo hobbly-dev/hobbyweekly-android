@@ -2,6 +2,7 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.login
 
 import androidx.lifecycle.SavedStateHandle
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,23 +47,24 @@ class LoginViewModel @Inject constructor(
     private fun login(
         token: OAuthToken
     ) {
-        launch {
-            _state.value = LoginState.Loading
+        UserApiClient.instance.accessTokenInfo { tokenInfo, error ->
+            launch {
+                _state.value = LoginState.Loading
+                loginUseCase(
+                    socialId = tokenInfo?.id?.toString().orEmpty(),
+                    socialType = SocialType.Kakao
+                ).onSuccess {
+                    checkProgress()
+                }.onFailure { exception ->
+                    _state.value = LoginState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-            loginUseCase(
-                socialId = token.idToken.orEmpty(),
-                socialType = SocialType.Kakao
-            ).onSuccess {
-                checkProgress()
-            }.onFailure { exception ->
-                _state.value = LoginState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
-
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
                 }
             }
