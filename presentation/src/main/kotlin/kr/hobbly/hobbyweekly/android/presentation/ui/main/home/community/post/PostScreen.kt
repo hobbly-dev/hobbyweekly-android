@@ -445,9 +445,7 @@ fun PostScreen(
             items(
                 count = data.commentList.itemCount,
                 key = { index ->
-                    data.commentList[index]?.let { comment ->
-                        "${comment.blockId}/${comment.boardId}/${comment.postId}/${comment.id}"
-                    }.orEmpty()
+                    data.commentList[index]?.id?.toString().orEmpty()
                 }
             ) { index ->
                 data.commentList[index]?.let { comment ->
@@ -482,93 +480,95 @@ fun PostScreen(
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .background(White)
-                .fillMaxWidth()
-        ) {
+        if (data.isMyBlock) {
             Box(
                 modifier = Modifier
-                    .padding(Space8)
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(Neutral100)
+                    .background(White)
+                    .fillMaxWidth()
             ) {
-                Row(
+                Box(
                     modifier = Modifier
-                        .padding(
-                            horizontal = Space12,
-                            vertical = Space4
-                        )
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(Space8)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(Neutral100)
                 ) {
-                    RippleBox(
-                        onClick = {
-                            isAnonymous = !isAnonymous
-                        }
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(Space12),
-                                painter = if (isAnonymous) {
-                                    painterResource(id = R.drawable.ic_check_box_checked)
-                                } else {
-                                    painterResource(id = R.drawable.ic_check_box_unchecked)
-                                },
-                                contentDescription = null,
-                                tint = Red
-                            )
-                            Spacer(modifier = Modifier.width(Space4))
-                            Text(
-                                text = "익명",
-                                modifier = Modifier.padding(vertical = Space8),
-                                style = BodyRegular.merge(Neutral900)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.width(Space6))
-                    EmptyTextField(
-                        text = commentText,
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester),
-                        style = BodyRegular.merge(Neutral900),
-                        hintText = "댓글을 입력하세요",
-                        hintStyle = BodyRegular.merge(Neutral400),
-                        maxLines = 1,
-                        maxTextLength = Int.MAX_VALUE,
-                        onValueChange = {
-                            commentText = it
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(Space6))
-                    if (commentText.isEmpty()) {
-                        Icon(
-                            modifier = Modifier.size(Space24),
-                            painter = painterResource(id = R.drawable.ic_send),
-                            contentDescription = null,
-                            tint = Neutral400
-                        )
-                    } else {
+                            .padding(
+                                horizontal = Space12,
+                                vertical = Space4
+                            )
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         RippleBox(
                             onClick = {
-                                intent(
-                                    PostIntent.Comment.OnComment(
-                                        parentId = selectedComment?.id ?: -1,
-                                        commentText = commentText,
-                                        isAnonymous = isAnonymous
-                                    )
-                                )
+                                isAnonymous = !isAnonymous
                             }
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(Space12),
+                                    painter = if (isAnonymous) {
+                                        painterResource(id = R.drawable.ic_check_box_checked)
+                                    } else {
+                                        painterResource(id = R.drawable.ic_check_box_unchecked)
+                                    },
+                                    contentDescription = null,
+                                    tint = Red
+                                )
+                                Spacer(modifier = Modifier.width(Space4))
+                                Text(
+                                    text = "익명",
+                                    modifier = Modifier.padding(vertical = Space8),
+                                    style = BodyRegular.merge(Neutral900)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(Space6))
+                        EmptyTextField(
+                            text = commentText,
+                            modifier = Modifier
+                                .weight(1f)
+                                .focusRequester(focusRequester),
+                            style = BodyRegular.merge(Neutral900),
+                            hintText = "댓글을 입력하세요",
+                            hintStyle = BodyRegular.merge(Neutral400),
+                            maxLines = 1,
+                            maxTextLength = Int.MAX_VALUE,
+                            onValueChange = {
+                                commentText = it
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(Space6))
+                        if (commentText.isEmpty()) {
                             Icon(
                                 modifier = Modifier.size(Space24),
                                 painter = painterResource(id = R.drawable.ic_send),
                                 contentDescription = null,
-                                tint = Neutral900
+                                tint = Neutral400
                             )
+                        } else {
+                            RippleBox(
+                                onClick = {
+                                    intent(
+                                        PostIntent.Comment.OnComment(
+                                            parentId = selectedComment?.id ?: -1,
+                                            commentText = commentText,
+                                            isAnonymous = isAnonymous
+                                        )
+                                    )
+                                }
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(Space24),
+                                    painter = painterResource(id = R.drawable.ic_send),
+                                    contentDescription = null,
+                                    tint = Neutral900
+                                )
+                            }
                         }
                     }
                 }
@@ -592,14 +592,21 @@ fun PostScreen(
         when (event) {
             is PostEvent.Comment.Write.Success -> {
                 isCommentWriteSuccessDialogShowing = true
+                commentText = ""
+                selectedComment = null
+                focusRequester.freeFocus()
             }
 
             PostEvent.Comment.Remove.Success -> {
                 isCommentRemoveSuccessDialogShowing = true
+                selectedComment = null
+                focusRequester.freeFocus()
             }
 
             PostEvent.Comment.Report.Success -> {
                 isCommentReportSuccessDialogShowing = true
+                selectedComment = null
+                focusRequester.freeFocus()
             }
         }
     }
@@ -876,6 +883,7 @@ private fun PostScreenPreview() {
                     hasNewPost = true
                 )
             ),
+            isMyBlock = true,
             profile = Profile(
                 id = 1,
                 nickname = "장성혁",

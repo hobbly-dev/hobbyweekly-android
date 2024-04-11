@@ -43,11 +43,13 @@ fun NavGraphBuilder.boardDestination(
 
         val data: BoardData = Unit.let {
             val block by viewModel.block.collectAsStateWithLifecycle()
+            val isMyBlock by viewModel.isMyBlock.collectAsStateWithLifecycle()
             val board by viewModel.board.collectAsStateWithLifecycle()
             val postPaging = viewModel.postPaging.collectAsLazyPagingItems()
 
             BoardData(
                 block = block,
+                isMyBlock = isMyBlock,
                 board = board,
                 postPaging = postPaging
             )

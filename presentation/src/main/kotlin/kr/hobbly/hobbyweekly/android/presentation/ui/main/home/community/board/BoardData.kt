@@ -9,6 +9,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 @Immutable
 data class BoardData(
     val block: Block,
+    val isMyBlock: Boolean,
     val board: Board,
     val postPaging: LazyPagingItems<Post>
 )

@@ -237,32 +237,34 @@ fun BoardScreen(
                     )
                 }
             }
-            Box(
-                modifier = Modifier
-                    .padding(Space16)
-                    .align(Alignment.BottomEnd)
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier.size(Space56),
-                    shape = CircleShape,
-                    containerColor = Red,
-                    onClick = {
-                        if (data.board.type == BoardType.Routine) {
-                            isBoardRoutineShowing = true
-                        } else {
-                            navigateToPostAdd(
-                                block = data.block,
-                                board = data.board
-                            )
-                        }
-                    }
+            if (data.isMyBlock) {
+                Box(
+                    modifier = Modifier
+                        .padding(Space16)
+                        .align(Alignment.BottomEnd)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(Space32),
-                        painter = painterResource(id = R.drawable.ic_edit),
-                        contentDescription = null,
-                        tint = White
-                    )
+                    FloatingActionButton(
+                        modifier = Modifier.size(Space56),
+                        shape = CircleShape,
+                        containerColor = Red,
+                        onClick = {
+                            if (data.board.type == BoardType.Routine) {
+                                isBoardRoutineShowing = true
+                            } else {
+                                navigateToPostAdd(
+                                    block = data.block,
+                                    board = data.board
+                                )
+                            }
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(Space32),
+                            painter = painterResource(id = R.drawable.ic_edit),
+                            contentDescription = null,
+                            tint = White
+                        )
+                    }
                 }
             }
         }
@@ -411,6 +413,7 @@ private fun BoardScreenPreview() {
                 thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 memberCount = 100
             ),
+            isMyBlock = false,
             board = Board(
                 id = 1,
                 blockId = 1,

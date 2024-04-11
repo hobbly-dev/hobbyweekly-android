@@ -52,6 +52,9 @@ class RoutineEditViewModel @Inject constructor(
     private fun refresh() {
         launch {
             _state.value = RoutineEditState.Loading
+//            if (blockId == -1L) {
+//                TODO : 루틴 불러오기
+//            }
             getBlockUseCase(
                 id = blockId
             ).onSuccess { block ->

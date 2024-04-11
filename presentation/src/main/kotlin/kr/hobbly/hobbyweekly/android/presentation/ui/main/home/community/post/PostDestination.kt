@@ -47,11 +47,13 @@ fun NavGraphBuilder.postDestination(
 
         val data: PostData = let {
             val post by viewModel.post.collectAsStateWithLifecycle()
+            val isMyBlock by viewModel.isMyBlock.collectAsStateWithLifecycle()
             val profile by viewModel.profile.collectAsStateWithLifecycle()
             val commentList = viewModel.commentPaging.collectAsLazyPagingItems()
 
             PostData(
                 post = post,
+                isMyBlock = isMyBlock,
                 profile = profile,
                 commentList = commentList
             )

@@ -47,10 +47,6 @@ class CommunityViewModel @Inject constructor(
         MutableStateFlow(PagingData.empty())
     val popularPostPaging: StateFlow<PagingData<Post>> = _popularPostPaging.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun onIntent(intent: CommunityIntent) {
         when (intent) {
             CommunityIntent.Refresh -> {

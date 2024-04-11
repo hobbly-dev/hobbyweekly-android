@@ -19,6 +19,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.board.GetBoardUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.SearchPostPagingFromBoardUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
@@ -28,6 +29,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 class BoardViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getBlockUseCase: GetBlockUseCase,
+    private val getMyBlockListUseCase: GetMyBlockListUseCase,
     private val getBoardUseCase: GetBoardUseCase,
     private val searchPostPagingFromBoardUseCase: SearchPostPagingFromBoardUseCase
 ) : BaseViewModel() {
@@ -49,6 +51,9 @@ class BoardViewModel @Inject constructor(
     private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
     val block: StateFlow<Block> = _block.asStateFlow()
 
+    private val _isMyBlock: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isMyBlock: StateFlow<Boolean> = _isMyBlock.asStateFlow()
+
     private val _board: MutableStateFlow<Board> = MutableStateFlow(Board.empty)
     val board: StateFlow<Board> = _board.asStateFlow()
 
@@ -69,10 +74,12 @@ class BoardViewModel @Inject constructor(
             _state.value = BoardState.Loading
             zip(
                 { getBlockUseCase(id = blockId) },
+                { getMyBlockListUseCase() },
                 { getBoardUseCase(id = boardId) }
-            ).onSuccess { (block, board) ->
+            ).onSuccess { (block, myBlockList, board) ->
                 _state.value = BoardState.Init
                 _block.value = block
+                _isMyBlock.value = myBlockList.any { it.id == blockId }
                 _board.value = board
             }.onFailure { exception ->
                 _state.value = BoardState.Init

@@ -18,6 +18,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LikeCommentUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.LoadCommentPagingUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.comment.RemoveCommentUseCase
@@ -36,6 +37,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 class PostViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val loadBlockPostUseCase: LoadPostUseCase,
+    private val getMyBlockListUseCase: GetMyBlockListUseCase,
     private val getProfileUseCase: GetProfileUseCase,
     private val loadCommentPagingUseCase: LoadCommentPagingUseCase,
     private val likePostUseCase: LikePostUseCase,
@@ -68,6 +70,9 @@ class PostViewModel @Inject constructor(
 
     private val _post: MutableStateFlow<Post> = MutableStateFlow(Post.empty)
     val post: StateFlow<Post> = _post.asStateFlow()
+
+    private val _isMyBlock: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isMyBlock: StateFlow<Boolean> = _isMyBlock.asStateFlow()
 
     private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
     val profile: StateFlow<Profile> = _profile.asStateFlow()
@@ -126,11 +131,13 @@ class PostViewModel @Inject constructor(
             refreshComment()
             zip(
                 { loadBlockPostUseCase(id = postId) },
+                { getMyBlockListUseCase() },
                 { getProfileUseCase() },
-            ).onSuccess { (post, profile) ->
+            ).onSuccess { (post, myBlockList, profile) ->
                 _state.value = PostState.Init
 
                 _post.value = post
+                _isMyBlock.value = myBlockList.any { it.id == post.board.blockId }
                 _profile.value = profile
             }.onFailure { exception ->
                 _state.value = PostState.Init

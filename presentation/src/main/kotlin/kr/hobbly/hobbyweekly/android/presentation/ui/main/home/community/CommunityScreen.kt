@@ -436,6 +436,10 @@ private fun CommunityScreen(
 
         }
     }
+
+    LaunchedEffectWithLifecycle(Unit, handler) {
+        intent(CommunityIntent.Refresh)
+    }
 }
 
 @Composable

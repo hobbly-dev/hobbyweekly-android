@@ -9,6 +9,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 @Immutable
 data class PostData(
     val post: Post,
+    val isMyBlock: Boolean,
     val profile: Profile,
     val commentList: LazyPagingItems<Comment>
 )
