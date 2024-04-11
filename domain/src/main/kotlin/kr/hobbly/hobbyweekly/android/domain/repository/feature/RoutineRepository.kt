@@ -9,6 +9,10 @@ interface RoutineRepository {
 
     suspend fun getCurrentRoutineList(): Result<List<Routine>>
 
+    suspend fun getRoutine(
+        id: Long
+    ): Result<Routine>
+
     suspend fun writeRoutinePost(
         id: Long,
         title: String,

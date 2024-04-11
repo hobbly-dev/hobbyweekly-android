@@ -15,6 +15,7 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerExcepti
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.AddRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.EditRoutineUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.RemoveRoutineUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -22,6 +23,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 @HiltViewModel
 class RoutineEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getRoutineUseCase: GetRoutineUseCase,
     private val addRoutineUseCase: AddRoutineUseCase,
     private val editRoutineUseCase: EditRoutineUseCase,
     private val removeRoutineUseCase: RemoveRoutineUseCase,
@@ -34,9 +36,6 @@ class RoutineEditViewModel @Inject constructor(
     private val _event: MutableEventFlow<RoutineEditEvent> = MutableEventFlow()
     val event: EventFlow<RoutineEditEvent> = _event.asEventFlow()
 
-    private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
-    val block: StateFlow<Block> = _block.asStateFlow()
-
     val blockId: Long by lazy {
         savedStateHandle.get<Long>(RoutineEditConstant.ROUTE_ARGUMENT_BLOCK_ID) ?: -1
     }
@@ -45,6 +44,9 @@ class RoutineEditViewModel @Inject constructor(
         savedStateHandle.get<Long>(RoutineEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1
     }
 
+    private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
+    val block: StateFlow<Block> = _block.asStateFlow()
+
     init {
         refresh()
     }
@@ -52,23 +54,40 @@ class RoutineEditViewModel @Inject constructor(
     private fun refresh() {
         launch {
             _state.value = RoutineEditState.Loading
-//            if (blockId == -1L) {
-//                TODO : 루틴 불러오기
-//            }
-            getBlockUseCase(
-                id = blockId
-            ).onSuccess { block ->
-                _state.value = RoutineEditState.Init
-                _block.value = block
-            }.onFailure { exception ->
-                _state.value = RoutineEditState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
+            if (blockId == -1L) {
+                getBlockUseCase(
+                    id = blockId
+                ).onSuccess { block ->
+                    _state.value = RoutineEditState.Init
+                    _block.value = block
+                }.onFailure { exception ->
+                    _state.value = RoutineEditState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+            } else {
+                getRoutineUseCase(
+                    id = routineId
+                ).onSuccess { routine ->
+                    _state.value = RoutineEditState.Init
+                    _event.emit(RoutineEditEvent.LoadData.Success(routine))
+                }.onFailure { exception ->
+                    _state.value = RoutineEditState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
                 }
             }

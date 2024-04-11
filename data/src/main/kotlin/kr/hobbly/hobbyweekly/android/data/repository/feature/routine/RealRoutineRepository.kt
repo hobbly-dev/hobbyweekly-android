@@ -17,6 +17,14 @@ class RealRoutineRepository @Inject constructor(
         return routineApi.getCurrentRoutineList().toDomain()
     }
 
+    override suspend fun getRoutine(
+        id: Long
+    ): Result<Routine> {
+        return routineApi.getRoutine(
+            id = id
+        ).toDomain()
+    }
+
     override suspend fun writeRoutinePost(
         id: Long,
         title: String,

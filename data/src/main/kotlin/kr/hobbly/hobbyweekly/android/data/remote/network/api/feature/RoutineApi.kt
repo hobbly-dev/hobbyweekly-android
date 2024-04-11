@@ -20,6 +20,7 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.E
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.GetCurrentRoutineRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.GetLatestRoutineRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.GetRoutineStatisticsRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.RoutineRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.SwitchRoutineAlarmReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.WriteRoutinePostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.routine.WriteRoutinePostRes
@@ -35,6 +36,13 @@ class RoutineApi @Inject constructor(
 
     suspend fun getCurrentRoutineList(): Result<GetCurrentRoutineRes> {
         return client.get("$baseUrl/v1/routines/me")
+            .convert(errorMessageMapper::map)
+    }
+
+    suspend fun getRoutine(
+        id: Long
+    ): Result<RoutineRes> {
+        return client.get("$baseUrl/v1/routines/$id")
             .convert(errorMessageMapper::map)
     }
 

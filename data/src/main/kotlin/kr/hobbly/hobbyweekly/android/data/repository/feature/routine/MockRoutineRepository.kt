@@ -42,6 +42,37 @@ class MockRoutineRepository @Inject constructor() : RoutineRepository {
         )
     }
 
+    override suspend fun getRoutine(
+        id: Long
+    ): Result<Routine> {
+        randomShortDelay()
+
+        return Result.success(
+            Routine(
+                id = 0L,
+                title = "블록 이름",
+                blockId = 0L,
+                blockName = "영어 블록",
+                alarmTime = null,
+                isAlarmEnabled = true,
+                smallRoutineList = listOf(
+                    SmallRoutine(
+                        dayOfWeek = 0,
+                        isDone = true
+                    ),
+                    SmallRoutine(
+                        dayOfWeek = 1,
+                        isDone = true
+                    ),
+                    SmallRoutine(
+                        dayOfWeek = 2,
+                        isDone = false
+                    )
+                )
+            )
+        )
+    }
+
     override suspend fun writeRoutinePost(
         id: Long,
         title: String,
