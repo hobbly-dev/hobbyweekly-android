@@ -121,7 +121,7 @@ private fun BoardRoutineScreen(
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val routineList = data.routineList.filter {
-        it.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal && it.isDone }
+        it.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal }
     }
     var selectedRoutine: Routine? by remember { mutableStateOf(null) }
 
