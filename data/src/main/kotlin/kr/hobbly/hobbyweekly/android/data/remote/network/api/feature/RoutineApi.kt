@@ -108,7 +108,7 @@ class RoutineApi @Inject constructor(
     suspend fun removeRoutine(
         id: Long
     ): Result<Unit> {
-        return client.delete("$baseUrl/v1/routines/$id")
+        return client.post("$baseUrl/v1/routines/$id/terminate")
             .convert(errorMessageMapper::map)
     }
 

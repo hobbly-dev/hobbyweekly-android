@@ -148,7 +148,7 @@ private fun BoardRoutineScreen(
                 style = TitleSemiBold.merge(Neutral900)
             )
             Spacer(modifier = Modifier.height(Space20))
-            if (data.routineList.isEmpty()) {
+            if (routineList.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .height(200.dp)

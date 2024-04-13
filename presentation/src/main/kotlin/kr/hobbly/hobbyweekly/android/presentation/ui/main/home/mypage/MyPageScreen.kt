@@ -160,7 +160,6 @@ private fun MyPageScreen(
     val week = (showingDate.dayOfMonth - 1) / 7 + 1
     val formattedDate: String = if (showingDate.year == now.date.year) {
         "${showingDate.month.number}월 ${week}주차"
-
     } else {
         "${showingDate.year}년 ${showingDate.month.number}월 ${week}주차"
     }

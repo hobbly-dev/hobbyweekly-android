@@ -810,9 +810,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                 listOf(
                     Comment(
                         id = 1L,
-                        blockId = 1L,
-                        boardId = 1L,
-                        postId = 1L,
                         content = "좋은 글이네요!",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                             .atTime(0, 0, 0),
@@ -829,9 +826,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                     ),
                     Comment(
                         id = 2L,
-                        blockId = 1L,
-                        boardId = 1L,
-                        postId = 1L,
                         content = "좋은 글이네요!",
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                             .atTime(0, 0, 0),
@@ -846,9 +840,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                         child = listOf(
                             Comment(
                                 id = 3L,
-                                blockId = 1L,
-                                boardId = 1L,
-                                postId = 1L,
                                 content = "좋은 글이네요!",
                                 createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                                     .atTime(0, 0, 0),
@@ -865,9 +856,6 @@ class MockCommunityRepository @Inject constructor() : CommunityRepository {
                             ),
                             Comment(
                                 id = 4L,
-                                blockId = 1L,
-                                boardId = 1L,
-                                postId = 1L,
                                 content = "좋은 글이네요!",
                                 createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                                     .atTime(0, 0, 0),

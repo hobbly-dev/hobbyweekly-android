@@ -7,15 +7,9 @@ import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Comment
 
 @Serializable
-data class BoardCommentRes(
+data class CommentRes(
     @SerialName("commentId")
     val commentId: Long,
-    @SerialName("blockId")
-    val blockId: Long,
-    @SerialName("boardId")
-    val boardId: Long,
-    @SerialName("postId")
-    val postId: Long,
     @SerialName("content")
     val content: String,
     @SerialName("createdAt")
@@ -27,16 +21,13 @@ data class BoardCommentRes(
     @SerialName("likeCount")
     val likeCount: Int,
     @SerialName("childComments")
-    val childComments: List<BoardCommentRes>,
+    val childComments: List<CommentRes>,
     @SerialName("isAnonymous")
     val isAnonymous: Boolean
 ) : DataMapper<Comment> {
     override fun toDomain(): Comment {
         return Comment(
             id = commentId,
-            blockId = blockId,
-            boardId = boardId,
-            postId = postId,
             content = content,
             createdAt = createdAt,
             updatedAt = updatedAt,

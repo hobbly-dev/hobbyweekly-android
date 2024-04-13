@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoadBoardCommentRes(
     @SerialName("result")
-    val result: List<BoardCommentRes>,
+    val result: List<CommentRes>,
     @SerialName("hasPrevious")
     val hasPrevious: Boolean,
     @SerialName("hasNext")

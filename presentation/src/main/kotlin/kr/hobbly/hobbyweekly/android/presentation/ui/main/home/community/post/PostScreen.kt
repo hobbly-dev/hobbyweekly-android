@@ -642,7 +642,7 @@ fun PostScreenCommentItem(
     onReport: (Comment, String) -> Unit,
     onDelete: (Comment) -> Unit,
 ) {
-    val isMyComment = comment.member.id == comment.id
+    val isMyComment = comment.member.id == profile.id
     val formattedDate = comment.createdAt.toDurationString()
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
