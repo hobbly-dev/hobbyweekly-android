@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,16 +56,19 @@ import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelSemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral050
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral100
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral400
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral600
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Radius12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
@@ -73,15 +77,16 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space16
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space4
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space60
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Transparent
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
@@ -90,7 +95,6 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.block.BlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.splash.SplashConstant
@@ -115,12 +119,10 @@ fun MyPageScreen(
 
     val data: MyPageData = Unit.let {
         val profile by viewModel.profile.collectAsStateWithLifecycle()
-        val myBlockList by viewModel.myBlockList.collectAsStateWithLifecycle()
         val routineStatisticsList by viewModel.routineStatisticsList.collectAsStateWithLifecycle()
 
         MyPageData(
             profile = profile,
-            myBlockList = myBlockList,
             routineStatisticsList = routineStatisticsList
         )
     }
@@ -156,6 +158,7 @@ private fun MyPageScreen(
     )
 
     var showingDate: LocalDate by remember { mutableStateOf(recentDate) }
+    val unselectedBlockList: MutableList<Long> = remember { mutableStateListOf() }
 
     val isLastWeek: Boolean = showingDate == recentDate
     val week = (showingDate.dayOfMonth - 1) / 7 + 1
@@ -173,18 +176,6 @@ private fun MyPageScreen(
 
     fun navigateToMyBlock() {
         navController.safeNavigate(MyBlockConstant.ROUTE)
-    }
-
-    fun navigateToBlock(
-        block: Block
-    ) {
-        val route = makeRoute(
-            BlockConstant.ROUTE,
-            listOf(
-                BlockConstant.ROUTE_ARGUMENT_BLOCK_ID to block.id
-            )
-        )
-        navController.safeNavigate(route)
     }
 
     fun navigateToMyPageStatistics() {
@@ -351,7 +342,7 @@ private fun MyPageScreen(
             ) {
                 MyPageScreenStatistics(
                     modifier = Modifier.size(150.dp),
-                    dataList = data.routineStatisticsList,
+                    dataList = data.routineStatisticsList.filter { !unselectedBlockList.contains(it.id) },
                     thickness = 0.4f
                 )
             }
@@ -434,7 +425,7 @@ private fun MyPageScreen(
                         style = TitleSemiBoldSmall.merge(Neutral900)
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    if (data.myBlockList.isNotEmpty()) {
+                    if (data.routineStatisticsList.isNotEmpty()) {
                         RippleBox(
                             onClick = {
                                 navigateToMyBlock()
@@ -457,7 +448,7 @@ private fun MyPageScreen(
                         }
                     }
                 }
-                if (data.myBlockList.isEmpty()) {
+                if (data.routineStatisticsList.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .padding(horizontal = Space20)
@@ -477,13 +468,18 @@ private fun MyPageScreen(
                         contentPadding = PaddingValues(start = Space20, end = Space20)
                     ) {
                         items(
-                            items = data.myBlockList,
+                            items = data.routineStatisticsList,
                             key = { it.id }
-                        ) { block ->
-                            MyPageScreenMyBlockItem(
-                                block = block,
+                        ) { statistics ->
+                            MyPageScreenStatisticsItem(
+                                statistics = statistics,
+                                isSelected = !unselectedBlockList.contains(statistics.id),
                                 onClick = {
-                                    navigateToBlock(it)
+                                    if (unselectedBlockList.contains(it.id)) {
+                                        unselectedBlockList.remove(it.id)
+                                    } else {
+                                        unselectedBlockList.add(it.id)
+                                    }
                                 }
                             )
                         }
@@ -585,28 +581,59 @@ private fun MyPageScreen(
 }
 
 @Composable
-private fun MyPageScreenMyBlockItem(
-    block: Block,
-    onClick: (Block) -> Unit
+private fun MyPageScreenStatisticsItem(
+    statistics: RoutineStatistics,
+    isSelected: Boolean,
+    onClick: (RoutineStatistics) -> Unit
 ) {
+    val percent = if (statistics.totalCount == 0) {
+        0
+    } else {
+        (statistics.completedCount.toFloat() / statistics.totalCount.toFloat() * 100).toInt()
+    }
+
     Box(
-        modifier = Modifier.clip(RoundedCornerShape(Radius12))
+        modifier = Modifier
+            .clip(RoundedCornerShape(Radius12))
+            .background(
+                if (isSelected) {
+                    Neutral100
+                } else {
+                    Transparent
+                }
+            )
     ) {
-        Column(
-            modifier = Modifier.clickable {
-                onClick(block)
-            },
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .clickable {
+                    onClick(statistics)
+                }
+                .padding(Space4)
+                .clip(RoundedCornerShape(Radius12))
         ) {
-            PostImage(
-                data = block.thumbnail,
-                modifier = Modifier.size(Space60)
-            )
-            Spacer(modifier = Modifier.height(Space8))
-            Text(
-                text = block.name,
-                style = BodySemiBold.merge(Neutral900)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box {
+                    PostImage(
+                        data = statistics.thumbnail,
+                        modifier = Modifier
+                            .size(Space60)
+                            .align(Alignment.Center)
+                    )
+                    Text(
+                        text = "$percent%",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = LabelSemiBold.merge(White)
+                    )
+                }
+                Spacer(modifier = Modifier.height(Space8))
+                Text(
+                    text = statistics.blockName,
+                    style = BodySemiBold.merge(Neutral600)
+                )
+            }
         }
     }
 }
@@ -630,49 +657,32 @@ private fun MyPageScreenPreview() {
                 image = "https://avatars.githubusercontent.com/u/48707913?v=4",
                 isHobbyChecked = true
             ),
-            myBlockList = listOf(
-                Block(
-                    id = 1,
-                    name = "영어 블록",
-                    content = "영어를 공부하고 인증하는 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
+            routineStatisticsList = listOf(
+                RoutineStatistics(
+                    id = 1L,
+                    blockName = "독서 블록",
+                    thumbnail = "https://via.placeholder.com/150",
+                    title = "해리포터 원문보기",
+                    totalCount = 5,
+                    completedCount = 5
                 ),
-                Block(
-                    id = 2,
-                    name = "요리 블록",
-                    content = "취미로 요리를 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
+                RoutineStatistics(
+                    id = 2L,
+                    blockName = "영어 블록",
+                    thumbnail = "https://via.placeholder.com/150",
+                    title = "영화자막 번역하기",
+                    totalCount = 4,
+                    completedCount = 2
                 ),
-                Block(
-                    id = 3,
-                    name = "여행 블록",
-                    content = "여행을 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 4,
-                    name = "공부 블록",
-                    content = "공부를 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-                Block(
-                    id = 5,
-                    name = "코딩 블록",
-                    content = "코딩을 취미로 하는 사람들의 모임",
-                    image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
-                    memberCount = 100
-                ),
-            ),
-            routineStatisticsList = emptyList()
+                RoutineStatistics(
+                    id = 3L,
+                    blockName = "공부 블록",
+                    thumbnail = "https://via.placeholder.com/150",
+                    title = "해외 친구들 만나기",
+                    totalCount = 4,
+                    completedCount = 1
+                )
+            )
         )
     )
 }

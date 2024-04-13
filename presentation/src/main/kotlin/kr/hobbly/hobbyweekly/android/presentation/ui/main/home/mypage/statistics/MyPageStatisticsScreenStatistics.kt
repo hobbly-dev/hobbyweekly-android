@@ -80,16 +80,25 @@ private fun MyPageStatisticsScreenStatisticsPreview1() {
             modifier = Modifier.fillMaxSize(),
             dataList = listOf(
                 RoutineStatistics(
+                    id = 1L,
+                    blockName = "독서 블록",
+                    thumbnail = "https://via.placeholder.com/150",
                     title = "해리포터 원문보기",
                     totalCount = 5,
                     completedCount = 5
                 ),
                 RoutineStatistics(
+                    id = 2L,
+                    blockName = "영어 블록",
+                    thumbnail = "https://via.placeholder.com/150",
                     title = "영화자막 번역하기",
                     totalCount = 4,
                     completedCount = 2
                 ),
                 RoutineStatistics(
+                    id = 3L,
+                    blockName = "공부 블록",
+                    thumbnail = "https://via.placeholder.com/150",
                     title = "해외 친구들 만나기",
                     totalCount = 4,
                     completedCount = 1

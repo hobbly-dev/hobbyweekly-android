@@ -10,12 +10,9 @@ import kotlinx.datetime.LocalDate
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
-import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
-import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.RoutineStatistics
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
-import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetMyBlockListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetRoutineStatisticsListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.LogoutUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication.WithdrawUseCase
@@ -29,7 +26,6 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 class MyPageViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getProfileUseCase: GetProfileUseCase,
-    private val getMyBlockListUseCase: GetMyBlockListUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val withdrawUseCase: WithdrawUseCase,
     private val editProfileWithUploadUseCase: EditProfileWithUploadUseCase,
@@ -44,9 +40,6 @@ class MyPageViewModel @Inject constructor(
 
     private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
     val profile: StateFlow<Profile> = _profile.asStateFlow()
-
-    private val _myBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
-    val myBlockList: StateFlow<List<Block>> = _myBlockList.asStateFlow()
 
     private val _routineStatistics: MutableStateFlow<List<RoutineStatistics>> =
         MutableStateFlow(emptyList())
@@ -165,25 +158,22 @@ class MyPageViewModel @Inject constructor(
     private fun refresh() {
         launch {
             _state.value = MyPageState.Loading
-            zip(
-                { getProfileUseCase() },
-                { getMyBlockListUseCase() }
-            ).onSuccess { (profile, myBlockList) ->
-                _state.value = MyPageState.Init
-                _profile.value = profile
-                _myBlockList.value = myBlockList
-            }.onFailure { exception ->
-                _state.value = MyPageState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
+            getProfileUseCase()
+                .onSuccess { profile ->
+                    _state.value = MyPageState.Init
+                    _profile.value = profile
+                }.onFailure { exception ->
+                    _state.value = MyPageState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
                 }
-            }
         }
     }
 }
