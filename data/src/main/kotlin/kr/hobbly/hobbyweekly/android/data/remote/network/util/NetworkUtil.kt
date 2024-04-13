@@ -3,7 +3,6 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.util
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import io.ktor.client.call.body
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.sentry.Sentry
 import io.sentry.SentryLevel
@@ -30,7 +29,7 @@ inline fun <reified T : DataMapper<R>, R : Any> Result<T>.toDomain(): Result<R> 
 }
 
 suspend inline fun <reified T : Any> HttpResponse.convert(
-    noinline errorMessageMapper: (String) -> String
+    noinline errorMessageMapper: (Long) -> String
 ): Result<T> {
     return runCatching {
         if (isSuccessful) {
@@ -50,18 +49,21 @@ suspend inline fun <reified T : Any> HttpResponse.convert(
 }
 
 suspend inline fun HttpResponse.toThrowable(
-    noinline errorMessageMapper: (String) -> String
+    noinline errorMessageMapper: (Long) -> String
 ): Throwable {
     return runCatching {
         if (isInternalServerError) {
             return@runCatching InternalServerException(
-                ErrorMessageMapper.KEY_INTERNAL_SERVER_ERROR,
+                ErrorMessageMapper.KEY_INTERNAL_SERVER_ERROR.toString(),
                 errorMessageMapper(ErrorMessageMapper.KEY_INTERNAL_SERVER_ERROR)
             )
         }
 
         return@runCatching this.body<ErrorRes?>()?.let { errorRes ->
-            BadRequestServerException(errorRes.id, errorMessageMapper(errorRes.id))
+            BadRequestServerException(
+                errorRes.detailStatusCode.toString(),
+                errorMessageMapper(errorRes.detailStatusCode)
+            )
         } ?: InvalidStandardResponseException("Response Empty Body")
     }.getOrElse { exception ->
         exception
