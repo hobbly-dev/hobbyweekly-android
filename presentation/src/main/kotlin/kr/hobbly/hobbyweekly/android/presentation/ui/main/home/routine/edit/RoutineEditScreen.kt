@@ -359,7 +359,7 @@ fun RoutineEditScreen(
                 .heightIn(min = 100.dp)
                 .padding(horizontal = Space20),
             maxLines = Int.MAX_VALUE,
-            isEnabled = state != RoutineEditState.Loading,
+            isEnabled = state != RoutineEditState.Loading && !data.isEditMode,
             onValueChange = { description = it },
         )
         Spacer(modifier = Modifier.height(Space40))

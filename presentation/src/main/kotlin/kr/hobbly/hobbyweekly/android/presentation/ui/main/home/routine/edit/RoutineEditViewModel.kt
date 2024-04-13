@@ -109,7 +109,6 @@ class RoutineEditViewModel @Inject constructor(
                 if (isEditMode) {
                     editRoutine(
                         selectedDayOfWeek = intent.selectedDayOfWeek,
-                        description = intent.description,
                         alarmTime = intent.alarmTime
                     )
                 } else {
@@ -160,10 +159,8 @@ class RoutineEditViewModel @Inject constructor(
 
     private fun editRoutine(
         selectedDayOfWeek: List<Int>,
-        description: String,
         alarmTime: LocalTime?
     ) {
-        // TODO : Description 회의 결과 파악 후 수정
         launch {
             _state.value = RoutineEditState.Loading
             editRoutineUseCase(

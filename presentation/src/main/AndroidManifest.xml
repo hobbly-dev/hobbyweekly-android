@@ -19,7 +19,13 @@
         </activity>
 
         <receiver
-            android:name=".common.alarm.AlarmReceiver"
+            android:name=".common.alarm.InstantRoutineReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+        <receiver
+            android:name=".common.alarm.RepeatRoutineReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />

@@ -482,7 +482,6 @@ fun BlockScreen(
         }
     }
 
-    // TODO : 첫 onResume 에 작동안함. 왜?
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(BlockIntent.Refresh)
     }

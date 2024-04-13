@@ -89,8 +89,11 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
-import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRoutineList
-import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterRoutine
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerInstantRoutineList
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRepeatRoutineList
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterAlarmAll
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterInstantRoutine
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterRepeatRoutine
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.model.routine.RoutineStatisticsItem
@@ -377,15 +380,19 @@ private fun RoutineScreen(
     fun updateAlarm(event: RoutineEvent.UpdateAlarm) {
         when (event) {
             is RoutineEvent.UpdateAlarm.Off -> {
-                context.registerRoutineList(listOf(event.routine))
+                context.unregisterInstantRoutine(event.routine)
+                context.unregisterRepeatRoutine(event.routine)
             }
 
             is RoutineEvent.UpdateAlarm.On -> {
-                context.unregisterRoutine(event.routine)
+                context.registerInstantRoutineList(listOf(event.routine))
+                context.registerRepeatRoutineList(listOf(event.routine))
             }
 
             is RoutineEvent.UpdateAlarm.Refresh -> {
-                // TODO
+                context.unregisterAlarmAll(event.currentRoutineList + event.latestRoutineList)
+                context.registerInstantRoutineList(event.currentRoutineList)
+                context.registerRepeatRoutineList(event.latestRoutineList)
             }
         }
     }

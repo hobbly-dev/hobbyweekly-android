@@ -8,7 +8,7 @@ import kr.hobbly.hobbyweekly.android.common.util.orZero
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.util.showNotification
 
-class AlarmReceiver : BroadcastReceiver() {
+class InstantRoutineReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
         val notificationId = intent?.getIntExtra(NOTIFICATION_ID, 0).orZero()
         val title = intent?.getStringExtra(NOTIFICATION_TITLE).orEmpty()
