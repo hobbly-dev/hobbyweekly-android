@@ -42,9 +42,11 @@ fun NavGraphBuilder.routineEditDestination(
 
         val data: RoutineEditData = let {
             val block by viewModel.block.collectAsStateWithLifecycle()
+            val isEditMode = viewModel.isEditMode
 
             RoutineEditData(
-                block = block
+                block = block,
+                isEditMode = isEditMode
             )
         }
 

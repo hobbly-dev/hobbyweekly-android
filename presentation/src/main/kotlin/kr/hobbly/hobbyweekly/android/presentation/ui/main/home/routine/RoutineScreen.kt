@@ -45,12 +45,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
-import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.SmallRoutine
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
@@ -122,22 +122,11 @@ fun RoutineScreen(
         )
     }
 
-    val data: RoutineData = Unit.let {
-        val currentRoutineList by viewModel.currentRoutineList.collectAsStateWithLifecycle()
-        val latestRoutineList by viewModel.latestRoutineList.collectAsStateWithLifecycle()
-
-        RoutineData(
-            currentRoutineList = currentRoutineList,
-            latestRoutineList = latestRoutineList
-        )
-    }
-
     ErrorObserver(viewModel)
     RoutineScreen(
         navController = navController,
         parentArgument = parentArgument,
-        argument = argument,
-        data = data
+        argument = argument
     )
 }
 
@@ -145,32 +134,30 @@ fun RoutineScreen(
 private fun RoutineScreen(
     navController: NavController,
     parentArgument: HomeArgument,
-    argument: RoutineArgument,
-    data: RoutineData
+    argument: RoutineArgument
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
     val context = LocalContext.current
 
     val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    val routineList: MutableList<Routine> =
-        remember { mutableStateListOf(*data.currentRoutineList.toTypedArray()) }
+    val presentationRoutineList: MutableList<Routine> = remember { mutableStateListOf() }
     var selectedDate: LocalDate by remember { mutableStateOf(now) }
     val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
 
-    val currentRoutineList: List<Routine> = routineList.filter {
+    val todayRoutineList: List<Routine> = presentationRoutineList.filter {
         it.smallRoutineList.any { it.dayOfWeek == selectedDate.dayOfWeek.ordinal }
     }
-    // TODO
-    val routineStatisticsList: List<RoutineStatisticsItem> = routineList.map { routine ->
-        routine.smallRoutineList.map { it to it.isDone }
-    }.flatten().groupBy { it.first }.map { (key, value) ->
-        RoutineStatisticsItem(
-            dayOfWeek = key.dayOfWeek,
-            routineCount = value.count(),
-            confirmedRoutineCount = value.count { it.second }
-        )
-    }
+    val routineStatisticsList: List<RoutineStatisticsItem> =
+        presentationRoutineList.map { routine ->
+            routine.smallRoutineList
+        }.flatten().groupBy { it.dayOfWeek }.map { (key, value) ->
+            RoutineStatisticsItem(
+                dayOfWeek = key,
+                routineCount = value.count(),
+                confirmedRoutineCount = value.count { it.isDone }
+            )
+        }
 
     var isRoutineBlockShowing: Boolean by remember { mutableStateOf(false) }
 
@@ -315,7 +302,7 @@ private fun RoutineScreen(
             }
 
             items(
-                items = currentRoutineList,
+                items = todayRoutineList,
 //                key = {
 //                    it.id
 //                }
@@ -324,9 +311,9 @@ private fun RoutineScreen(
                     routine = routine,
                     selectedDayOfWeek = selectedDayOfWeek,
                     onEnableStateChanged = {
-                        val index = routineList.indexOfFirst { it.id == routine.id }
+                        val index = presentationRoutineList.indexOfFirst { it.id == routine.id }
                         val fixedRoutine = routine.copy(isAlarmEnabled = it)
-                        routineList[index] = fixedRoutine
+                        presentationRoutineList[index] = fixedRoutine
                         intent(RoutineIntent.OnSwitch(fixedRoutine))
                     },
                     onConfirm = {
@@ -408,6 +395,11 @@ private fun RoutineScreen(
             when (event) {
                 is RoutineEvent.UpdateAlarm -> {
                     updateAlarm(event)
+                }
+
+                is RoutineEvent.UpdateRoutine -> {
+                    presentationRoutineList.clear()
+                    presentationRoutineList.addAll(event.currentRoutineList)
                 }
             }
         }
@@ -500,6 +492,7 @@ fun RoutineScreenItem(
     onConfirm: () -> Unit,
     onEdit: () -> Unit
 ) {
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val containerColor = if (!routine.isAlarmEnabled) {
         Neutral200
     } else when (selectedDayOfWeek) {
@@ -511,6 +504,10 @@ fun RoutineScreenItem(
         5 -> Purple
         6 -> Pink
         else -> Neutral200
+    }
+
+    val isToday = routine.smallRoutineList.any {
+        it.dayOfWeek == now.dayOfWeek.ordinal
     }
 
     Column(
@@ -537,7 +534,9 @@ fun RoutineScreenItem(
                     CustomSwitch(
                         isChecked = routine.isAlarmEnabled,
                         onCheckedChange = {
-                            onEnableStateChanged(it)
+                            if (routine.alarmTime != null) {
+                                onEnableStateChanged(it)
+                            }
                         },
                         color = containerColor
                     )
@@ -615,7 +614,9 @@ fun RoutineScreenItem(
                         Box(
                             modifier = Modifier.clickable {
                                 if (routine.smallRoutineList.find { it.dayOfWeek == selectedDayOfWeek }?.isDone == false) {
-                                    onConfirm()
+                                    if (isToday) {
+                                        onConfirm()
+                                    }
                                 }
                             }
                         ) {
@@ -656,55 +657,5 @@ private fun RoutineScreenPreview() {
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
-        data = RoutineData(
-            currentRoutineList = listOf(
-                Routine(
-                    id = 0L,
-                    title = "블록 이름",
-                    blockId = 0L,
-                    blockName = "영어 블록",
-                    alarmTime = null,
-                    isAlarmEnabled = true,
-                    smallRoutineList = listOf(
-                        SmallRoutine(
-                            dayOfWeek = 0,
-                            isDone = true
-                        ),
-                        SmallRoutine(
-                            dayOfWeek = 1,
-                            isDone = true
-                        ),
-                        SmallRoutine(
-                            dayOfWeek = 2,
-                            isDone = false
-                        )
-                    )
-                )
-            ),
-            latestRoutineList = listOf(
-                Routine(
-                    id = 0L,
-                    title = "블록 이름",
-                    blockId = 0L,
-                    blockName = "영어 블록",
-                    alarmTime = null,
-                    isAlarmEnabled = true,
-                    smallRoutineList = listOf(
-                        SmallRoutine(
-                            dayOfWeek = 0,
-                            isDone = true
-                        ),
-                        SmallRoutine(
-                            dayOfWeek = 1,
-                            isDone = true
-                        ),
-                        SmallRoutine(
-                            dayOfWeek = 2,
-                            isDone = false
-                        )
-                    )
-                )
-            )
-        )
     )
 }

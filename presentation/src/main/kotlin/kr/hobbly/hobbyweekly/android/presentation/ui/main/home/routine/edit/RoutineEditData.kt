@@ -6,5 +6,6 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 
 @Immutable
 data class RoutineEditData(
-    val block: Block
+    val block: Block,
+    val isEditMode: Boolean
 )

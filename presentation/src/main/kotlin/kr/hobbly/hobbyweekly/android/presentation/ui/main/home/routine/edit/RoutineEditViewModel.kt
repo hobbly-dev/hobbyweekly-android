@@ -47,6 +47,10 @@ class RoutineEditViewModel @Inject constructor(
     private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
     val block: StateFlow<Block> = _block.asStateFlow()
 
+    val isEditMode: Boolean by lazy {
+        routineId != -1L
+    }
+
     init {
         refresh()
     }
@@ -54,12 +58,17 @@ class RoutineEditViewModel @Inject constructor(
     private fun refresh() {
         launch {
             _state.value = RoutineEditState.Loading
-            if (blockId == -1L) {
-                getBlockUseCase(
-                    id = blockId
-                ).onSuccess { block ->
+            if (isEditMode) {
+                getRoutineUseCase(
+                    id = routineId
+                ).onSuccess { routine ->
+                    val block = getBlockUseCase(
+                        id = routine.blockId
+                    ).getOrThrow()
+
                     _state.value = RoutineEditState.Init
                     _block.value = block
+                    _event.emit(RoutineEditEvent.LoadData.Success(routine))
                 }.onFailure { exception ->
                     _state.value = RoutineEditState.Init
                     when (exception) {
@@ -73,11 +82,11 @@ class RoutineEditViewModel @Inject constructor(
                     }
                 }
             } else {
-                getRoutineUseCase(
-                    id = routineId
-                ).onSuccess { routine ->
+                getBlockUseCase(
+                    id = blockId
+                ).onSuccess { block ->
                     _state.value = RoutineEditState.Init
-                    _event.emit(RoutineEditEvent.LoadData.Success(routine))
+                    _block.value = block
                 }.onFailure { exception ->
                     _state.value = RoutineEditState.Init
                     when (exception) {
@@ -97,14 +106,14 @@ class RoutineEditViewModel @Inject constructor(
     fun onIntent(intent: RoutineEditIntent) {
         when (intent) {
             is RoutineEditIntent.OnConfirm -> {
-                if (routineId == -1L) {
-                    addRoutine(
+                if (isEditMode) {
+                    editRoutine(
                         selectedDayOfWeek = intent.selectedDayOfWeek,
                         description = intent.description,
                         alarmTime = intent.alarmTime
                     )
                 } else {
-                    editRoutine(
+                    addRoutine(
                         selectedDayOfWeek = intent.selectedDayOfWeek,
                         description = intent.description,
                         alarmTime = intent.alarmTime

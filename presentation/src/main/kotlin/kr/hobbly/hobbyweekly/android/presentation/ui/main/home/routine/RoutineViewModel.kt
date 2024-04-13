@@ -32,12 +32,6 @@ class RoutineViewModel @Inject constructor(
     private val _event: MutableEventFlow<RoutineEvent> = MutableEventFlow()
     val event: EventFlow<RoutineEvent> = _event.asEventFlow()
 
-    private val _currentRoutineList: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    val currentRoutineList: StateFlow<List<Routine>> = _currentRoutineList.asStateFlow()
-
-    private val _latestRoutineList: MutableStateFlow<List<Routine>> = MutableStateFlow(emptyList())
-    val latestRoutineList: StateFlow<List<Routine>> = _latestRoutineList.asStateFlow()
-
     fun onIntent(intent: RoutineIntent) {
         when (intent) {
             is RoutineIntent.OnSwitch -> {
@@ -87,9 +81,8 @@ class RoutineViewModel @Inject constructor(
                 { getLatestRoutineListUseCase() }
             ).onSuccess { (currentRoutineList, latestRoutineList) ->
                 _state.value = RoutineState.Init
-                _currentRoutineList.value = currentRoutineList
-                _latestRoutineList.value = latestRoutineList
-                _event.emit(RoutineEvent.UpdateAlarm.Refresh)
+                _event.emit(RoutineEvent.UpdateAlarm.Refresh(currentRoutineList, latestRoutineList))
+                _event.emit(RoutineEvent.UpdateRoutine(currentRoutineList))
             }.onFailure { exception ->
                 _state.value = RoutineState.Init
                 when (exception) {

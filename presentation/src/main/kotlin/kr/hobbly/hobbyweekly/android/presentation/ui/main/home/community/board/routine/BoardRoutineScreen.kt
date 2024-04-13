@@ -119,6 +119,10 @@ private fun BoardRoutineScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
+    val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    val routineList = data.routineList.filter {
+        it.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal && it.isDone }
+    }
     var selectedRoutine: Routine? by remember { mutableStateOf(null) }
 
     BottomSheetScreen(
@@ -166,7 +170,7 @@ private fun BoardRoutineScreen(
                     verticalArrangement = Arrangement.spacedBy(Space16)
                 ) {
                     items(
-                        items = data.routineList,
+                        items = routineList,
                         key = { it.id }
                     ) { routine ->
                         BoardRoutineScreenBlockItem(

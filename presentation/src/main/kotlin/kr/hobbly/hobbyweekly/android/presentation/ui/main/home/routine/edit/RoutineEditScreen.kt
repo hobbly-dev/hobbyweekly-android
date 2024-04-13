@@ -200,7 +200,7 @@ fun RoutineEditScreen(
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
-            if (data.block != Block.empty) {
+            if (data.isEditMode) {
                 RippleBox(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -500,7 +500,8 @@ private fun RoutineEditScreenPreview() {
                 image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
                 memberCount = 100
-            )
+            ),
+            isEditMode = false
         )
     )
 }
