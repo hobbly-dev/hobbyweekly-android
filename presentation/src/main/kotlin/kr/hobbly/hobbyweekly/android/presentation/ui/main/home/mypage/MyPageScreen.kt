@@ -149,6 +149,9 @@ private fun MyPageScreen(
     val recentDate: LocalDate = now.date.minus(
         now.date.dayOfWeek.ordinal,
         DateTimeUnit.DAY
+    ).minus(
+        1,
+        DateTimeUnit.WEEK
     )
 
     var showingDate: LocalDate by remember { mutableStateOf(recentDate) }
@@ -166,6 +169,7 @@ private fun MyPageScreen(
     var isGalleryShowing by remember { mutableStateOf(false) }
     var isLogoutSuccessDialogShowing by remember { mutableStateOf(false) }
     var isWithdrawSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isLastStatisticsUnavailableDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToMyBlock() {
         navController.safeNavigate(MyBlockConstant.ROUTE)
@@ -230,6 +234,17 @@ private fun MyPageScreen(
             },
             onDismissRequest = {
                 isWithdrawSuccessDialogShowing = false
+            }
+        )
+    }
+
+    if (isLastStatisticsUnavailableDialogShowing) {
+        DialogScreen(
+            isCancelable = true,
+            title = "마이페이지 알람",
+            message = "통계는 이미 진행된 주차만\n확인이 가능합니다.",
+            onDismissRequest = {
+                isLastStatisticsUnavailableDialogShowing = false
             }
         )
     }
@@ -312,26 +327,21 @@ private fun MyPageScreen(
                     text = formattedDate,
                     style = LabelMedium.merge(Neutral900)
                 )
-                if (isLastWeek) {
+                RippleBox(
+                    onClick = {
+                        if (isLastWeek) {
+                            isLastStatisticsUnavailableDialogShowing = true
+                        } else {
+                            showingDate = showingDate.plus(1, DateTimeUnit.WEEK)
+                        }
+                    }
+                ) {
                     Icon(
                         modifier = Modifier.size(Space24),
                         painter = painterResource(R.drawable.ic_arrow_right),
                         contentDescription = null,
-                        tint = Neutral400
+                        tint = Red
                     )
-                } else {
-                    RippleBox(
-                        onClick = {
-                            showingDate = showingDate.plus(1, DateTimeUnit.WEEK)
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space24),
-                            painter = painterResource(R.drawable.ic_arrow_right),
-                            contentDescription = null,
-                            tint = Red
-                        )
-                    }
                 }
             }
             Spacer(modifier = Modifier.height(Space20))

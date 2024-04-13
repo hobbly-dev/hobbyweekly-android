@@ -6,7 +6,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
-import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import javax.inject.Inject
 import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
@@ -15,7 +14,6 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProv
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.AddMyBlockRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.BlockRes
-import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.PostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.EditBoardPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetBoardListRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetBoardRes
@@ -24,6 +22,7 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetPopularPostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.GetRecommendBlockRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.LoadBoardCommentRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.PostRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportCommentReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.ReportPostReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.feature.community.SearchBlockRes
@@ -235,7 +234,7 @@ class CommunityApi @Inject constructor(
         pageNum: Int,
         pageSize: Int
     ): Result<LoadBoardCommentRes> {
-        return client.get("$baseUrl/v1/posts/$id/comment") {
+        return client.get("$baseUrl/v1/posts/$id/comments") {
             parameter("pageNum", pageNum)
             parameter("pageSize", pageSize)
         }.convert(errorMessageMapper::map)

@@ -86,6 +86,9 @@ fun MyPageStatisticsScreen(
     val recentDate: LocalDate = now.date.minus(
         now.date.dayOfWeek.ordinal,
         DateTimeUnit.DAY
+    ).minus(
+        1,
+        DateTimeUnit.WEEK
     )
 
     var showingDate: LocalDate by remember { mutableStateOf(recentDate) }
