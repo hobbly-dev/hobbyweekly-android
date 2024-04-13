@@ -2,13 +2,10 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.api.nonfeature
 
 import android.net.Uri
 import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.http.Headers
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import java.io.File
 import javax.inject.Inject
 import kr.hobbly.hobbyweekly.android.data.remote.network.di.AuthHttpClient
@@ -44,23 +41,9 @@ class FileApi @Inject constructor(
             return Result.failure(IllegalArgumentException("Invalid imageUri"))
         }
         val file = File(image)
-        val name = fileName ?: file.name
 
-        return noAuthClient.submitFormWithBinaryData(
-            url = preSignedUrl,
-            formData = formData {
-                append(
-                    "image",
-                    file.readBytes(),
-                    Headers.build {
-                        append(HttpHeaders.ContentType, "image/jpeg")
-                        append(HttpHeaders.ContentDisposition, "filename=$name")
-                    }
-                )
-            },
-            block = {
-                method = HttpMethod.Put
-            }
-        ).convert(errorMessageMapper::map)
+        return noAuthClient.put(preSignedUrl) {
+            setBody(file.readBytes())
+        }.convert(errorMessageMapper::map)
     }
 }

@@ -245,7 +245,7 @@ class CommunityApi @Inject constructor(
         content: String,
         isAnonymous: Boolean
     ): Result<WriteCommentRes> {
-        return client.post("$baseUrl/v1/posts/$id/comment") {
+        return client.post("$baseUrl/v1/posts/$id/comments") {
             setBody(
                 WriteCommentReq(
                     content = content,
