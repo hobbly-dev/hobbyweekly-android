@@ -79,6 +79,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.TypingTextField
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.timepicker.TimePickerScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 
 @Composable
 fun RoutineEditScreen(
@@ -116,6 +117,10 @@ fun RoutineEditScreen(
     var isEditDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isDeleteDialogShowing: Boolean by remember { mutableStateOf(false) }
 
+    fun navigateToHome() {
+        navController.popBackStack(HomeConstant.ROUTE, false)
+    }
+
     if (isTimePickerShowing) {
         TimePickerScreen(
             localTime = alarmTime ?: LocalTime(0, 0),
@@ -134,7 +139,7 @@ fun RoutineEditScreen(
                 isAddDialogShowing = false
             },
             onConfirm = {
-                navController.safeNavigateUp()
+                navigateToHome()
             }
         )
     }
@@ -148,7 +153,7 @@ fun RoutineEditScreen(
                 isEditDialogShowing = false
             },
             onConfirm = {
-                navController.safeNavigateUp()
+                navigateToHome()
             }
         )
     }
@@ -162,7 +167,7 @@ fun RoutineEditScreen(
                 isDeleteDialogShowing = false
             },
             onConfirm = {
-                navController.safeNavigateUp()
+                navigateToHome()
             }
         )
     }

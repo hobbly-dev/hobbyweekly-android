@@ -69,6 +69,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmal
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
 import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
@@ -76,6 +78,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.EmptyTextField
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
 
 @Composable
 fun PostEditScreen(
@@ -96,9 +99,29 @@ fun PostEditScreen(
     var isSecret: Boolean by rememberSaveable { mutableStateOf(false) }
 
     var isGalleryShowing: Boolean by rememberSaveable { mutableStateOf(false) }
-    var isPostSuccessDialogShowing: Boolean by rememberSaveable { mutableStateOf(false) }
-    var isEditSuccessDialogShowing: Boolean by rememberSaveable { mutableStateOf(false) }
     var isLeaveDialogShowing: Boolean by rememberSaveable { mutableStateOf(false) }
+
+    fun navigateToCommunityTerm() {
+//        navController.safeNavigate(CommunityTermConstant.ROUTE)
+    }
+
+    fun navigateToPost(
+        id: Long
+    ) {
+        val route = makeRoute(
+            PostConstant.ROUTE,
+            listOf(
+                PostConstant.ROUTE_ARGUMENT_BLOCK_ID to data.blockId,
+                PostConstant.ROUTE_ARGUMENT_BOARD_ID to data.boardId,
+                PostConstant.ROUTE_ARGUMENT_POST_ID to id
+            )
+        )
+        navController.safeNavigate(route) {
+            popUpTo(PostEditConstant.ROUTE) {
+                inclusive = true
+            }
+        }
+    }
 
     if (isGalleryShowing) {
         GalleryScreen(
@@ -108,33 +131,6 @@ fun PostEditScreen(
             maxSelectCount = 10,
             onResult = {
                 newImageList = it
-            }
-        )
-    }
-    if (isPostSuccessDialogShowing) {
-        DialogScreen(
-            title = "게시글 작성",
-            message = "게시글이 작성되었습니다.",
-            isCancelable = false,
-            onDismissRequest = {
-                isPostSuccessDialogShowing = false
-            },
-            onConfirm = {
-                navController.safeNavigateUp()
-                // TODO : 이동
-            }
-        )
-    }
-    if (isEditSuccessDialogShowing) {
-        DialogScreen(
-            title = "게시글 수정",
-            message = "게시글이 수정되었습니다.",
-            isCancelable = false,
-            onDismissRequest = {
-                isEditSuccessDialogShowing = false
-            },
-            onConfirm = {
-                navController.safeNavigateUp()
             }
         )
     }
@@ -151,10 +147,6 @@ fun PostEditScreen(
                 navController.safeNavigateUp()
             }
         )
-    }
-
-    fun navigateToCommunityTerm() {
-//        navController.safeNavigate(CommunityTermConstant.ROUTE)
     }
 
     BackHandler(
@@ -473,7 +465,7 @@ fun PostEditScreen(
     fun post(event: PostEditEvent.Post) {
         when (event) {
             is PostEditEvent.Post.Success -> {
-                isPostSuccessDialogShowing = true
+                navigateToPost(event.id)
             }
         }
     }
@@ -481,7 +473,7 @@ fun PostEditScreen(
     fun edit(event: PostEditEvent.Edit) {
         when (event) {
             is PostEditEvent.Edit.Success -> {
-                isEditSuccessDialogShowing = true
+                navController.safeNavigateUp()
             }
         }
     }
