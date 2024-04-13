@@ -468,8 +468,19 @@ private fun MyPageScreen(
                         contentPadding = PaddingValues(start = Space20, end = Space20)
                     ) {
                         items(
-                            items = data.routineStatisticsList,
-                            key = { it.id }
+                            items = data.routineStatisticsList.groupBy {
+                                it.id
+                            }.map { (key, value) ->
+                                val item = value.firstOrNull()
+                                RoutineStatistics(
+                                    id = item?.id ?: -1L,
+                                    blockName = item?.blockName.orEmpty(),
+                                    thumbnail = item?.thumbnail.orEmpty(),
+                                    title = item?.title.orEmpty(),
+                                    totalCount = value.sumOf { it.totalCount },
+                                    completedCount = value.sumOf { it.completedCount }
+                                )
+                            }
                         ) { statistics ->
                             MyPageScreenStatisticsItem(
                                 statistics = statistics,
