@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.cardElevation
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +28,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +46,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Red
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space10
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space12
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space44
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space6
@@ -207,10 +208,19 @@ fun RegisterProfileScreen(
                 )
             }
         ) { style ->
-            Text(
-                text = "다음",
-                style = style
-            )
+            if (state == RegisterProfileState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(Space24),
+                    color = White,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = "다음",
+                    style = style
+                )
+            }
         }
     }
 

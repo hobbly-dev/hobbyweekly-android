@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -499,19 +500,29 @@ private fun MyPageScreen(
                         .clip(CircleShape)
                         .background(Neutral200)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clickable {
-                                isGalleryShowing = true
-                            }
-                    ) {
-                        AsyncImage(
-                            model = data.profile.image,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                    if (state == MyPageState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(Space24)
+                                .align(Alignment.Center),
+                            color = White,
+                            strokeWidth = 2.dp
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clickable {
+                                    isGalleryShowing = true
+                                }
+                        ) {
+                            AsyncImage(
+                                model = data.profile.image,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
                 Box(

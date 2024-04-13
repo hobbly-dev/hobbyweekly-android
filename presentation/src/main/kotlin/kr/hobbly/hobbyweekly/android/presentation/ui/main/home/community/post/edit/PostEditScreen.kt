@@ -23,6 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -213,6 +214,20 @@ fun PostEditScreen(
                         tint = Neutral900
                     )
                 }
+            } else if (state == PostEditState.Loading) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = Space20)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(Space24)
+                            .align(Alignment.Center),
+                        color = Neutral400,
+                        strokeWidth = 2.dp
+                    )
+                }
             } else {
                 Box(
                     modifier = Modifier
@@ -257,6 +272,7 @@ fun PostEditScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Space20),
                     maxLines = 1,
+                    isEnabled = state != PostEditState.Loading,
                     maxTextLength = Int.MAX_VALUE,
                     onValueChange = {
                         title = it
@@ -277,6 +293,7 @@ fun PostEditScreen(
                         .fillMaxWidth()
                         .padding(horizontal = Space20)
                         .heightIn(min = 200.dp),
+                    isEnabled = state != PostEditState.Loading,
                     maxLines = Int.MAX_VALUE,
                     maxTextLength = Int.MAX_VALUE,
                     onValueChange = {
@@ -350,6 +367,7 @@ fun PostEditScreen(
                 items(originalImageList) { item ->
                     PostEditScreenImageItem(
                         item = item,
+                        isLoading = state == PostEditState.Loading,
                         itemToData = { it },
                         onRemove = {
                             originalImageList = originalImageList.filter { it != item }
@@ -359,6 +377,7 @@ fun PostEditScreen(
                 items(newImageList) { item ->
                     PostEditScreenImageItem(
                         item = item,
+                        isLoading = state == PostEditState.Loading,
                         itemToData = { item.filePath },
                         onRemove = {
                             newImageList = newImageList.filter { it != item }
@@ -379,24 +398,29 @@ fun PostEditScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(Space20))
-                RippleBox(
-                    onClick = {
-                        isGalleryShowing = true
-                    }
-                ) {
+                if (state == PostEditState.Loading) {
                     Icon(
                         modifier = Modifier.size(Space24),
                         painter = painterResource(R.drawable.ic_photo),
                         contentDescription = null,
-                        tint = Neutral900
+                        tint = Neutral400
                     )
+                } else {
+                    RippleBox(
+                        onClick = {
+                            isGalleryShowing = true
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(Space24),
+                            painter = painterResource(R.drawable.ic_photo),
+                            contentDescription = null,
+                            tint = Neutral900
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                RippleBox(
-                    onClick = {
-                        isSecret = !isSecret
-                    }
-                ) {
+                if (state == PostEditState.Loading) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -408,22 +432,45 @@ fun PostEditScreen(
                                 painterResource(id = R.drawable.ic_check_box_unchecked)
                             },
                             contentDescription = null,
-                            tint = Red
+                            tint = Neutral400
                         )
                         Spacer(modifier = Modifier.width(Space4))
                         Text(
                             text = "비밀글",
                             modifier = Modifier.padding(vertical = Space8),
-                            style = BodyRegular.merge(Neutral900)
+                            style = BodyRegular.merge(Neutral400)
                         )
+                    }
+                } else {
+                    RippleBox(
+                        onClick = {
+                            isSecret = !isSecret
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space12),
+                                painter = if (isSecret) {
+                                    painterResource(id = R.drawable.ic_check_box_checked)
+                                } else {
+                                    painterResource(id = R.drawable.ic_check_box_unchecked)
+                                },
+                                contentDescription = null,
+                                tint = Red
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Text(
+                                text = "비밀글",
+                                modifier = Modifier.padding(vertical = Space8),
+                                style = BodyRegular.merge(Neutral900)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(Space10))
-                RippleBox(
-                    onClick = {
-                        isAnonymous = !isAnonymous
-                    }
-                ) {
+                if (state == PostEditState.Loading) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -435,14 +482,41 @@ fun PostEditScreen(
                                 painterResource(id = R.drawable.ic_check_box_unchecked)
                             },
                             contentDescription = null,
-                            tint = Red
+                            tint = Neutral400
                         )
                         Spacer(modifier = Modifier.width(Space4))
                         Text(
                             text = "익명",
                             modifier = Modifier.padding(vertical = Space8),
-                            style = BodyRegular.merge(Neutral900)
+                            style = BodyRegular.merge(Neutral400)
                         )
+                    }
+                } else {
+                    RippleBox(
+                        onClick = {
+                            isAnonymous = !isAnonymous
+                        }
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space12),
+                                painter = if (isAnonymous) {
+                                    painterResource(id = R.drawable.ic_check_box_checked)
+                                } else {
+                                    painterResource(id = R.drawable.ic_check_box_unchecked)
+                                },
+                                contentDescription = null,
+                                tint = Red
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Text(
+                                text = "익명",
+                                modifier = Modifier.padding(vertical = Space8),
+                                style = BodyRegular.merge(Neutral900)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(Space20))
@@ -500,6 +574,7 @@ fun PostEditScreen(
 @Composable
 fun <T> PostEditScreenImageItem(
     item: T,
+    isLoading: Boolean,
     itemToData: (T) -> Any?,
     onRemove: (T) -> Unit
 ) {
@@ -515,20 +590,35 @@ fun <T> PostEditScreenImageItem(
                 .padding(Space4)
                 .align(Alignment.TopStart)
         ) {
-            RippleBox(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(Red),
-                onClick = {
-                    onRemove(item)
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Neutral400)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(Space20),
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = null,
+                        tint = White
+                    )
                 }
-            ) {
-                Icon(
-                    modifier = Modifier.size(Space20),
-                    painter = painterResource(R.drawable.ic_close),
-                    contentDescription = null,
-                    tint = White
-                )
+            } else {
+                RippleBox(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Red),
+                    onClick = {
+                        onRemove(item)
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(Space20),
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = null,
+                        tint = White
+                    )
+                }
             }
         }
     }

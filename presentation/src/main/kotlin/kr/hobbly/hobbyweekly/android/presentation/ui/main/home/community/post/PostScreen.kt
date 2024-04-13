@@ -117,14 +117,26 @@ fun PostScreen(
         if (isMyPost) {
             add("수정하기")
             add("삭제하기")
+        } else {
+            add("신고하기")
         }
     }
+
+    // TODO
+    val reportReasonList: List<String> = listOf(
+        "욕설/비방",
+        "음란성",
+        "광고/홍보",
+        "개인정보 유출",
+        "기타"
+    )
 
     var isAnonymous: Boolean by remember { mutableStateOf(false) }
     var commentText: String by remember { mutableStateOf("") }
     var selectedComment: Comment? by remember { mutableStateOf(null) }
 
     var isMenuShowing by remember { mutableStateOf(false) }
+    var isReportReasonShowing by remember { mutableStateOf(false) }
     var isPostRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
     var isPostReportSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentWriteSuccessDialogShowing by remember { mutableStateOf(false) }
@@ -270,6 +282,17 @@ fun PostScreen(
                             if (text == "삭제하기") {
                                 intent(PostIntent.Post.OnRemove)
                             }
+                            if (text == "신고하기") {
+                                isReportReasonShowing = true
+                            }
+                        }
+                    )
+                    TextDropdownMenu(
+                        items = reportReasonList,
+                        isExpanded = isReportReasonShowing,
+                        onDismissRequest = { isReportReasonShowing = false },
+                        onClick = { reason ->
+                            intent(PostIntent.Post.OnReport(reason))
                         }
                     )
                 }

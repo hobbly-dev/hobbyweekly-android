@@ -116,6 +116,8 @@ class PostEditViewModel @Inject constructor(
         isAnonymous: Boolean
     ) {
         launch {
+            _state.value = PostEditState.Loading
+
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
             ).onSuccess { newImageList ->
@@ -154,6 +156,8 @@ class PostEditViewModel @Inject constructor(
         isAnonymous: Boolean
     ) {
         launch {
+            _state.value = PostEditState.Loading
+
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
             ).onSuccess { newImageList ->
