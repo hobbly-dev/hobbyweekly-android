@@ -63,6 +63,7 @@ hilt-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref =
 # AndroidX Presentation
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
+androidx-navigation-ktx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "androidx-compose-navigation" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
 androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-compose-navigation" }
@@ -116,7 +117,7 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 [bundles]
 kotlin = ["kotlin", "kotlinx-coroutines-android", "kotlinx-coroutines-core", "kotlinx-datetime"]
 androidx-presentation = ["androidx-core", "androidx-appcompat", "androidx-compose-material3",
-    "androidx-compose-navigation", "androidx-compose-constraintlayout",
+    "androidx-navigation-ktx", "androidx-compose-navigation", "androidx-compose-constraintlayout",
     "androidx-compose-lifecycle", "holix-bottomsheet", "androidx-paging-compose"]
 androidx-data = ["androidx-room-runtime", "androidx-room-coroutine", "androidx-paging-runtime"]
 network = ["ktor-core", "ktor-okhttp", "ktor-resources", "ktor-content-negotiation", "ktor-kotlinx-serialization",

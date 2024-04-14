@@ -8,7 +8,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.paging.compose.collectAsLazyPagingItems
+import kr.hobbly.hobbyweekly.android.presentation.common.DOMAIN
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 
 fun NavGraphBuilder.postDestination(
@@ -28,6 +30,11 @@ fun NavGraphBuilder.postDestination(
             navArgument(PostConstant.ROUTE_ARGUMENT_POST_ID) {
                 type = NavType.LongType
                 defaultValue = -1L
+            }
+        ),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "${DOMAIN}/${PostConstant.ROUTE_STRUCTURE}"
             }
         )
     ) {

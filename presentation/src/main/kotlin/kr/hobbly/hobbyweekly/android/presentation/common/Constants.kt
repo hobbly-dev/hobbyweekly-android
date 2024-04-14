@@ -1,3 +1,5 @@
 package kr.hobbly.hobbyweekly.android.presentation.common
 
-const val REGEX_EMAIL = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$"
+const val SCHEME = "https"
+const val HOST = "deeplink.hobbly.co.kr"
+const val DOMAIN = "${SCHEME}://${HOST}"

@@ -2,6 +2,7 @@ package kr.hobbly.hobbyweekly.android.presentation.common.util
 
 import android.Manifest
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,6 +21,7 @@ fun Context.showNotification(
     content: String? = null,
     @DrawableRes icon: Int = R.drawable.ic_launcher,
     group: String? = null,
+    pendingIntent: PendingIntent? = null,
     priority: Int = NotificationCompat.PRIORITY_DEFAULT
 ): Boolean {
 
@@ -63,6 +65,8 @@ fun Context.showNotification(
         .setContentText(content)
         .setPriority(priority)
         .setGroup(group)
+        .setAutoCancel(true)
+        .setContentIntent(pendingIntent)
         .build()
 
     NotificationManagerCompat.from(this)
