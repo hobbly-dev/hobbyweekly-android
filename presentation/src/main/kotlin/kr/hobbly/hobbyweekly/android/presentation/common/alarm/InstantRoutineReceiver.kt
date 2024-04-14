@@ -1,5 +1,6 @@
 package kr.hobbly.hobbyweekly.android.presentation.common.alarm
 
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import kr.hobbly.hobbyweekly.android.common.util.orZero
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.util.showNotification
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.MainActivity
 
 class InstantRoutineReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
@@ -19,6 +21,15 @@ class InstantRoutineReceiver : BroadcastReceiver() {
         val group = null
         val priority = NotificationCompat.PRIORITY_DEFAULT
 
+        val pendingIntent = Intent(context, MainActivity::class.java).let { mainIntent ->
+            PendingIntent.getBroadcast(
+                context,
+                notificationId,
+                mainIntent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        }
+
         context.showNotification(
             channelId = channelId,
             notificationId = notificationId,
@@ -26,6 +37,7 @@ class InstantRoutineReceiver : BroadcastReceiver() {
             content = content,
             icon = icon,
             group = group,
+            pendingIntent = pendingIntent,
             priority = priority
         )
     }
