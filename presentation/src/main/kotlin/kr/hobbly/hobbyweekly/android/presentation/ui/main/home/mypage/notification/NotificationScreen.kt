@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -119,7 +120,7 @@ fun NotificationScreen(
                 NotificationScreenItem(
                     notification = notification,
                     onClick = {
-                        // TODO : MVP 이후 작업
+                        navController.navigate(notification.deeplink.toUri())
                     }
                 )
             }
@@ -207,6 +208,7 @@ private fun NotificationScreenPreview() {
                             isRead = false,
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                                 .atTime(0, 0, 0),
+                            deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                         ),
                         Notification(
                             id = 2,
@@ -215,6 +217,7 @@ private fun NotificationScreenPreview() {
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                                 .minus(1, DateTimeUnit.DAY)
                                 .atTime(0, 0, 0),
+                            deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                         ),
                         Notification(
                             id = 3,
@@ -223,6 +226,7 @@ private fun NotificationScreenPreview() {
                             createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                                 .minus(7, DateTimeUnit.DAY)
                                 .atTime(0, 0, 0),
+                            deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                         )
                     )
                 )

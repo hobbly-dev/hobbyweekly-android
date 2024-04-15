@@ -6,5 +6,6 @@ data class Notification(
     val id: Long,
     val content: String,
     val isRead: Boolean,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    val deeplink: String
 )

@@ -115,6 +115,7 @@ class MockUserRepository @Inject constructor(
                         isRead = false,
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                             .atTime(0, 0, 0),
+                        deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                     ),
                     Notification(
                         id = 2,
@@ -123,6 +124,7 @@ class MockUserRepository @Inject constructor(
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                             .minus(1, DateTimeUnit.DAY)
                             .atTime(0, 0, 0),
+                        deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                     ),
                     Notification(
                         id = 3,
@@ -131,6 +133,7 @@ class MockUserRepository @Inject constructor(
                         createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
                             .minus(7, DateTimeUnit.DAY)
                             .atTime(0, 0, 0),
+                        deeplink = "https://deeplink.hobbly.co.kr/community/post?post_id=1&board_id=1&block_id=1"
                     )
                 )
             )

@@ -15,14 +15,17 @@ data class NotificationRes(
     @SerialName("isRead")
     val isRead: Boolean,
     @SerialName("createdAt")
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    @SerialName("deeplink")
+    val deeplink: String
 ) : DataMapper<Notification> {
     override fun toDomain(): Notification {
         return Notification(
             id = notificationId,
             content = content,
             isRead = isRead,
-            createdAt = createdAt
+            createdAt = createdAt,
+            deeplink = deeplink
         )
     }
 }
