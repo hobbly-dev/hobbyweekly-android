@@ -100,8 +100,17 @@ fun BoardScreen(
 
     var isBoardRoutineShowing: Boolean by remember { mutableStateOf(false) }
 
-    fun navigateToBoardSearch() {
-        navController.safeNavigate(BoardSearchConstant.ROUTE)
+    fun navigateToBoardSearch(
+        board: Board
+    ) {
+        val route = makeRoute(
+            BoardSearchConstant.ROUTE,
+            listOf(
+                BoardSearchConstant.ROUTE_ARGUMENT_BLOCK_ID to board.blockId,
+                BoardSearchConstant.ROUTE_ARGUMENT_BOARD_ID to board.id,
+            )
+        )
+        navController.safeNavigate(route)
     }
 
     fun navigateToPost(
@@ -215,7 +224,7 @@ fun BoardScreen(
                             )
                         },
                         onClick = {
-                            navigateToBoardSearch()
+                            navigateToBoardSearch(data.board)
                         }
                     )
                     Spacer(modifier = Modifier.height(Space24))

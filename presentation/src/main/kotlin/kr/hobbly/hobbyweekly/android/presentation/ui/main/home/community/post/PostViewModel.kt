@@ -180,6 +180,7 @@ class PostViewModel @Inject constructor(
                 id = postId
             ).onSuccess {
                 _state.value = PostState.Init
+                _post.value = post.value.copy(likeCount = post.value.likeCount + 1)
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -254,6 +255,7 @@ class PostViewModel @Inject constructor(
             ).onSuccess { id ->
                 _state.value = PostState.Init
                 _event.emit(PostEvent.Comment.Write.Success(id))
+                refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -282,6 +284,7 @@ class PostViewModel @Inject constructor(
             ).onSuccess { id ->
                 _state.value = PostState.Init
                 _event.emit(PostEvent.Comment.Write.Success(id))
+                refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -305,6 +308,7 @@ class PostViewModel @Inject constructor(
                 id = commentId
             ).onSuccess {
                 _state.value = PostState.Init
+                refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -329,6 +333,7 @@ class PostViewModel @Inject constructor(
             ).onSuccess {
                 _state.value = PostState.Init
                 _event.emit(PostEvent.Comment.Remove.Success)
+                refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {
@@ -355,6 +360,7 @@ class PostViewModel @Inject constructor(
             ).onSuccess {
                 _state.value = PostState.Init
                 _event.emit(PostEvent.Comment.Report.Success)
+                refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init
                 when (exception) {

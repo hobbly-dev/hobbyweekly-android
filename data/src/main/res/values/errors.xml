@@ -28,4 +28,5 @@
     <string name="error_already_liked_post">이미 좋아요를 눌렀습니다.</string>
     <string name="error_not_allowed_routine_day">인중할 수 있는 시간대가 아닙니다.</string>
     <string name="error_not_allowed_self_report">신고할 수 없는 대상입니다.</string>
+    <string name="error_already_done_routine">이미 인증한 루틴입니다.</string>
 </resources>

@@ -139,8 +139,8 @@ class BlockViewModel @Inject constructor(
                                         _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                                     }
                                 }
-                            }.collect { popularPostPaging ->
-                                _popularPostPaging.value = popularPostPaging
+                            }.collect { noticePostPaging ->
+                                _noticePostPaging.value = noticePostPaging
                             }
                     }
                 }
