@@ -30,7 +30,10 @@ sealed interface RoutineEvent {
         ) : UpdateAlarm
     }
 
-    data class UpdateRoutine(val currentRoutineList: List<Routine>) : RoutineEvent
+    data class UpdateRoutine(
+        val currentRoutineList: List<Routine>,
+        val latestRoutineList: List<Routine>
+    ) : RoutineEvent
 }
 
 sealed interface RoutineIntent {

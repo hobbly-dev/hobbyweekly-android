@@ -82,7 +82,7 @@ class RoutineViewModel @Inject constructor(
             ).onSuccess { (currentRoutineList, latestRoutineList) ->
                 _state.value = RoutineState.Init
                 _event.emit(RoutineEvent.UpdateAlarm.Refresh(currentRoutineList, latestRoutineList))
-                _event.emit(RoutineEvent.UpdateRoutine(currentRoutineList))
+                _event.emit(RoutineEvent.UpdateRoutine(currentRoutineList, latestRoutineList))
             }.onFailure { exception ->
                 _state.value = RoutineState.Init
                 when (exception) {

@@ -144,15 +144,23 @@ private fun RoutineScreen(
     val context = LocalContext.current
 
     val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    val presentationRoutineList: MutableList<Routine> = remember { mutableStateListOf() }
     var selectedDate: LocalDate by remember { mutableStateOf(now) }
     val selectedDayOfWeek = selectedDate.dayOfWeek.ordinal
+
+    val currentRoutineList: MutableList<Routine> = remember { mutableStateListOf() }
+    val latestRoutineList: MutableList<Routine> = remember { mutableStateListOf() }
+    var isLatestRoutineShowing: Boolean by remember { mutableStateOf(false) }
+    val presentationRoutineList: List<Routine> = if (isLatestRoutineShowing) {
+        latestRoutineList
+    } else {
+        currentRoutineList
+    }
 
     val todayRoutineList: List<Routine> = presentationRoutineList.filter {
         it.smallRoutineList.any { it.dayOfWeek == selectedDate.dayOfWeek.ordinal }
     }
     val routineStatisticsList: List<RoutineStatisticsItem> =
-        presentationRoutineList.map { routine ->
+        currentRoutineList.map { routine ->
             routine.smallRoutineList
         }.flatten().groupBy { it.dayOfWeek }.map { (key, value) ->
             RoutineStatisticsItem(
@@ -285,12 +293,19 @@ private fun RoutineScreen(
                                 style = TitleSemiBold.merge(Neutral900)
                             )
                             Spacer(modifier = Modifier.width(Space4))
-                            Icon(
-                                modifier = Modifier.size(Space24),
-                                painter = painterResource(R.drawable.ic_calendar),
-                                contentDescription = null,
-                                tint = Neutral900
-                            )
+
+                            RippleBox(
+                                onClick = {
+                                    isLatestRoutineShowing = true
+                                }
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(Space24),
+                                    painter = painterResource(R.drawable.ic_calendar),
+                                    contentDescription = null,
+                                    tint = Neutral900
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(Space20))
                         RoutineScreenCalendar(
@@ -314,9 +329,17 @@ private fun RoutineScreen(
                     routine = routine,
                     selectedDayOfWeek = selectedDayOfWeek,
                     onEnableStateChanged = {
-                        val index = presentationRoutineList.indexOfFirst { it.id == routine.id }
+                        fun MutableList<Routine>.switch(fixedRoutine: Routine) {
+                            val index = currentRoutineList.indexOfFirst { it.id == fixedRoutine.id }
+                            if (index != -1) {
+                                set(index, fixedRoutine)
+                            }
+                        }
+
                         val fixedRoutine = routine.copy(isAlarmEnabled = it)
-                        presentationRoutineList[index] = fixedRoutine
+
+                        currentRoutineList.switch(fixedRoutine)
+                        latestRoutineList.switch(fixedRoutine)
                         intent(RoutineIntent.OnSwitch(fixedRoutine))
                     },
                     onConfirm = {
@@ -405,8 +428,10 @@ private fun RoutineScreen(
                 }
 
                 is RoutineEvent.UpdateRoutine -> {
-                    presentationRoutineList.clear()
-                    presentationRoutineList.addAll(event.currentRoutineList)
+                    currentRoutineList.clear()
+                    latestRoutineList.clear()
+                    currentRoutineList.addAll(event.currentRoutineList)
+                    latestRoutineList.addAll(event.latestRoutineList)
                 }
             }
         }
