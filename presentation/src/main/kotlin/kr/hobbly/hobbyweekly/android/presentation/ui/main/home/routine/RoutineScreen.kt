@@ -330,7 +330,7 @@ private fun RoutineScreen(
                     selectedDayOfWeek = selectedDayOfWeek,
                     onEnableStateChanged = {
                         fun MutableList<Routine>.switch(fixedRoutine: Routine) {
-                            val index = currentRoutineList.indexOfFirst { it.id == fixedRoutine.id }
+                            val index = indexOfFirst { it.id == fixedRoutine.id }
                             if (index != -1) {
                                 set(index, fixedRoutine)
                             }
