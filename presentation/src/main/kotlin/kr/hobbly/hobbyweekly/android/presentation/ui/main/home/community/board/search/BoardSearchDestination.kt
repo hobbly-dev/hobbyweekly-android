@@ -15,7 +15,7 @@ fun NavGraphBuilder.boardSearchDestination(
     navController: NavController
 ) {
     composable(
-        route = BoardSearchConstant.ROUTE,
+        route = BoardSearchConstant.ROUTE_STRUCTURE,
         arguments = listOf(
             navArgument(BoardSearchConstant.ROUTE_ARGUMENT_BLOCK_ID) {
                 type = NavType.LongType
