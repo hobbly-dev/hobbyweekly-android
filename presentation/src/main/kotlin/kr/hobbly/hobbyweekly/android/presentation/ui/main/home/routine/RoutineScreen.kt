@@ -296,7 +296,7 @@ private fun RoutineScreen(
 
                             RippleBox(
                                 onClick = {
-                                    isLatestRoutineShowing = true
+                                    isLatestRoutineShowing = !isLatestRoutineShowing
                                 }
                             ) {
                                 Icon(
