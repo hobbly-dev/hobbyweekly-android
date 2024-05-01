@@ -7,10 +7,8 @@ import android.content.Intent
 import android.os.Build
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -26,13 +24,12 @@ fun Context.registerRepeatRoutineList(
 
     routineList.forEach { routine ->
         if (!routine.isAlarmEnabled) return@forEach
-        val year = now.date.year
-        val month = now.date.month.number
         val alarmTime = routine.alarmTime ?: return@forEach
 
         routine.smallRoutineList.forEach { smallRoutine ->
-            val day = now.date.dayOfMonth + (smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal)
-            val date = LocalDate(year, month, day).plus(1, DateTimeUnit.WEEK)
+            val date = now.date
+                .plus(smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
+                .plus(1, DateTimeUnit.WEEK)
             val time = LocalDateTime(date, alarmTime)
             val intent = makeRepeatRoutineToIntent(routine)
 
@@ -54,13 +51,11 @@ fun Context.registerInstantRoutineList(
 
     routineList.forEach { routine ->
         if (!routine.isAlarmEnabled) return@forEach
-        val year = now.date.year
-        val month = now.date.month.number
         val alarmTime = routine.alarmTime ?: return@forEach
 
         routine.smallRoutineList.forEach { smallRoutine ->
-            val day = now.date.dayOfMonth + (smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal)
-            val date = LocalDate(year, month, day)
+            val date = now.date
+                .plus(smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
             val time = LocalDateTime(date, alarmTime)
             if (time > now) {
                 val intent = makeInstantRoutineToIntent(routine)
