@@ -37,6 +37,10 @@ sealed interface RoutineEditEvent {
     sealed interface DeleteRoutine : RoutineEditEvent {
         data object Success : DeleteRoutine
     }
+
+    sealed interface QuitRoutine : RoutineEditEvent {
+        data object Success : QuitRoutine
+    }
 }
 
 sealed interface RoutineEditIntent {

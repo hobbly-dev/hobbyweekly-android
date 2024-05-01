@@ -116,6 +116,7 @@ fun RoutineEditScreen(
     var isAddDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isEditDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isDeleteDialogShowing: Boolean by remember { mutableStateOf(false) }
+    var isQuitDialogShowing: Boolean by remember { mutableStateOf(false) }
 
     fun navigateToHome() {
         navController.popBackStack(HomeConstant.ROUTE, false)
@@ -165,6 +166,20 @@ fun RoutineEditScreen(
             isCancelable = false,
             onDismissRequest = {
                 isDeleteDialogShowing = false
+            },
+            onConfirm = {
+                navigateToHome()
+            }
+        )
+    }
+
+    if (isQuitDialogShowing) {
+        DialogScreen(
+            title = "루틴 종료",
+            message = "루틴이 종료되었습니다.",
+            isCancelable = false,
+            onDismissRequest = {
+                isQuitDialogShowing = false
             },
             onConfirm = {
                 navigateToHome()
@@ -468,6 +483,14 @@ fun RoutineEditScreen(
         }
     }
 
+    fun quitRoutine(event: RoutineEditEvent.QuitRoutine) {
+        when (event) {
+            is RoutineEditEvent.QuitRoutine.Success -> {
+                isQuitDialogShowing = true
+            }
+        }
+    }
+
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
             when (event) {
@@ -485,6 +508,10 @@ fun RoutineEditScreen(
 
                 is RoutineEditEvent.DeleteRoutine -> {
                     deleteRoutine(event)
+                }
+
+                is RoutineEditEvent.QuitRoutine -> {
+                    quitRoutine(event)
                 }
             }
         }

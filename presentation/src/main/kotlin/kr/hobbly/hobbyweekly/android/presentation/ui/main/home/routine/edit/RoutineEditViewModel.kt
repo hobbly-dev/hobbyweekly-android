@@ -224,7 +224,7 @@ class RoutineEditViewModel @Inject constructor(
             ).onSuccess {
                 _state.value = RoutineEditState.Init
 
-                _event.emit(RoutineEditEvent.DeleteRoutine.Success)
+                _event.emit(RoutineEditEvent.QuitRoutine.Success)
             }.onFailure { exception ->
                 _state.value = RoutineEditState.Init
                 when (exception) {
