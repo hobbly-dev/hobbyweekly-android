@@ -222,12 +222,18 @@ fun RoutineEditScreen(
                         tint = Neutral900
                     )
                     TextDropdownMenu(
-                        items = listOf("삭제"),
+                        items = listOf("삭제", "종료"),
                         isExpanded = isMenuShowing,
                         onDismissRequest = { isMenuShowing = false },
                         onClick = { text ->
-                            if (text == "삭제") {
-                                intent(RoutineEditIntent.OnDelete)
+                            when (text) {
+                                "삭제" -> {
+                                    intent(RoutineEditIntent.OnDelete)
+                                }
+
+                                "종료" -> {
+                                    intent(RoutineEditIntent.OnQuit)
+                                }
                             }
                         }
                     )

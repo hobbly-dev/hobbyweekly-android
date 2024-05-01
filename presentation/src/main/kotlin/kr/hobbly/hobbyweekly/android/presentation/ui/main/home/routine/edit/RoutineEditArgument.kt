@@ -47,4 +47,5 @@ sealed interface RoutineEditIntent {
     ) : RoutineEditIntent
 
     data object OnDelete : RoutineEditIntent
+    data object OnQuit : RoutineEditIntent
 }

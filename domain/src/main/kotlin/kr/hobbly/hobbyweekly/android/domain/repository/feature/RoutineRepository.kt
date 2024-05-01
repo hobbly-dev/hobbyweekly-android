@@ -41,6 +41,10 @@ interface RoutineRepository {
         id: Long
     ): Result<Unit>
 
+    suspend fun quitRoutine(
+        id: Long
+    ): Result<Unit>
+
     suspend fun switchRoutineAlarm(
         id: Long,
         isEnabled: Boolean

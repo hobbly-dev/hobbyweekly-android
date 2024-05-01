@@ -146,6 +146,14 @@ class MockRoutineRepository @Inject constructor() : RoutineRepository {
         return Result.success(Unit)
     }
 
+    override suspend fun quitRoutine(
+        id: Long
+    ): Result<Unit> {
+        randomShortDelay()
+
+        return Result.success(Unit)
+    }
+
     override suspend fun switchRoutineAlarm(
         id: Long,
         isEnabled: Boolean

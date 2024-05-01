@@ -16,6 +16,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetB
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.AddRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.EditRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetRoutineUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.QuitRoutineUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.RemoveRoutineUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -27,6 +28,7 @@ class RoutineEditViewModel @Inject constructor(
     private val addRoutineUseCase: AddRoutineUseCase,
     private val editRoutineUseCase: EditRoutineUseCase,
     private val removeRoutineUseCase: RemoveRoutineUseCase,
+    private val quitRoutineUseCase: QuitRoutineUseCase,
     private val getBlockUseCase: GetBlockUseCase
 ) : BaseViewModel() {
 
@@ -123,6 +125,10 @@ class RoutineEditViewModel @Inject constructor(
             RoutineEditIntent.OnDelete -> {
                 deleteRoutine()
             }
+
+            RoutineEditIntent.OnQuit -> {
+                quitRoutine()
+            }
         }
     }
 
@@ -190,6 +196,30 @@ class RoutineEditViewModel @Inject constructor(
         launch {
             _state.value = RoutineEditState.Loading
             removeRoutineUseCase(
+                id = routineId
+            ).onSuccess {
+                _state.value = RoutineEditState.Init
+
+                _event.emit(RoutineEditEvent.DeleteRoutine.Success)
+            }.onFailure { exception ->
+                _state.value = RoutineEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun quitRoutine() {
+        launch {
+            _state.value = RoutineEditState.Loading
+            quitRoutineUseCase(
                 id = routineId
             ).onSuccess {
                 _state.value = RoutineEditState.Init
