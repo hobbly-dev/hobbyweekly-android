@@ -1,5 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
+import kr.hobbly.hobbyweekly.android.presentation.common.ANIMATION_DURATION
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HobbyWeeklyTheme
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
@@ -35,7 +38,31 @@ fun MainScreen(
 
         NavHost(
             navController = navController,
-            startDestination = SplashConstant.ROUTE
+            startDestination = SplashConstant.ROUTE,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(ANIMATION_DURATION)
+                )
+            }
         ) {
             splashDestination(navController = navController)
             nonLoginNavGraphNavGraph(navController = navController)
