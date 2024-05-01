@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -422,16 +423,18 @@ private fun RoutineScreen(
 
     LaunchedEffectWithLifecycle(event, handler) {
         event.eventObserve { event ->
-            when (event) {
-                is RoutineEvent.UpdateAlarm -> {
-                    updateAlarm(event)
-                }
+            scope.launch {
+                when (event) {
+                    is RoutineEvent.UpdateAlarm -> {
+                        updateAlarm(event)
+                    }
 
-                is RoutineEvent.UpdateRoutine -> {
-                    currentRoutineList.clear()
-                    latestRoutineList.clear()
-                    currentRoutineList.addAll(event.currentRoutineList)
-                    latestRoutineList.addAll(event.latestRoutineList)
+                    is RoutineEvent.UpdateRoutine -> {
+                        currentRoutineList.clear()
+                        latestRoutineList.clear()
+                        currentRoutineList.addAll(event.currentRoutineList)
+                        latestRoutineList.addAll(event.latestRoutineList)
+                    }
                 }
             }
         }

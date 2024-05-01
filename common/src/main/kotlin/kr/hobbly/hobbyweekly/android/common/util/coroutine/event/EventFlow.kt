@@ -8,6 +8,7 @@ private class ReadOnlyEventFlow<T>(flow: EventFlow<T>) : EventFlow<T> by flow
 
 fun <T> MutableEventFlow<T>.asEventFlow(): EventFlow<T> = ReadOnlyEventFlow(this)
 
+// TODO : flow collect block suspend?
 suspend inline fun <reified S : T, T> EventFlow<T>.eventObserve(
     crossinline onEventUnhandledContent: (S) -> Unit
 ) {
