@@ -91,10 +91,14 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.makeRoute
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerInstantNotifyList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.registerInstantRoutineList
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRepeatNotifyList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRepeatRoutineList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterAlarmAll
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterInstantNotify
 import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterInstantRoutine
+import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterRepeatNotify
 import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterRepeatRoutine
 import kr.hobbly.hobbyweekly.android.presentation.common.view.CustomSwitch
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
@@ -419,17 +423,60 @@ private fun RoutineScreen(
             is RoutineEvent.UpdateAlarm.Off -> {
                 context.unregisterInstantRoutine(event.routine)
                 context.unregisterRepeatRoutine(event.routine)
+                (0..6).forEach { dayOfWeek ->
+                    currentRoutineList.filter { routine ->
+                        routine.smallRoutineList.any { it.dayOfWeek == dayOfWeek }
+                    }.let { routineList ->
+                        if (routineList.count() == 1 && routineList.firstOrNull()?.id == event.routine.id) {
+                            context.unregisterInstantNotify(dayOfWeek)
+                        }
+                    }
+
+                    latestRoutineList.filter { routine ->
+                        routine.smallRoutineList.any { it.dayOfWeek == dayOfWeek }
+                    }.let { routineList ->
+                        if (routineList.count() == 1 && routineList.firstOrNull()?.id == event.routine.id) {
+                            context.unregisterRepeatNotify(dayOfWeek)
+                        }
+                    }
+                }
             }
 
             is RoutineEvent.UpdateAlarm.On -> {
                 context.registerInstantRoutineList(listOf(event.routine))
                 context.registerRepeatRoutineList(listOf(event.routine))
+                (0..6).forEach { dayOfWeek ->
+                    currentRoutineList.filter { routine ->
+                        routine.smallRoutineList.any { it.dayOfWeek == dayOfWeek }
+                    }.let { routineList ->
+                        if (routineList.count() == 1 && routineList.firstOrNull()?.id == event.routine.id) {
+                            context.registerInstantNotifyList(listOf(dayOfWeek))
+                        }
+                    }
+
+                    latestRoutineList.filter { routine ->
+                        routine.smallRoutineList.any { it.dayOfWeek == dayOfWeek }
+                    }.let { routineList ->
+                        if (routineList.count() == 1 && routineList.firstOrNull()?.id == event.routine.id) {
+                            context.registerRepeatNotifyList(listOf(dayOfWeek))
+                        }
+                    }
+                }
             }
 
             is RoutineEvent.UpdateAlarm.Refresh -> {
                 context.unregisterAlarmAll(event.currentRoutineList + event.latestRoutineList)
                 context.registerInstantRoutineList(event.currentRoutineList)
                 context.registerRepeatRoutineList(event.latestRoutineList)
+
+                (event.currentRoutineList + event.latestRoutineList).map {
+                    it.smallRoutineList
+                }.flatten().map {
+                    it.dayOfWeek
+                }.distinct().let { dayOfWeek ->
+                    context.registerInstantNotifyList(dayOfWeek)
+                    context.registerRepeatNotifyList(dayOfWeek)
+                }
             }
         }
     }
@@ -582,9 +629,7 @@ fun RoutineScreenItem(
                     CustomSwitch(
                         isChecked = routine.isAlarmEnabled,
                         onCheckedChange = {
-                            if (routine.alarmTime != null) {
-                                onEnableStateChanged(it)
-                            }
+                            onEnableStateChanged(it)
                         },
                         color = containerColor
                     )

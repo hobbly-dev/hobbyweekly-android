@@ -22,7 +22,9 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerInstantNotifyList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.registerInstantRoutineList
+import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRepeatNotifyList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.registerRepeatRoutineList
 import kr.hobbly.hobbyweekly.android.presentation.common.util.unregisterAlarmAll
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.NonLoginConstant
@@ -59,6 +61,15 @@ fun SplashScreen(
                 context.unregisterAlarmAll(event.currentRoutineList + event.latestRoutineList)
                 context.registerInstantRoutineList(event.currentRoutineList)
                 context.registerRepeatRoutineList(event.latestRoutineList)
+
+                (event.currentRoutineList + event.latestRoutineList).map {
+                    it.smallRoutineList
+                }.flatten().map {
+                    it.dayOfWeek
+                }.distinct().let { dayOfWeek ->
+                    context.registerInstantNotifyList(dayOfWeek)
+                    context.registerRepeatNotifyList(dayOfWeek)
+                }
 
                 navigateToRegister()
             }
