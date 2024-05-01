@@ -45,6 +45,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
+import kotlinx.datetime.number
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
@@ -56,6 +57,7 @@ import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Green
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelSemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral030
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral100
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
@@ -74,7 +76,6 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space20
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space24
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space30
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space32
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space36
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space4
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
@@ -172,6 +173,13 @@ private fun RoutineScreen(
         }
 
     var isRoutineBlockShowing: Boolean by remember { mutableStateOf(false) }
+
+    val formattedSummary: String = if (isLatestRoutineShowing) {
+        "루틴 변경사항이 적용된 다음주 루틴입니다"
+    } else {
+        val week = (now.dayOfMonth - 1) / 7 + 1
+        "${now.month.number}월 ${week}째주 루틴입니다"
+    }
 
     fun navigateToNotification() {
         navController.safeNavigate(NotificationConstant.ROUTE)
@@ -285,7 +293,12 @@ private fun RoutineScreen(
                             .background(White),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Spacer(modifier = Modifier.height(Space36))
+                        Spacer(modifier = Modifier.height(Space24))
+                        Text(
+                            text = formattedSummary,
+                            style = LabelSemiBold.merge(Neutral900)
+                        )
+                        Spacer(modifier = Modifier.height(Space8))
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -304,7 +317,7 @@ private fun RoutineScreen(
                                     modifier = Modifier.size(Space24),
                                     painter = painterResource(R.drawable.ic_calendar),
                                     contentDescription = null,
-                                    tint = Neutral900
+                                    tint = if (isLatestRoutineShowing) Red else Neutral900
                                 )
                             }
                         }
