@@ -1,5 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,15 +37,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
+import io.sentry.Sentry
+import io.sentry.SentryLevel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
@@ -98,6 +106,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.splash.SplashConstant
+import timber.log.Timber
 
 @Composable
 fun MyPageScreen(
@@ -143,10 +152,12 @@ private fun MyPageScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val context = LocalContext.current
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val menu: List<String> = listOf(
         "로그아웃",
+        "정책약관",
         "회원탈퇴"
     )
     val recentDate: LocalDate = now.date.minus(
@@ -180,6 +191,38 @@ private fun MyPageScreen(
 
     fun navigateToMyPageStatistics() {
         navController.safeNavigate(MyPageStatisticsConstant.ROUTE)
+    }
+
+    fun navigateToInquiry() {
+        runCatching {
+            val link =
+                Uri.parse("https://forms.gle/3W6qTYfEpusS5dnf6")
+            val browserIntent = Intent(Intent.ACTION_VIEW, link)
+            ContextCompat.startActivity(context, browserIntent, null)
+        }.onFailure { exception ->
+            Timber.d(exception)
+            Sentry.withScope {
+                it.level = SentryLevel.INFO
+                Sentry.captureException(exception)
+            }
+            Firebase.crashlytics.recordException(exception)
+        }
+    }
+
+    fun navigateToTerm() {
+        runCatching {
+            val link =
+                Uri.parse("https://sites.google.com/view/hobblyofficial/hobby-weekly?authuser=0#h.86okzz2wkj1r")
+            val browserIntent = Intent(Intent.ACTION_VIEW, link)
+            ContextCompat.startActivity(context, browserIntent, null)
+        }.onFailure { exception ->
+            Timber.d(exception)
+            Sentry.withScope {
+                it.level = SentryLevel.INFO
+                Sentry.captureException(exception)
+            }
+            Firebase.crashlytics.recordException(exception)
+        }
     }
 
     if (isGalleryShowing) {
@@ -279,6 +322,14 @@ private fun MyPageScreen(
                         when (it) {
                             "로그아웃" -> {
                                 intent(MyPageIntent.Logout)
+                            }
+
+                            "문의하기" -> {
+                                navigateToInquiry()
+                            }
+
+                            "정책약관" -> {
+                                navigateToTerm()
                             }
 
                             "회원탈퇴" -> {

@@ -1,5 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,13 +38,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
+import io.sentry.Sentry
+import io.sentry.SentryLevel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
@@ -80,6 +88,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.EmptyTex
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
+import timber.log.Timber
 
 @Composable
 fun PostEditScreen(
@@ -89,6 +98,7 @@ fun PostEditScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val context = LocalContext.current
 
     var title: String by rememberSaveable { mutableStateOf("") }
     var content: String by rememberSaveable { mutableStateOf("") }
@@ -103,7 +113,19 @@ fun PostEditScreen(
     var isLeaveDialogShowing: Boolean by rememberSaveable { mutableStateOf(false) }
 
     fun navigateToCommunityTerm() {
-//        navController.safeNavigate(CommunityTermConstant.ROUTE)
+        runCatching {
+            val link =
+                Uri.parse("https://sites.google.com/view/hobblyofficial/hobby-weekly?authuser=0#h.esvmsklk4668")
+            val browserIntent = Intent(Intent.ACTION_VIEW, link)
+            ContextCompat.startActivity(context, browserIntent, null)
+        }.onFailure { exception ->
+            Timber.d(exception)
+            Sentry.withScope {
+                it.level = SentryLevel.INFO
+                Sentry.captureException(exception)
+            }
+            Firebase.crashlytics.recordException(exception)
+        }
     }
 
     fun navigateToPost(
