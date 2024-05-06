@@ -44,6 +44,7 @@ class ErrorMessageMapper(
             NOT_ALLOWED_ROUTINE_DAY -> R.string.error_not_allowed_routine_day
             NOT_ALLOWED_SELF_REPORT -> R.string.error_not_allowed_self_report
             ALREADY_DONE_ROUTINE -> R.string.error_already_done_routine
+            NOT_ALLOWED_SELF_BLOCK -> R.string.error_not_allowed_self_block
             else -> {
                 Timber.e(UndefinedKeyException("Undefined error key: $id"))
                 R.string.error_unknown
@@ -86,5 +87,6 @@ class ErrorMessageMapper(
         const val NOT_ALLOWED_ROUTINE_DAY: Long = 409105L // Not allowed routine day
         const val NOT_ALLOWED_SELF_REPORT: Long = 409106L // Not allowed self report
         const val ALREADY_DONE_ROUTINE: Long = 409107L // Already done routine
+        const val NOT_ALLOWED_SELF_BLOCK: Long = 409108L // Not allowed self block
     }
 }

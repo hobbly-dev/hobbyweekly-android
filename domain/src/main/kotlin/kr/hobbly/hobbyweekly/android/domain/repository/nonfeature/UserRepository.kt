@@ -31,4 +31,8 @@ interface UserRepository {
     suspend fun checkNotification(
         id: Long
     ): Result<Unit>
+
+    suspend fun blockUser(
+        id: Long
+    ): Result<Unit>
 }

@@ -29,6 +29,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LikeP
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.RemovePostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.ReportPostUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.BlockUserUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -47,7 +48,8 @@ class PostViewModel @Inject constructor(
     private val writeCommentReplyUseCase: WriteCommentReplyUseCase,
     private val likeCommentUseCase: LikeCommentUseCase,
     private val removeCommentUseCase: RemoveCommentUseCase,
-    private val reportCommentUseCase: ReportCommentUseCase
+    private val reportCommentUseCase: ReportCommentUseCase,
+    private val blockUserUseCase: BlockUserUseCase
 ) : BaseViewModel() {
 
     private val _state: MutableStateFlow<PostState> = MutableStateFlow(PostState.Init)
@@ -91,6 +93,10 @@ class PostViewModel @Inject constructor(
                 removePost()
             }
 
+            is PostIntent.Post.OnBlock -> {
+                blockPostUser(post.value.member.id)
+            }
+
             is PostIntent.Post.OnReport -> {
                 reportPost(intent.reason)
             }
@@ -113,6 +119,10 @@ class PostViewModel @Inject constructor(
 
             is PostIntent.Comment.OnRemove -> {
                 removeComment(intent.commentId)
+            }
+
+            is PostIntent.Comment.OnBlock -> {
+                blockCommentUser(intent.userId)
             }
 
             is PostIntent.Comment.OnReport -> {
@@ -360,6 +370,51 @@ class PostViewModel @Inject constructor(
             ).onSuccess {
                 _state.value = PostState.Init
                 _event.emit(PostEvent.Comment.Report.Success)
+                refreshComment()
+            }.onFailure { exception ->
+                _state.value = PostState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun blockPostUser(userId: Long) {
+        launch {
+            blockUserUseCase(
+                id = userId
+            ).onSuccess {
+                _state.value = PostState.Init
+                _event.emit(PostEvent.Post.Block.Success)
+            }.onFailure { exception ->
+                _state.value = PostState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun blockCommentUser(userId: Long) {
+        launch {
+            blockUserUseCase(
+                id = userId
+            ).onSuccess {
+                _state.value = PostState.Init
+                _event.emit(PostEvent.Comment.Block.Success)
                 refreshComment()
             }.onFailure { exception ->
                 _state.value = PostState.Init

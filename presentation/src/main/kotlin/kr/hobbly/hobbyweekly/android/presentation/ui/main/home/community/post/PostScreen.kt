@@ -118,6 +118,7 @@ fun PostScreen(
             add("수정하기")
             add("삭제하기")
         } else {
+            add("차단하기")
             add("신고하기")
         }
     }
@@ -138,9 +139,11 @@ fun PostScreen(
     var isMenuShowing by remember { mutableStateOf(false) }
     var isReportReasonShowing by remember { mutableStateOf(false) }
     var isPostRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isPostUserBlockSuccessDialogShowing by remember { mutableStateOf(false) }
     var isPostReportSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentWriteSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
+    var isCommentUserBlockSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentReportSuccessDialogShowing by remember { mutableStateOf(false) }
 
     fun navigateToPostEdit(
@@ -167,6 +170,19 @@ fun PostScreen(
             },
             onDismissRequest = {
                 isPostRemoveSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isPostUserBlockSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "게시글 알람",
+            message = "게시글 작성자를 차단하였습니다.",
+            onConfirm = {
+                navController.safeNavigateUp()
+            },
+            onDismissRequest = {
+                isPostUserBlockSuccessDialogShowing = false
             }
         )
     }
@@ -206,6 +222,19 @@ fun PostScreen(
             },
             onDismissRequest = {
                 isCommentRemoveSuccessDialogShowing = false
+            }
+        )
+    }
+    if (isCommentUserBlockSuccessDialogShowing) {
+        DialogScreen(
+            isCancelable = false,
+            title = "댓글 알람",
+            message = "댓글 작성자를 차단하였습니다.",
+            onConfirm = {
+                intent(PostIntent.Comment.Refresh)
+            },
+            onDismissRequest = {
+                isCommentUserBlockSuccessDialogShowing = false
             }
         )
     }
@@ -281,6 +310,9 @@ fun PostScreen(
                             }
                             if (text == "삭제하기") {
                                 intent(PostIntent.Post.OnRemove)
+                            }
+                            if (text == "차단하기") {
+                                intent(PostIntent.Post.OnBlock)
                             }
                             if (text == "신고하기") {
                                 isReportReasonShowing = true
@@ -488,6 +520,9 @@ fun PostScreen(
                         onLike = {
                             intent(PostIntent.Comment.OnLike(it.id))
                         },
+                        onBlock = {
+                            intent(PostIntent.Comment.OnBlock(it.member.id))
+                        },
                         onReport = { comment, reason ->
                             intent(
                                 PostIntent.Comment.OnReport(
@@ -605,6 +640,10 @@ fun PostScreen(
                 isPostRemoveSuccessDialogShowing = true
             }
 
+            PostEvent.Post.Block.Success -> {
+                isPostUserBlockSuccessDialogShowing = true
+            }
+
             PostEvent.Post.Report.Success -> {
                 isPostReportSuccessDialogShowing = true
             }
@@ -622,6 +661,12 @@ fun PostScreen(
 
             PostEvent.Comment.Remove.Success -> {
                 isCommentRemoveSuccessDialogShowing = true
+                selectedComment = null
+                focusRequester.freeFocus()
+            }
+
+            PostEvent.Comment.Block.Success -> {
+                isCommentUserBlockSuccessDialogShowing = true
                 selectedComment = null
                 focusRequester.freeFocus()
             }
@@ -662,6 +707,7 @@ fun PostScreenCommentItem(
     selectedComment: Comment?,
     onComment: (Comment, BringIntoViewRequester) -> Unit,
     onLike: (Comment) -> Unit,
+    onBlock: (Comment) -> Unit,
     onReport: (Comment, String) -> Unit,
     onDelete: (Comment) -> Unit,
 ) {
@@ -673,6 +719,7 @@ fun PostScreenCommentItem(
         if (isMyComment) {
             add("삭제하기")
         } else {
+            add("차단하기")
             add("신고하기")
         }
     }
@@ -821,6 +868,9 @@ fun PostScreenCommentItem(
                                             if (it == "삭제하기") {
                                                 onDelete(comment)
                                             }
+                                            if (it == "차단하기") {
+                                                onBlock(comment)
+                                            }
                                             if (it == "신고하기") {
                                                 isReportReasonShowing = true
                                             }
@@ -855,6 +905,7 @@ fun PostScreenCommentItem(
                 selectedComment = selectedComment,
                 onComment = onComment,
                 onLike = onLike,
+                onBlock = onBlock,
                 onReport = onReport,
                 onDelete = onDelete
             )

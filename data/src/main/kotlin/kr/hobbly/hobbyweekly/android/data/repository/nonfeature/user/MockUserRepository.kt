@@ -148,6 +148,14 @@ class MockUserRepository @Inject constructor(
         return Result.success(Unit)
     }
 
+    override suspend fun blockUser(
+        id: Long
+    ): Result<Unit> {
+        randomShortDelay()
+
+        return Result.success(Unit)
+    }
+
     private suspend fun randomShortDelay() {
         delay(LongRange(100, 500).random())
     }

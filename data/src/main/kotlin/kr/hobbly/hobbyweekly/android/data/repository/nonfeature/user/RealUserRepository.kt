@@ -80,4 +80,12 @@ class RealUserRepository @Inject constructor(
             id = id
         )
     }
+
+    override suspend fun blockUser(
+        id: Long
+    ): Result<Unit> {
+        return notificationApi.blockUser(
+            id = id
+        )
+    }
 }
