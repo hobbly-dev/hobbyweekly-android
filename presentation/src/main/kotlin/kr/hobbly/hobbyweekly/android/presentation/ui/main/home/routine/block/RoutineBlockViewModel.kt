@@ -31,7 +31,15 @@ class RoutineBlockViewModel @Inject constructor(
     private val _myBlockList: MutableStateFlow<List<Block>> = MutableStateFlow(emptyList())
     val myBlockList: StateFlow<List<Block>> = _myBlockList.asStateFlow()
 
-    init {
+    fun onIntent(intent: RoutineBlockIntent) {
+        when (intent) {
+            RoutineBlockIntent.Refresh -> {
+                refresh()
+            }
+        }
+    }
+
+    private fun refresh() {
         launch {
             _state.value = RoutineBlockState.Loading
             getMyBlockListUseCase()
@@ -51,9 +59,5 @@ class RoutineBlockViewModel @Inject constructor(
                     }
                 }
         }
-    }
-
-    fun onIntent(intent: RoutineBlockIntent) {
-
     }
 }

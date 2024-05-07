@@ -21,4 +21,6 @@ sealed interface RoutineBlockState {
 
 sealed interface RoutineBlockEvent
 
-sealed interface RoutineBlockIntent
+sealed interface RoutineBlockIntent {
+    data object Refresh : RoutineBlockIntent
+}
