@@ -52,6 +52,7 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import io.sentry.Sentry
 import io.sentry.SentryLevel
+import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kotlinx.datetime.Clock
@@ -102,10 +103,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropd
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.splash.SplashConstant
 import timber.log.Timber
 
 @Composable
@@ -225,6 +224,16 @@ private fun MyPageScreen(
         }
     }
 
+    // TODO : Migrate after Ktor 3.0.0
+    fun restartApp() {
+        context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
+            context.startActivity(
+                Intent.makeRestartActivityTask(intent.component)
+            )
+        }
+        exitProcess(0)
+    }
+
     if (isGalleryShowing) {
         GalleryScreen(
             navController = navController,
@@ -242,11 +251,7 @@ private fun MyPageScreen(
             title = "마이페이지 알람",
             message = "로그아웃했습니다.\n다시 로그인해주세요.",
             onConfirm = {
-                navController.safeNavigate(SplashConstant.ROUTE) {
-                    popUpTo(HomeConstant.ROUTE) {
-                        inclusive = true
-                    }
-                }
+                restartApp()
             },
             onDismissRequest = {
                 isLogoutSuccessDialogShowing = false
@@ -260,11 +265,7 @@ private fun MyPageScreen(
             title = "마이페이지 알람",
             message = "탈퇴 완료 했습니다.\n다시 회원가입해주세요.",
             onConfirm = {
-                navController.safeNavigate(SplashConstant.ROUTE) {
-                    popUpTo(HomeConstant.ROUTE) {
-                        inclusive = true
-                    }
-                }
+                restartApp()
             },
             onDismissRequest = {
                 isWithdrawSuccessDialogShowing = false
