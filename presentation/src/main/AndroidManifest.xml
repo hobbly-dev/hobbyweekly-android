@@ -39,5 +39,11 @@
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+        <receiver
+            android:name=".common.alarm.RoutineNoticeReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" />
     </application>
 </manifest>

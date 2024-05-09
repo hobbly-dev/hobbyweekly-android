@@ -16,6 +16,7 @@ import kotlinx.datetime.toLocalDateTime
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 import kr.hobbly.hobbyweekly.android.presentation.common.alarm.InstantRoutineReceiver
 import kr.hobbly.hobbyweekly.android.presentation.common.alarm.RepeatRoutineReceiver
+import kr.hobbly.hobbyweekly.android.presentation.common.alarm.RoutineNoticeReceiver
 
 fun Context.registerRepeatRoutineList(
     routineList: List<Routine>
@@ -235,10 +236,10 @@ private fun Context.makeRepeatRoutineToIntent(
 private fun Context.makeInstantNotifyToIntent(
     dayOfWeek: Int
 ): List<PendingIntent> {
-    val first = Intent(this, InstantRoutineReceiver::class.java).apply {
-        putExtra(InstantRoutineReceiver.NOTIFICATION_ID, dayOfWeek)
-        putExtra(InstantRoutineReceiver.NOTIFICATION_TITLE, "하비위클리")
-        putExtra(InstantRoutineReceiver.NOTIFICATION_CONTENT, "오늘은 루틴을 진행하는 날입니다.")
+    val first = Intent(this, RoutineNoticeReceiver::class.java).apply {
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_ID, dayOfWeek * 2)
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_TITLE, "하비위클리")
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_CONTENT, "오늘은 루틴을 진행하는 날입니다.")
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
@@ -247,10 +248,10 @@ private fun Context.makeInstantNotifyToIntent(
             PendingIntent.FLAG_IMMUTABLE
         )
     }
-    val second = Intent(this, InstantRoutineReceiver::class.java).apply {
-        putExtra(InstantRoutineReceiver.NOTIFICATION_ID, dayOfWeek)
-        putExtra(InstantRoutineReceiver.NOTIFICATION_TITLE, "하비위클리")
-        putExtra(InstantRoutineReceiver.NOTIFICATION_CONTENT, "오늘 루틴은 진행하셨나요? 하셨다면 인증게시글을 작성해보세요!")
+    val second = Intent(this, RoutineNoticeReceiver::class.java).apply {
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_ID, dayOfWeek * 2 + 1)
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_TITLE, "하비위클리")
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_CONTENT, "오늘 루틴은 진행하셨나요? 하셨다면 인증게시글을 작성해보세요!")
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
@@ -265,10 +266,10 @@ private fun Context.makeInstantNotifyToIntent(
 private fun Context.makeRepeatNotifyToIntent(
     dayOfWeek: Int
 ): List<PendingIntent> {
-    val first = Intent(this, RepeatRoutineReceiver::class.java).apply {
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_ID, dayOfWeek)
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_TITLE, "하비위클리")
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_CONTENT, "오늘은 루틴을 진행하는 날입니다.")
+    val first = Intent(this, RoutineNoticeReceiver::class.java).apply {
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_ID, 14 + dayOfWeek * 2)
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_TITLE, "하비위클리")
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_CONTENT, "오늘은 루틴을 진행하는 날입니다.")
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
@@ -277,10 +278,10 @@ private fun Context.makeRepeatNotifyToIntent(
             PendingIntent.FLAG_IMMUTABLE
         )
     }
-    val second = Intent(this, RepeatRoutineReceiver::class.java).apply {
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_ID, dayOfWeek)
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_TITLE, "하비위클리")
-        putExtra(RepeatRoutineReceiver.NOTIFICATION_CONTENT, "오늘 루틴은 진행하셨나요? 하셨다면 인증게시글을 작성해보세요!")
+    val second = Intent(this, RoutineNoticeReceiver::class.java).apply {
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_ID, 14 + dayOfWeek * 2 + 1)
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_TITLE, "하비위클리")
+        putExtra(RoutineNoticeReceiver.NOTIFICATION_CONTENT, "오늘 루틴은 진행하셨나요? 하셨다면 인증게시글을 작성해보세요!")
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
