@@ -31,6 +31,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -131,19 +133,23 @@ fun PostScreen(
         }
     }
 
-    // TODO
-    val reportReasonList: List<String> = listOf(
-        "욕설/비방",
-        "음란성",
-        "광고/홍보",
-        "개인정보 유출",
-        "기타"
+    val reportReasonList: List<Pair<String, String>> = listOf(
+        "게시글 성격과 부적절" to "게시글 성격에 부합되지 않거나, 본 취미 커뮤니티와 관련없는 타 취미 관련 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "욕설/비방" to "사람,단체,지역등의 특정 대상을 비하하거나 폭언,욕설 등의 예의 범절에 어긋나는 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "음란물/불건전한 만남" to "청소년유해매체물, 외설, 음란물, 음담패설, 불건전한 만남 등의 내용을 다룬 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "상업적 광고 및 판매" to "타 서비스로의 회원 유도성 광고 및 허가되지 않는 이벤트/홍보 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "유출/사칭/무단복제" to "게시물 무단 유출, 타인 개인정보 유출, 관리자 사칭 등 타인의 권리를 침해하는 게시물\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "정당/정치인 비하 및 정치활동" to "특정 정당, 정치인에 대한 비난/모욕/지지/홍보 등의 정치적 성향을 띄는 게시물\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "기타" to "신고사유외의 국내 관습상 부적절하다고 판단되는 게시글.\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다."
     )
 
     var isAnonymous: Boolean by remember { mutableStateOf(false) }
     var commentText: String by remember { mutableStateOf("") }
     var selectedComment: Comment? by remember { mutableStateOf(null) }
 
+    var reportPostReasonIndex by remember { mutableIntStateOf(-1) }
+    var reportCommentReasonIndex by remember { mutableIntStateOf(-1) }
+    var reportCommentId by remember { mutableLongStateOf(-1) }
     var isMenuShowing by remember { mutableStateOf(false) }
     var isReportReasonShowing by remember { mutableStateOf(false) }
     var isPostRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
@@ -153,6 +159,9 @@ fun PostScreen(
     var isCommentRemoveSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentUserBlockSuccessDialogShowing by remember { mutableStateOf(false) }
     var isCommentReportSuccessDialogShowing by remember { mutableStateOf(false) }
+
+    val reportPostReason = reportReasonList.getOrNull(reportPostReasonIndex)
+    val reportCommentReason = reportReasonList.getOrNull(reportCommentReasonIndex)
 
     fun navigateToPostEdit(
         post: Post
@@ -256,6 +265,38 @@ fun PostScreen(
             },
             onDismissRequest = {
                 isCommentReportSuccessDialogShowing = false
+            }
+        )
+    }
+    if (reportPostReason != null) {
+        DialogScreen(
+            isCancelable = false,
+            title = "게시글 신고",
+            message = reportPostReason.second,
+            onConfirm = {
+                intent(PostIntent.Post.OnReport(reportPostReason.first))
+            },
+            onDismissRequest = {
+                reportPostReasonIndex = -1
+            }
+        )
+    }
+    if (reportCommentReason != null) {
+        DialogScreen(
+            isCancelable = false,
+            title = "댓글 신고",
+            message = reportCommentReason.second,
+            onConfirm = {
+                intent(
+                    PostIntent.Comment.OnReport(
+                        commentId = reportCommentId,
+                        reason = reportCommentReason.first
+                    )
+                )
+            },
+            onDismissRequest = {
+                reportCommentReasonIndex = -1
+                reportCommentId = -1
             }
         )
     }
@@ -469,13 +510,9 @@ fun PostScreen(
                             onBlock = {
                                 intent(PostIntent.Comment.OnBlock(it.member.id))
                             },
-                            onReport = { comment, reason ->
-                                intent(
-                                    PostIntent.Comment.OnReport(
-                                        commentId = comment.id,
-                                        reason = reason
-                                    )
-                                )
+                            onReport = { comment, index ->
+                                reportCommentId = comment.id
+                                reportCommentReasonIndex = index
                             },
                             onDelete = {
                                 intent(PostIntent.Comment.OnRemove(it.id))
@@ -567,7 +604,8 @@ fun PostScreen(
                         isExpanded = isReportReasonShowing,
                         onDismissRequest = { isReportReasonShowing = false },
                         onClick = { reason ->
-                            intent(PostIntent.Post.OnReport(reason))
+                            val index = reportReasonList.indexOf(reason)
+                            reportPostReasonIndex = index
                         }
                     )
                 }
@@ -760,7 +798,7 @@ fun PostScreenCommentItem(
     onComment: (Comment, BringIntoViewRequester) -> Unit,
     onLike: (Comment) -> Unit,
     onBlock: (Comment) -> Unit,
-    onReport: (Comment, String) -> Unit,
+    onReport: (Comment, Int) -> Unit,
     onDelete: (Comment) -> Unit,
 ) {
     val isMyComment = comment.member.id == profile.id
@@ -776,13 +814,14 @@ fun PostScreenCommentItem(
         }
     }
 
-    // TODO
-    val reportReasonList: List<String> = listOf(
-        "욕설/비방",
-        "음란성",
-        "광고/홍보",
-        "개인정보 유출",
-        "기타"
+    val reportReasonList: List<Pair<String, String>> = listOf(
+        "게시글 성격과 부적절" to "게시글 성격에 부합되지 않거나, 본 취미 커뮤니티와 관련없는 타 취미 관련 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "욕설/비방" to "사람,단체,지역등의 특정 대상을 비하하거나 폭언,욕설 등의 예의 범절에 어긋나는 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "음란물/불건전한 만남" to "청소년유해매체물, 외설, 음란물, 음담패설, 불건전한 만남 등의 내용을 다룬 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "상업적 광고 및 판매" to "타 서비스로의 회원 유도성 광고 및 허가되지 않는 이벤트/홍보 게시글\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "유출/사칭/무단복제" to "게시물 무단 유출, 타인 개인정보 유출, 관리자 사칭 등 타인의 권리를 침해하는 게시물\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "정당/정치인 비하 및 정치활동" to "특정 정당, 정치인에 대한 비난/모욕/지지/홍보 등의 정치적 성향을 띄는 게시물\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다.",
+        "기타" to "신고사유외의 국내 관습상 부적절하다고 판단되는 게시글.\n\n신고는 반대의사를 표출하는 기능이 아닙니다.\n\n신고 사유가 적절치 않다면 해당 신고는 반영되지 않습니다."
     )
 
     val backgroundColor by animateColorAsState(
@@ -933,7 +972,8 @@ fun PostScreenCommentItem(
                                         isExpanded = isReportReasonShowing,
                                         onDismissRequest = { isReportReasonShowing = false },
                                         onClick = { reason ->
-                                            onReport(comment, reason)
+                                            val index = reportReasonList.indexOf(reason)
+                                            onReport(comment, index)
                                         }
                                     )
                                 }
