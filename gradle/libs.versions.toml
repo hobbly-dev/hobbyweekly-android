@@ -30,7 +30,7 @@ androidx-compose = "1.6.1"
 androidx-compose-navigation = "2.7.7"
 androidx-compose-lifecycle = "2.7.0"
 androidx-compose-compiler = "1.5.9"
-androidx-compose-material3 = "1.2.0"
+androidx-compose-material3 = "1.2.1"
 androidx-compose-constraintlayout = "1.0.1"
 # Network
 ktor = "2.3.7"

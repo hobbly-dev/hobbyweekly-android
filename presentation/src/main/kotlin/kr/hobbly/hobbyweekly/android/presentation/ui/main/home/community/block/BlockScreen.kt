@@ -22,9 +22,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,12 +38,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -67,6 +74,7 @@ import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral030
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral050
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
@@ -85,6 +93,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space56
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space6
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space60
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space8
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
@@ -107,6 +116,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.B
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit.RoutineEditConstant
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BlockScreen(
     navController: NavController,
@@ -116,6 +126,7 @@ fun BlockScreen(
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
     val context = LocalContext.current
+    val refreshState = rememberPullToRefreshState()
 
     var isMenuShowing by remember { mutableStateOf(false) }
     var isRemoveMyBlockSuccessDialogShowing by remember { mutableStateOf(false) }
@@ -177,76 +188,27 @@ fun BlockScreen(
         )
     }
 
-    Column(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
     ) {
+        val (topBar, contents, bottomBar) = createRefs()
         Box(
             modifier = Modifier
-                .height(Space56)
-                .background(White)
-                .fillMaxWidth()
-        ) {
-            RippleBox(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = Space20),
-                onClick = {
-                    navController.safeNavigateUp()
+                .nestedScroll(refreshState.nestedScrollConnection)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
                 }
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(Space24),
-                    painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = null,
-                    tint = Neutral900
-                )
-            }
-            Text(
-                text = "하비위클리",
-                modifier = Modifier.align(Alignment.Center),
-                style = TitleSemiBoldSmall.merge(Neutral900)
-            )
-            if (data.isMyBlock) {
-                RippleBox(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = Space20),
-                    onClick = {
-                        isMenuShowing = true
-                    }
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(Space24),
-                        painter = painterResource(R.drawable.ic_more_vertical),
-                        contentDescription = null,
-                        tint = Neutral900
-                    )
-                    TextDropdownMenu(
-                        items = menu,
-                        isExpanded = isMenuShowing,
-                        onDismissRequest = { isMenuShowing = false },
-                        onClick = { text ->
-                            if (text == "삭제하기") {
-                                intent(BlockIntent.OnRemove)
-                            }
-                        }
-                    )
-                }
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .align(Alignment.TopStart)
                     .verticalScroll(rememberScrollState())
             ) {
                 SubcomposeAsyncImage(
@@ -439,27 +401,102 @@ fun BlockScreen(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(Space12))
+                Spacer(modifier = Modifier.height(Space80))
             }
-            if (!data.isMyBlock) {
-                ConfirmButton(
-                    modifier = Modifier
-                        .padding(start = Space20, end = Space20, bottom = Space12)
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
-                    properties = ConfirmButtonProperties(
-                        size = ConfirmButtonSize.Large,
-                        type = ConfirmButtonType.Primary
-                    ),
-                    onClick = {
-                        navigateToRoutineEdit()
-                    }
-                ) { style ->
-                    Text(
-                        text = "블록 추가하기",
-                        style = style
+            PullToRefreshContainer(
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = refreshState,
+                indicator = { pullRefreshState ->
+                    PullToRefreshDefaults.Indicator(
+                        state = pullRefreshState,
+                        modifier = Modifier.background(Neutral030)
                     )
                 }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .height(Space56)
+                .background(White)
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+        ) {
+            RippleBox(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = Space20),
+                onClick = {
+                    navController.safeNavigateUp()
+                }
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(Space24),
+                    painter = painterResource(R.drawable.ic_chevron_left),
+                    contentDescription = null,
+                    tint = Neutral900
+                )
+            }
+            Text(
+                text = "하비위클리",
+                modifier = Modifier.align(Alignment.Center),
+                style = TitleSemiBoldSmall.merge(Neutral900)
+            )
+            if (data.isMyBlock) {
+                RippleBox(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = Space20),
+                    onClick = {
+                        isMenuShowing = true
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .size(Space24),
+                        painter = painterResource(R.drawable.ic_more_vertical),
+                        contentDescription = null,
+                        tint = Neutral900
+                    )
+                    TextDropdownMenu(
+                        items = menu,
+                        isExpanded = isMenuShowing,
+                        onDismissRequest = { isMenuShowing = false },
+                        onClick = { text ->
+                            if (text == "삭제하기") {
+                                intent(BlockIntent.OnRemove)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+        if (!data.isMyBlock) {
+            ConfirmButton(
+                modifier = Modifier
+                    .padding(start = Space20, end = Space20, bottom = Space12)
+                    .constrainAs(bottomBar) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        width = Dimension.fillToConstraints
+                    },
+                properties = ConfirmButtonProperties(
+                    size = ConfirmButtonSize.Large,
+                    type = ConfirmButtonType.Primary
+                ),
+                onClick = {
+                    navigateToRoutineEdit()
+                }
+            ) { style ->
+                Text(
+                    text = "블록 추가하기",
+                    style = style
+                )
             }
         }
     }
@@ -484,6 +521,18 @@ fun BlockScreen(
 
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(BlockIntent.Refresh)
+    }
+
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+        if (refreshState.isRefreshing) {
+            intent(BlockIntent.Refresh)
+        }
+    }
+
+    LaunchedEffectWithLifecycle(state, handler) {
+        if (state != BlockState.Loading) {
+            refreshState.endRefresh()
+        }
     }
 }
 

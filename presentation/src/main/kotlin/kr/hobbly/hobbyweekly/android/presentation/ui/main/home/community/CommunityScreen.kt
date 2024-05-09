@@ -20,18 +20,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -60,6 +67,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral030
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral050
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral200
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral300
@@ -138,6 +146,7 @@ fun CommunityScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CommunityScreen(
     navController: NavController,
@@ -146,6 +155,7 @@ private fun CommunityScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val refreshState = rememberPullToRefreshState()
 
     fun navigateToNotification() {
         navController.safeNavigate(NotificationConstant.ROUTE)
@@ -189,17 +199,256 @@ private fun CommunityScreen(
         navController.safeNavigate(route)
     }
 
-    Column(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
-            .verticalScroll(rememberScrollState()),
     ) {
+        val (topBar, contents) = createRefs()
+        Box(
+            modifier = Modifier
+                .nestedScroll(refreshState.nestedScrollConnection)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
+        ) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
+                Spacer(modifier = Modifier.height(Space24))
+                SearchTextField(
+                    text = "",
+                    modifier = Modifier.padding(horizontal = Space20),
+                    hintText = "관심있는 취미를 입력하세요",
+                    onValueChange = {},
+                    leadingIconContent = {
+                        Icon(
+                            modifier = Modifier.size(Space16),
+                            painter = painterResource(R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = Neutral900
+                        )
+                    },
+                    onClick = {
+                        navigateToCommunitySearch()
+                    }
+                )
+                Spacer(modifier = Modifier.height(Space40))
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = Space20)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "내블록",
+                        style = TitleSemiBoldSmall.merge(Neutral900)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (data.myBlockList.isNotEmpty()) {
+                        RippleBox(
+                            onClick = {
+                                navigateToMyBlock()
+                            }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "더보기",
+                                    style = LabelRegular.merge(Neutral300)
+                                )
+                                Icon(
+                                    modifier = Modifier.size(21.dp),
+                                    painter = painterResource(id = R.drawable.ic_chevron_right),
+                                    contentDescription = null,
+                                    tint = Neutral300
+                                )
+                            }
+                        }
+                    }
+                }
+                if (data.myBlockList.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = Space20)
+                            .fillMaxWidth()
+                            .height(100.dp)
+                    ) {
+                        Text(
+                            text = "내 취미블록이 없습니다 블록을 추가해주세요",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = LabelRegular.merge(Neutral400)
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(Space12))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(Space16),
+                        contentPadding = PaddingValues(start = Space20, end = Space20)
+                    ) {
+                        items(
+                            items = data.myBlockList,
+                            key = { it.id }
+                        ) { block ->
+                            CommunityScreenMyBlockItem(
+                                block = block,
+                                onClick = {
+                                    navigateToBlock(it)
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(Space32))
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = Space20)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "인기블록",
+                        style = TitleSemiBoldSmall.merge(Neutral900)
+                    )
+                    Spacer(modifier = Modifier.width(Space6))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_hot),
+                        contentDescription = null,
+                        tint = Red
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    if (data.popularBlockList.isNotEmpty()) {
+                        RippleBox(
+                            onClick = {
+                                navigateToPopularBlock()
+                            }
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "더보기",
+                                    style = LabelRegular.merge(Neutral300)
+                                )
+                                Icon(
+                                    modifier = Modifier.size(21.dp),
+                                    painter = painterResource(id = R.drawable.ic_chevron_right),
+                                    contentDescription = null,
+                                    tint = Neutral300
+                                )
+                            }
+                        }
+                    }
+                }
+                if (data.popularBlockList.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = Space20)
+                            .fillMaxWidth()
+                            .height(100.dp)
+                    ) {
+                        Text(
+                            text = "인기블록이 없습니다",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = LabelRegular.merge(Neutral400)
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(Space12))
+                    Column(
+                        modifier = Modifier.padding(horizontal = Space20),
+                        verticalArrangement = Arrangement.spacedBy(Space16)
+                    ) {
+                        data.popularBlockList.forEach { block ->
+                            CommunityScreenPopularBlockItem(
+                                block = block,
+                                onClick = {
+                                    navigateToBlock(it)
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(Space32))
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = Space20)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "핫한 인기글",
+                        style = TitleSemiBoldSmall.merge(Neutral900)
+                    )
+                    Spacer(modifier = Modifier.width(Space6))
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_hot),
+                        contentDescription = null,
+                        tint = Red
+                    )
+                }
+                if (data.popularPostPaging.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = Space20)
+                            .fillMaxWidth()
+                            .height(100.dp)
+                    ) {
+                        Text(
+                            text = "핫한 인기글이 없습니다",
+                            modifier = Modifier.align(Alignment.Center),
+                            style = LabelRegular.merge(Neutral400)
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.height(Space12))
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(Space16),
+                        contentPadding = PaddingValues(start = Space20, end = Space20)
+                    ) {
+                        items(
+                            count = data.popularPostPaging.itemCount,
+                            key = { index -> data.popularPostPaging[index]?.id ?: -1 }
+                        ) { index ->
+                            val post = data.popularPostPaging[index] ?: return@items
+                            CommunityScreenPopularPostItem(
+                                post = post,
+                                onClick = {
+                                    navigateToPost(it)
+                                }
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(Space32))
+            }
+            PullToRefreshContainer(
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = refreshState,
+                indicator = { pullRefreshState ->
+                    PullToRefreshDefaults.Indicator(
+                        state = pullRefreshState,
+                        modifier = Modifier.background(Neutral030)
+                    )
+                }
+            )
+        }
         Box(
             modifier = Modifier
                 .height(Space56)
                 .background(White)
-                .fillMaxWidth()
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
         ) {
             Text(
                 text = "하비위클리",
@@ -222,213 +471,6 @@ private fun CommunityScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(Space24))
-        SearchTextField(
-            text = "",
-            modifier = Modifier.padding(horizontal = Space20),
-            hintText = "관심있는 취미를 입력하세요",
-            onValueChange = {},
-            leadingIconContent = {
-                Icon(
-                    modifier = Modifier.size(Space16),
-                    painter = painterResource(R.drawable.ic_search),
-                    contentDescription = null,
-                    tint = Neutral900
-                )
-            },
-            onClick = {
-                navigateToCommunitySearch()
-            }
-        )
-        Spacer(modifier = Modifier.height(Space40))
-        Row(
-            modifier = Modifier
-                .padding(horizontal = Space20)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "내블록",
-                style = TitleSemiBoldSmall.merge(Neutral900)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            if (data.myBlockList.isNotEmpty()) {
-                RippleBox(
-                    onClick = {
-                        navigateToMyBlock()
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "더보기",
-                            style = LabelRegular.merge(Neutral300)
-                        )
-                        Icon(
-                            modifier = Modifier.size(21.dp),
-                            painter = painterResource(id = R.drawable.ic_chevron_right),
-                            contentDescription = null,
-                            tint = Neutral300
-                        )
-                    }
-                }
-            }
-        }
-        if (data.myBlockList.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = Space20)
-                    .fillMaxWidth()
-                    .height(100.dp)
-            ) {
-                Text(
-                    text = "내 취미블록이 없습니다 블록을 추가해주세요",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = LabelRegular.merge(Neutral400)
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.height(Space12))
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(Space16),
-                contentPadding = PaddingValues(start = Space20, end = Space20)
-            ) {
-                items(
-                    items = data.myBlockList,
-                    key = { it.id }
-                ) { block ->
-                    CommunityScreenMyBlockItem(
-                        block = block,
-                        onClick = {
-                            navigateToBlock(it)
-                        }
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(Space32))
-        Row(
-            modifier = Modifier
-                .padding(horizontal = Space20)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "인기블록",
-                style = TitleSemiBoldSmall.merge(Neutral900)
-            )
-            Spacer(modifier = Modifier.width(Space6))
-            Icon(
-                painter = painterResource(id = R.drawable.ic_hot),
-                contentDescription = null,
-                tint = Red
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            if (data.popularBlockList.isNotEmpty()) {
-                RippleBox(
-                    onClick = {
-                        navigateToPopularBlock()
-                    }
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "더보기",
-                            style = LabelRegular.merge(Neutral300)
-                        )
-                        Icon(
-                            modifier = Modifier.size(21.dp),
-                            painter = painterResource(id = R.drawable.ic_chevron_right),
-                            contentDescription = null,
-                            tint = Neutral300
-                        )
-                    }
-                }
-            }
-        }
-        if (data.popularBlockList.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = Space20)
-                    .fillMaxWidth()
-                    .height(100.dp)
-            ) {
-                Text(
-                    text = "인기블록이 없습니다",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = LabelRegular.merge(Neutral400)
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.height(Space12))
-            Column(
-                modifier = Modifier.padding(horizontal = Space20),
-                verticalArrangement = Arrangement.spacedBy(Space16)
-            ) {
-                data.popularBlockList.forEach { block ->
-                    CommunityScreenPopularBlockItem(
-                        block = block,
-                        onClick = {
-                            navigateToBlock(it)
-                        }
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(Space32))
-        Row(
-            modifier = Modifier
-                .padding(horizontal = Space20)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "핫한 인기글",
-                style = TitleSemiBoldSmall.merge(Neutral900)
-            )
-            Spacer(modifier = Modifier.width(Space6))
-            Icon(
-                painter = painterResource(id = R.drawable.ic_hot),
-                contentDescription = null,
-                tint = Red
-            )
-        }
-        if (data.popularPostPaging.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = Space20)
-                    .fillMaxWidth()
-                    .height(100.dp)
-            ) {
-                Text(
-                    text = "핫한 인기글이 없습니다",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = LabelRegular.merge(Neutral400)
-                )
-            }
-        } else {
-            Spacer(modifier = Modifier.height(Space12))
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(Space16),
-                contentPadding = PaddingValues(start = Space20, end = Space20)
-            ) {
-                items(
-                    count = data.popularPostPaging.itemCount,
-                    key = { index -> data.popularPostPaging[index]?.id ?: -1 }
-                ) { index ->
-                    val post = data.popularPostPaging[index] ?: return@items
-                    CommunityScreenPopularPostItem(
-                        post = post,
-                        onClick = {
-                            navigateToPost(it)
-                        }
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(Space32))
     }
 
     LaunchedEffectWithLifecycle(event, handler) {
@@ -439,6 +481,18 @@ private fun CommunityScreen(
 
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(CommunityIntent.Refresh)
+    }
+
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+        if (refreshState.isRefreshing) {
+            intent(CommunityIntent.Refresh)
+        }
+    }
+
+    LaunchedEffectWithLifecycle(state, handler) {
+        if (state != CommunityState.Loading) {
+            refreshState.endRefresh()
+        }
     }
 }
 

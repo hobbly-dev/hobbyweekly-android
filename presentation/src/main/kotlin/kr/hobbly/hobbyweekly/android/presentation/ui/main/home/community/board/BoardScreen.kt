@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,10 +14,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -89,6 +95,7 @@ import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.board.s
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardScreen(
     navController: NavController,
@@ -97,6 +104,7 @@ fun BoardScreen(
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
+    val refreshState = rememberPullToRefreshState()
 
     var isBoardRoutineShowing: Boolean by remember { mutableStateOf(false) }
 
@@ -166,41 +174,24 @@ fun BoardScreen(
         )
     }
 
-    Column(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
     ) {
+        val (topBar, contents, button) = createRefs()
         Box(
             modifier = Modifier
-                .height(Space56)
-                .background(White)
-                .fillMaxWidth()
-        ) {
-            RippleBox(
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = Space20),
-                onClick = {
-                    navController.safeNavigateUp()
+                .background(Neutral030)
+                .nestedScroll(refreshState.nestedScrollConnection)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
                 }
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(Space24),
-                    painter = painterResource(R.drawable.ic_chevron_left),
-                    contentDescription = null,
-                    tint = Neutral900
-                )
-            }
-            Text(
-                text = "하비위클리",
-                modifier = Modifier.align(Alignment.Center),
-                style = TitleSemiBoldSmall.merge(Neutral900)
-            )
-        }
-        Box(
-            modifier = Modifier.fillMaxSize()
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -246,34 +237,80 @@ fun BoardScreen(
                     )
                 }
             }
-            if (data.isMyBlock) {
-                Box(
+            PullToRefreshContainer(
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = refreshState,
+                indicator = { pullRefreshState ->
+                    PullToRefreshDefaults.Indicator(
+                        state = pullRefreshState,
+                        modifier = Modifier.background(Neutral030)
+                    )
+                }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .height(Space56)
+                .background(White)
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
+        ) {
+            RippleBox(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = Space20),
+                onClick = {
+                    navController.safeNavigateUp()
+                }
+            ) {
+                Icon(
                     modifier = Modifier
-                        .padding(Space16)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    FloatingActionButton(
-                        modifier = Modifier.size(Space56),
-                        shape = CircleShape,
-                        containerColor = Red,
-                        onClick = {
-                            if (data.board.type == BoardType.Routine) {
-                                isBoardRoutineShowing = true
-                            } else {
-                                navigateToPostAdd(
-                                    block = data.block,
-                                    board = data.board
-                                )
-                            }
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space32),
-                            painter = painterResource(id = R.drawable.ic_edit),
-                            contentDescription = null,
-                            tint = White
-                        )
+                        .size(Space24),
+                    painter = painterResource(R.drawable.ic_chevron_left),
+                    contentDescription = null,
+                    tint = Neutral900
+                )
+            }
+            Text(
+                text = "하비위클리",
+                modifier = Modifier.align(Alignment.Center),
+                style = TitleSemiBoldSmall.merge(Neutral900)
+            )
+        }
+        if (data.isMyBlock) {
+            Box(
+                modifier = Modifier
+                    .padding(Space16)
+                    .constrainAs(button) {
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
                     }
+            ) {
+                FloatingActionButton(
+                    modifier = Modifier.size(Space56),
+                    shape = CircleShape,
+                    containerColor = Red,
+                    onClick = {
+                        if (data.board.type == BoardType.Routine) {
+                            isBoardRoutineShowing = true
+                        } else {
+                            navigateToPostAdd(
+                                block = data.block,
+                                board = data.board
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(Space32),
+                        painter = painterResource(id = R.drawable.ic_edit),
+                        contentDescription = null,
+                        tint = White
+                    )
                 }
             }
         }
@@ -287,6 +324,18 @@ fun BoardScreen(
 
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(BoardIntent.Refresh)
+    }
+
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+        if (refreshState.isRefreshing) {
+            intent(BoardIntent.Refresh)
+        }
+    }
+
+    LaunchedEffectWithLifecycle(state, handler) {
+        if (state != BoardState.Loading) {
+            refreshState.endRefresh()
+        }
     }
 }
 

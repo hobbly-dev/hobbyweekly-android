@@ -22,9 +22,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +41,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -99,7 +106,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.image.ProfileImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.EmptyTextField
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.edit.PostEditConstant
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun PostScreen(
     navController: NavController,
@@ -111,6 +118,7 @@ fun PostScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
+    val refreshState = rememberPullToRefreshState()
     val isMyPost = data.post.member.id == data.profile.id
     val formattedDate = data.post.createdAt.toDurationString()
     val menu: List<String> = mutableListOf<String>().apply {
@@ -252,16 +260,251 @@ fun PostScreen(
         )
     }
 
-    Column(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(White)
     ) {
+        val (topBar, contents, bottomBar) = createRefs()
+        Box(
+            modifier = Modifier
+                .background(Neutral030)
+                .nestedScroll(refreshState.nestedScrollConnection)
+                .constrainAs(contents) {
+                    top.linkTo(topBar.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(bottomBar.top)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    Column {
+                        Spacer(modifier = Modifier.height(Space20))
+                        Row(
+                            modifier = Modifier.padding(horizontal = Space20),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            ProfileImage(
+                                data = data.post.member.image,
+                                modifier = Modifier.size(Space24)
+                            )
+                            Spacer(modifier = Modifier.width(Space12))
+                            Column {
+                                Text(
+                                    text = data.post.member.nickname,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = LabelRegular.merge(Neutral900)
+                                )
+                                Spacer(modifier = Modifier.height(Space4))
+                                Text(
+                                    text = formattedDate,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = BodyRegular.merge(Neutral400)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(Space20))
+                        Text(
+                            text = data.post.title,
+                            modifier = Modifier.padding(horizontal = Space24),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = TitleSemiBoldXSmall.merge(Neutral900)
+                        )
+                        Spacer(modifier = Modifier.height(Space12))
+                        Text(
+                            text = data.post.content,
+                            modifier = Modifier.padding(horizontal = Space24),
+                            style = LabelRegular.merge(Neutral600)
+                        )
+                        if (data.post.imageList.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(Space20))
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(Space16),
+                                contentPadding = PaddingValues(start = Space20, end = Space20)
+                            ) {
+                                items(
+                                    items = data.post.imageList
+                                ) { image ->
+                                    PostImage(
+                                        data = image,
+                                        modifier = Modifier.height(200.dp),
+                                        contentScale = ContentScale.FillHeight,
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(Space20))
+                        Row(
+                            modifier = Modifier.padding(horizontal = Space20),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(Space12),
+                                painter = painterResource(R.drawable.ic_talk),
+                                contentDescription = null,
+                                tint = Neutral900
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Text(
+                                text = if (data.post.commentCount > 99) "99+" else data.post.commentCount.toString(),
+                                style = BodyRegular.merge(Neutral900)
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Icon(
+                                modifier = Modifier.size(Space12),
+                                painter = painterResource(R.drawable.ic_like),
+                                contentDescription = null,
+                                tint = Neutral900
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Text(
+                                text = if (data.post.likeCount > 99) "99+" else data.post.likeCount.toString(),
+                                style = BodyRegular.merge(Neutral900)
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                        }
+                        Spacer(modifier = Modifier.height(Space12))
+                        Row(
+                            modifier = Modifier.padding(horizontal = Space20),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(100.dp))
+                                    .background(Neutral100)
+                            ) {
+                                Box(
+                                    modifier = Modifier.clickable {
+                                        intent(PostIntent.Post.OnLike)
+                                    }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = Space12,
+                                            vertical = Space4
+                                        ),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            modifier = Modifier.size(Space12),
+                                            painter = painterResource(R.drawable.ic_like),
+                                            contentDescription = null,
+                                            tint = Neutral900
+                                        )
+                                        Spacer(modifier = Modifier.width(Space6))
+                                        Text(
+                                            text = "공감",
+                                            style = BodyRegularSmall.merge(Neutral900)
+                                        )
+                                    }
+                                }
+                            }
+//                        Spacer(modifier = Modifier.width(Space4))
+//                        Box(
+//                            modifier = Modifier
+//                                .clip(RoundedCornerShape(100.dp))
+//                                .background(Neutral100)
+//                        ) {
+//                            Box(
+//                                modifier = Modifier.clickable {
+//
+//                                }
+//                            ) {
+//                                Row(
+//                                    modifier = Modifier.padding(
+//                                        horizontal = Space12,
+//                                        vertical = Space4
+//                                    ),
+//                                    verticalAlignment = Alignment.CenterVertically
+//                                ) {
+//                                    Icon(
+//                                        modifier = Modifier.size(Space12),
+//                                        painter = painterResource(R.drawable.ic_bookmark),
+//                                        contentDescription = null,
+//                                        tint = Neutral900
+//                                    )
+//                                    Spacer(modifier = Modifier.width(Space6))
+//                                    Text(
+//                                        text = "스크랩",
+//                                        style = BodyRegularSmall.merge(Neutral900)
+//                                    )
+//                                }
+//                            }
+//                        }
+                        }
+                        Spacer(modifier = Modifier.height(Space20))
+                    }
+                }
+                items(
+                    count = data.commentList.itemCount,
+                    key = { index ->
+                        data.commentList[index]?.id?.toString().orEmpty()
+                    }
+                ) { index ->
+                    data.commentList[index]?.let { comment ->
+                        PostScreenCommentItem(
+                            comment = comment,
+                            profile = data.profile,
+                            isChild = false,
+                            selectedComment = selectedComment,
+                            onComment = { comment, bringIntoViewRequester ->
+                                selectedComment = comment
+                                scope.launch {
+                                    focusRequester.requestFocus()
+                                    keyboard?.show()
+                                    bringIntoViewRequester.bringIntoView()
+                                }
+                            },
+                            onLike = {
+                                intent(PostIntent.Comment.OnLike(it.id))
+                            },
+                            onBlock = {
+                                intent(PostIntent.Comment.OnBlock(it.member.id))
+                            },
+                            onReport = { comment, reason ->
+                                intent(
+                                    PostIntent.Comment.OnReport(
+                                        commentId = comment.id,
+                                        reason = reason
+                                    )
+                                )
+                            },
+                            onDelete = {
+                                intent(PostIntent.Comment.OnRemove(it.id))
+                            }
+                        )
+                    }
+                }
+            }
+            PullToRefreshContainer(
+                modifier = Modifier.align(Alignment.TopCenter),
+                state = refreshState,
+                indicator = { pullRefreshState ->
+                    PullToRefreshDefaults.Indicator(
+                        state = pullRefreshState,
+                        modifier = Modifier.background(Neutral030)
+                    )
+                }
+            )
+        }
         Box(
             modifier = Modifier
                 .height(Space56)
                 .background(White)
-                .fillMaxWidth()
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                }
         ) {
             RippleBox(
                 modifier = Modifier
@@ -330,219 +573,16 @@ fun PostScreen(
                 }
             }
         }
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .background(Neutral030)
-        ) {
-            item {
-                Column {
-                    Spacer(modifier = Modifier.height(Space20))
-                    Row(
-                        modifier = Modifier.padding(horizontal = Space20),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ProfileImage(
-                            data = data.post.member.image,
-                            modifier = Modifier.size(Space24)
-                        )
-                        Spacer(modifier = Modifier.width(Space12))
-                        Column {
-                            Text(
-                                text = data.post.member.nickname,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = LabelRegular.merge(Neutral900)
-                            )
-                            Spacer(modifier = Modifier.height(Space4))
-                            Text(
-                                text = formattedDate,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = BodyRegular.merge(Neutral400)
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(Space20))
-                    Text(
-                        text = data.post.title,
-                        modifier = Modifier.padding(horizontal = Space24),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = TitleSemiBoldXSmall.merge(Neutral900)
-                    )
-                    Spacer(modifier = Modifier.height(Space12))
-                    Text(
-                        text = data.post.content,
-                        modifier = Modifier.padding(horizontal = Space24),
-                        style = LabelRegular.merge(Neutral600)
-                    )
-                    if (data.post.imageList.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(Space20))
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(Space16),
-                            contentPadding = PaddingValues(start = Space20, end = Space20)
-                        ) {
-                            items(
-                                items = data.post.imageList
-                            ) { image ->
-                                PostImage(
-                                    data = image,
-                                    modifier = Modifier.height(200.dp),
-                                    contentScale = ContentScale.FillHeight,
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(Space20))
-                    Row(
-                        modifier = Modifier.padding(horizontal = Space20),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_talk),
-                            contentDescription = null,
-                            tint = Neutral900
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                        Text(
-                            text = if (data.post.commentCount > 99) "99+" else data.post.commentCount.toString(),
-                            style = BodyRegular.merge(Neutral900)
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                        Icon(
-                            modifier = Modifier.size(Space12),
-                            painter = painterResource(R.drawable.ic_like),
-                            contentDescription = null,
-                            tint = Neutral900
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                        Text(
-                            text = if (data.post.likeCount > 99) "99+" else data.post.likeCount.toString(),
-                            style = BodyRegular.merge(Neutral900)
-                        )
-                        Spacer(modifier = Modifier.width(Space4))
-                    }
-                    Spacer(modifier = Modifier.height(Space12))
-                    Row(
-                        modifier = Modifier.padding(horizontal = Space20),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(100.dp))
-                                .background(Neutral100)
-                        ) {
-                            Box(
-                                modifier = Modifier.clickable {
-                                    intent(PostIntent.Post.OnLike)
-                                }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(
-                                        horizontal = Space12,
-                                        vertical = Space4
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        modifier = Modifier.size(Space12),
-                                        painter = painterResource(R.drawable.ic_like),
-                                        contentDescription = null,
-                                        tint = Neutral900
-                                    )
-                                    Spacer(modifier = Modifier.width(Space6))
-                                    Text(
-                                        text = "공감",
-                                        style = BodyRegularSmall.merge(Neutral900)
-                                    )
-                                }
-                            }
-                        }
-//                        Spacer(modifier = Modifier.width(Space4))
-//                        Box(
-//                            modifier = Modifier
-//                                .clip(RoundedCornerShape(100.dp))
-//                                .background(Neutral100)
-//                        ) {
-//                            Box(
-//                                modifier = Modifier.clickable {
-//
-//                                }
-//                            ) {
-//                                Row(
-//                                    modifier = Modifier.padding(
-//                                        horizontal = Space12,
-//                                        vertical = Space4
-//                                    ),
-//                                    verticalAlignment = Alignment.CenterVertically
-//                                ) {
-//                                    Icon(
-//                                        modifier = Modifier.size(Space12),
-//                                        painter = painterResource(R.drawable.ic_bookmark),
-//                                        contentDescription = null,
-//                                        tint = Neutral900
-//                                    )
-//                                    Spacer(modifier = Modifier.width(Space6))
-//                                    Text(
-//                                        text = "스크랩",
-//                                        style = BodyRegularSmall.merge(Neutral900)
-//                                    )
-//                                }
-//                            }
-//                        }
-                    }
-                    Spacer(modifier = Modifier.height(Space20))
-                }
-            }
-            items(
-                count = data.commentList.itemCount,
-                key = { index ->
-                    data.commentList[index]?.id?.toString().orEmpty()
-                }
-            ) { index ->
-                data.commentList[index]?.let { comment ->
-                    PostScreenCommentItem(
-                        comment = comment,
-                        profile = data.profile,
-                        isChild = false,
-                        selectedComment = selectedComment,
-                        onComment = { comment, bringIntoViewRequester ->
-                            selectedComment = comment
-                            scope.launch {
-                                focusRequester.requestFocus()
-                                keyboard?.show()
-                                bringIntoViewRequester.bringIntoView()
-                            }
-                        },
-                        onLike = {
-                            intent(PostIntent.Comment.OnLike(it.id))
-                        },
-                        onBlock = {
-                            intent(PostIntent.Comment.OnBlock(it.member.id))
-                        },
-                        onReport = { comment, reason ->
-                            intent(
-                                PostIntent.Comment.OnReport(
-                                    commentId = comment.id,
-                                    reason = reason
-                                )
-                            )
-                        },
-                        onDelete = {
-                            intent(PostIntent.Comment.OnRemove(it.id))
-                        }
-                    )
-                }
-            }
-        }
         if (data.isMyBlock) {
             Box(
                 modifier = Modifier
                     .background(White)
-                    .fillMaxWidth()
+                    .constrainAs(bottomBar) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                        width = Dimension.fillToConstraints
+                    }
             ) {
                 Box(
                     modifier = Modifier
@@ -695,6 +735,18 @@ fun PostScreen(
 
     LaunchedEffectWithLifecycle(Unit, handler) {
         intent(PostIntent.Post.Refresh)
+    }
+
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+        if (refreshState.isRefreshing) {
+            intent(PostIntent.Post.Refresh)
+        }
+    }
+
+    LaunchedEffectWithLifecycle(state, handler) {
+        if (state != PostState.Loading) {
+            refreshState.endRefresh()
+        }
     }
 }
 
