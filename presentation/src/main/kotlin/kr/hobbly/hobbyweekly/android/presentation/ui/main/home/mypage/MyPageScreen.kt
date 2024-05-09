@@ -156,6 +156,7 @@ private fun MyPageScreen(
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val menu: List<String> = listOf(
         "로그아웃",
+        "문의하기",
         "정책약관",
         "회원탈퇴"
     )
