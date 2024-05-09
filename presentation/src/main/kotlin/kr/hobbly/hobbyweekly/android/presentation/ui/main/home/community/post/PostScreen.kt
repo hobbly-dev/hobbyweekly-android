@@ -335,7 +335,7 @@ fun PostScreen(
                                 ) { image ->
                                     PostImage(
                                         data = image,
-                                        modifier = Modifier.height(200.dp),
+                                        modifier = Modifier.height(300.dp),
                                         contentScale = ContentScale.FillHeight,
                                     )
                                 }
