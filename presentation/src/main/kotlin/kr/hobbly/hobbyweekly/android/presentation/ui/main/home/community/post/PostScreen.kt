@@ -276,6 +276,7 @@ fun PostScreen(
             onConfirm = {
                 intent(PostIntent.Post.OnReport(reportPostReason.first))
             },
+            onCancel = {},
             onDismissRequest = {
                 reportPostReasonIndex = -1
             }
@@ -294,6 +295,7 @@ fun PostScreen(
                     )
                 )
             },
+            onCancel = {},
             onDismissRequest = {
                 reportCommentReasonIndex = -1
                 reportCommentId = -1
