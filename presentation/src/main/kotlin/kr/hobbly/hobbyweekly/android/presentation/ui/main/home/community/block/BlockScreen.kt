@@ -656,6 +656,14 @@ private fun BlockScreenPostItem(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(Space8))
+            Text(
+                text = post.board.name,
+                modifier = Modifier.padding(horizontal = Space20),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = BodyRegular.merge(Neutral900)
+            )
             Spacer(modifier = Modifier.height(Space12))
         }
     }
