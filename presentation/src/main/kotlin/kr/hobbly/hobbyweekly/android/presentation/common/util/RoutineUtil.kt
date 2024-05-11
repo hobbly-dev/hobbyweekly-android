@@ -82,8 +82,8 @@ fun Context.registerRepeatNotifyList(
         val date = now.date
             .plus(dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
             .plus(1, DateTimeUnit.WEEK)
-        val firstTime = LocalDateTime(date, LocalTime(9, 0))
-        val secondTime = LocalDateTime(date, LocalTime(21, 0))
+        val firstTime = LocalDateTime(date, LocalTime(8, 55))
+        val secondTime = LocalDateTime(date, LocalTime(20, 55))
         if (secondTime > now) {
             val intentList = makeRepeatNotifyToIntent(dayOfWeek)
             intentList.getOrNull(0)?.let { intent ->
@@ -117,8 +117,8 @@ fun Context.registerInstantNotifyList(
     dayOfWeekList.forEach { dayOfWeek ->
         val date = now.date
             .plus(dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
-        val firstTime = LocalDateTime(date, LocalTime(9, 0))
-        val secondTime = LocalDateTime(date, LocalTime(21, 0))
+        val firstTime = LocalDateTime(date, LocalTime(8, 55))
+        val secondTime = LocalDateTime(date, LocalTime(20, 55))
         if (secondTime > now) {
             val intentList = makeInstantNotifyToIntent(dayOfWeek)
             intentList.getOrNull(0)?.let { intent ->
