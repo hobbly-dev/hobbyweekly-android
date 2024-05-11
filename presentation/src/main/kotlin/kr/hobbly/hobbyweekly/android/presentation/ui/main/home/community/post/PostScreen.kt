@@ -601,6 +601,7 @@ fun PostScreen(
                     )
                     TextDropdownMenu(
                         items = reportReasonList,
+                        label = { it.first },
                         isExpanded = isReportReasonShowing,
                         onDismissRequest = { isReportReasonShowing = false },
                         onClick = { reason ->
@@ -969,6 +970,7 @@ fun PostScreenCommentItem(
                                     )
                                     TextDropdownMenu(
                                         items = reportReasonList,
+                                        label = { it.first },
                                         isExpanded = isReportReasonShowing,
                                         onDismissRequest = { isReportReasonShowing = false },
                                         onClick = { reason ->
