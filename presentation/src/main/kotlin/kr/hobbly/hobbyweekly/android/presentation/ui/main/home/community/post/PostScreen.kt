@@ -315,7 +315,11 @@ fun PostScreen(
                     top.linkTo(topBar.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(bottomBar.top)
+                    if (data.isMyBlock) {
+                        bottom.linkTo(bottomBar.top)
+                    } else {
+                        bottom.linkTo(parent.bottom)
+                    }
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 }
