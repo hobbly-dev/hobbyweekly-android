@@ -60,7 +60,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonProperties
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonType
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.profile.RegisterProfileConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.entry.RegisterEntryConstant
 import timber.log.Timber
 
 @Composable
@@ -79,8 +79,8 @@ fun RegisterTermScreen(
     }
     val isConfirmButtonEnabled = state != RegisterTermState.Loading && isNecessaryTermChecked
 
-    fun navigateToRegisterProfile() {
-        navController.safeNavigate(RegisterProfileConstant.ROUTE) {
+    fun navigateToRegisterEntry() {
+        navController.safeNavigate(RegisterEntryConstant.ROUTE) {
             popUpTo(RegisterTermConstant.ROUTE) {
                 inclusive = true
             }
@@ -142,7 +142,7 @@ fun RegisterTermScreen(
     fun patchTerm(event: RegisterTermEvent.AgreeTerm) {
         when (event) {
             RegisterTermEvent.AgreeTerm.Success -> {
-                navigateToRegisterProfile()
+                navigateToRegisterEntry()
             }
         }
     }

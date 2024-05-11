@@ -61,7 +61,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.TypingTextField
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.hobby.RegisterHobbyConstant
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.entry.RegisterEntryConstant
 
 @Composable
 fun RegisterProfileScreen(
@@ -88,8 +88,8 @@ fun RegisterProfileScreen(
         )
     }
 
-    fun navigateToRegisterHobby() {
-        navController.safeNavigate(RegisterHobbyConstant.ROUTE) {
+    fun navigateToRegisterEntry() {
+        navController.safeNavigate(RegisterEntryConstant.ROUTE) {
             popUpTo(RegisterProfileConstant.ROUTE) {
                 inclusive = true
             }
@@ -235,7 +235,7 @@ fun RegisterProfileScreen(
     fun setProfile(event: RegisterProfileEvent.SetProfile) {
         when (event) {
             RegisterProfileEvent.SetProfile.Success -> {
-                navigateToRegisterHobby()
+                navigateToRegisterEntry()
             }
         }
     }
