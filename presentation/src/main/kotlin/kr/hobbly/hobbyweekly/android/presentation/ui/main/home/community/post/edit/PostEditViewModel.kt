@@ -9,7 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.board.GetBoardUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.EditPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.LoadPostUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.WritePostUseCase
@@ -22,6 +27,8 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 @HiltViewModel
 class PostEditViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getBlockUseCase: GetBlockUseCase,
+    private val getBoardUseCase: GetBoardUseCase,
     private val loadPostUseCase: LoadPostUseCase,
     private val getUrlAndUploadImageUseCase: GetUrlAndUploadImageUseCase,
     private val writePostUseCase: WritePostUseCase,
@@ -50,6 +57,12 @@ class PostEditViewModel @Inject constructor(
     val routineId: Long by lazy {
         savedStateHandle.get<Long>(PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1L
     }
+
+    private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
+    val block: StateFlow<Block> = _block.asStateFlow()
+
+    private val _board: MutableStateFlow<Board> = MutableStateFlow(Board.empty)
+    val board: StateFlow<Board> = _board.asStateFlow()
 
     init {
         if (postId != -1L) {
@@ -87,10 +100,14 @@ class PostEditViewModel @Inject constructor(
         launch {
             _state.value = PostEditState.Loading
 
-            loadPostUseCase(
-                id = postId
-            ).onSuccess { post ->
+            zip(
+                { getBlockUseCase(id = blockId) },
+                { getBoardUseCase(id = boardId) },
+                { loadPostUseCase(id = postId) }
+            ).onSuccess { (block, board, post) ->
                 _state.value = PostEditState.Init
+                _block.value = block
+                _board.value = board
                 _event.emit(PostEditEvent.Load.Success(post))
             }.onFailure { exception ->
                 _state.value = PostEditState.Init

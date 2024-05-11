@@ -49,12 +49,16 @@ fun NavGraphBuilder.postEditDestination(
         }
 
         val data: PostEditData = let {
+            val block by viewModel.block.collectAsStateWithLifecycle()
+            val board by viewModel.board.collectAsStateWithLifecycle()
             val blockId = viewModel.blockId
             val boardId = viewModel.boardId
             val postId = viewModel.postId
             val routineId = viewModel.postId
 
             PostEditData(
+                block = block,
+                board = board,
                 blockId = blockId,
                 boardId = boardId,
                 postId = postId,

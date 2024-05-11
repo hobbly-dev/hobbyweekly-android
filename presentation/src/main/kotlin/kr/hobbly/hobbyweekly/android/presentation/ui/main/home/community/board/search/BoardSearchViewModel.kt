@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
+import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.block.GetBlockUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.board.GetBoardUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.community.post.SearchPostPagingFromBoardUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
@@ -23,6 +27,8 @@ import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 @HiltViewModel
 class BoardSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getBlockUseCase: GetBlockUseCase,
+    private val getBoardUseCase: GetBoardUseCase,
     private val searchPostPagingFromBoardUseCase: SearchPostPagingFromBoardUseCase
 ) : BaseViewModel() {
 
@@ -41,9 +47,19 @@ class BoardSearchViewModel @Inject constructor(
         savedStateHandle.get<Long>(BoardSearchConstant.ROUTE_ARGUMENT_BOARD_ID) ?: -1L
     }
 
+    private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
+    val block: StateFlow<Block> = _block.asStateFlow()
+
+    private val _board: MutableStateFlow<Board> = MutableStateFlow(Board.empty)
+    val board: StateFlow<Board> = _board.asStateFlow()
+
     private val _searchPostPaging: MutableStateFlow<PagingData<Post>> =
         MutableStateFlow(PagingData.empty())
     val searchPostPaging: StateFlow<PagingData<Post>> = _searchPostPaging.asStateFlow()
+
+    init {
+        load()
+    }
 
     fun onIntent(intent: BoardSearchIntent) {
         when (intent) {
@@ -53,15 +69,37 @@ class BoardSearchViewModel @Inject constructor(
         }
     }
 
+    private fun load() {
+        launch {
+            _state.value = BoardSearchState.Loading
+
+            zip(
+                { getBlockUseCase(id = blockId) },
+                { getBoardUseCase(id = boardId) }
+            ).onSuccess { (block, board) ->
+                _state.value = BoardSearchState.Init
+                _block.value = block
+                _board.value = board
+            }.onFailure { exception ->
+                _state.value = BoardSearchState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
+        }
+    }
+
     private fun search(keyword: String) {
         launch {
-            // TODO : Paging State 에 따라서 보여주기
             searchPostPagingFromBoardUseCase(id = boardId, keyword = keyword)
                 .cachedIn(viewModelScope)
-                .onStart {
-                    _state.value = BoardSearchState.Loading
-                }.catch { exception ->
-                    _state.value = BoardSearchState.Init
+                .catch { exception ->
                     when (exception) {
                         is ServerException -> {
                             _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
@@ -72,7 +110,6 @@ class BoardSearchViewModel @Inject constructor(
                         }
                     }
                 }.collect { searchPostPaging ->
-                    _state.value = BoardSearchState.Init
                     _searchPostPaging.value = searchPostPaging
                 }
         }

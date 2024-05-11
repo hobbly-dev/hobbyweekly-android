@@ -42,9 +42,13 @@ fun NavGraphBuilder.boardSearchDestination(
         }
 
         val data: BoardSearchData = let {
+            val block by viewModel.block.collectAsStateWithLifecycle()
+            val board by viewModel.board.collectAsStateWithLifecycle()
             val searchPostList = viewModel.searchPostPaging.collectAsLazyPagingItems()
 
             BoardSearchData(
+                block = block,
+                board = board,
                 searchPostPaging = searchPostList
             )
         }

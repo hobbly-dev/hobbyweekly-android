@@ -53,6 +53,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Board
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.BoardType
@@ -276,7 +277,9 @@ fun BoardScreen(
                 )
             }
             Text(
-                text = "하비위클리",
+                text = data.block.name.takeIfNotEmpty()
+                    ?.plus(" ${data.board.name}")
+                    ?: "하비위클리",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
@@ -462,8 +465,7 @@ private fun BoardScreenPreview() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardData(
-            block =
-            Block(
+            block = Block(
                 id = 5,
                 name = "코딩 블록",
                 content = "코딩을 취미로 하는 사람들의 모임",
