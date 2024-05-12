@@ -1,9 +1,9 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery
 
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryFolder
 import androidx.compose.runtime.Immutable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
+import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryFolder
 
 @Immutable
 data class GalleryArgument(

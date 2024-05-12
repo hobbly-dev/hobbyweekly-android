@@ -62,7 +62,6 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.RoutineIntent
 
 @Composable
 fun RoutineBlockScreen(

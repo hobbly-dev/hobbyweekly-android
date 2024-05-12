@@ -7,7 +7,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObserver
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.MyPageData
 
 fun NavGraphBuilder.myPageStatisticsDestination(
     navController: NavController

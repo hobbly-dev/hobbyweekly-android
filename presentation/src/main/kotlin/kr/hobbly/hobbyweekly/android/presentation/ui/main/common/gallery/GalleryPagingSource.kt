@@ -1,8 +1,8 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery
 
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 
 class GalleryPagingSource(
     private val galleryCursor: GalleryCursor,

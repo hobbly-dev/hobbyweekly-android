@@ -1,8 +1,8 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.block
 
 import androidx.compose.runtime.Immutable
-import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 
 @Immutable
 data class RoutineBlockArgument(

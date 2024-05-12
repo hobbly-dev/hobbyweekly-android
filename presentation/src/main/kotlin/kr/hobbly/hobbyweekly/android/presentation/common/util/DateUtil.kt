@@ -11,7 +11,8 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun LocalDateTime.toDurationString(): String {
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    val duration = now.toInstant(TimeZone.currentSystemDefault()) - (toInstant(TimeZone.currentSystemDefault()))
+    val duration =
+        now.toInstant(TimeZone.currentSystemDefault()) - (toInstant(TimeZone.currentSystemDefault()))
 
     // TODO : Localization
 

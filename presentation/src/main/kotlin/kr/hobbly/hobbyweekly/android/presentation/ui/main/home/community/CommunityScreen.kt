@@ -64,7 +64,6 @@ import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Member
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegularSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodySemiBold
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
