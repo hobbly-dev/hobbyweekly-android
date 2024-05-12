@@ -50,8 +50,6 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import io.sentry.Sentry
-import io.sentry.SentryLevel
 import kotlin.system.exitProcess
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
@@ -201,10 +199,10 @@ private fun MyPageScreen(
             ContextCompat.startActivity(context, browserIntent, null)
         }.onFailure { exception ->
             Timber.d(exception)
-            Sentry.withScope {
-                it.level = SentryLevel.INFO
-                Sentry.captureException(exception)
-            }
+//            Sentry.withScope {
+//                it.level = SentryLevel.INFO
+//                Sentry.captureException(exception)
+//            }
             Firebase.crashlytics.recordException(exception)
         }
     }
@@ -217,10 +215,10 @@ private fun MyPageScreen(
             ContextCompat.startActivity(context, browserIntent, null)
         }.onFailure { exception ->
             Timber.d(exception)
-            Sentry.withScope {
-                it.level = SentryLevel.INFO
-                Sentry.captureException(exception)
-            }
+//            Sentry.withScope {
+//                it.level = SentryLevel.INFO
+//                Sentry.captureException(exception)
+//            }
             Firebase.crashlytics.recordException(exception)
         }
     }

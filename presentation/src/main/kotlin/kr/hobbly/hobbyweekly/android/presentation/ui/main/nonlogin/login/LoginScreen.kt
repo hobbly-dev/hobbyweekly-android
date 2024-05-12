@@ -21,8 +21,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import io.sentry.Sentry
-import io.sentry.SentryLevel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -115,10 +113,10 @@ fun LoginScreen(
                         },
                         onFailure = { exception ->
                             Timber.d(exception)
-                            Sentry.withScope {
-                                it.level = SentryLevel.INFO
-                                Sentry.captureException(exception)
-                            }
+//                            Sentry.withScope {
+//                                it.level = SentryLevel.INFO
+//                                Sentry.captureException(exception)
+//                            }
                             Firebase.crashlytics.recordException(exception)
                         }
                     )

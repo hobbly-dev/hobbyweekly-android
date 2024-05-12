@@ -2,6 +2,8 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.environment
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kr.hobbly.hobbyweekly.android.data.R
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.UndefinedKeyException
 import timber.log.Timber
@@ -46,7 +48,13 @@ class ErrorMessageMapper(
             ALREADY_DONE_ROUTINE -> R.string.error_already_done_routine
             NOT_ALLOWED_SELF_BLOCK -> R.string.error_not_allowed_self_block
             else -> {
-                Timber.e(UndefinedKeyException("Undefined error key: $id"))
+                val exception = UndefinedKeyException("Undefined error key: $id")
+                Timber.d(exception)
+//                Sentry.withScope {
+//                    it.level = SentryLevel.INFO
+//                    Sentry.captureException(exception)
+//                }
+                Firebase.crashlytics.recordException(exception)
                 R.string.error_unknown
             }
         }

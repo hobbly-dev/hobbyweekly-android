@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
-import io.sentry.Sentry
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +69,7 @@ fun ErrorObserver(
         viewModel.errorEvent.eventObserve { event ->
             _error = event
             Timber.d(event.exception)
-            Sentry.captureException(event.exception)
+//            Sentry.captureException(event.exception)
             Firebase.crashlytics.recordException(event.exception)
         }
     }

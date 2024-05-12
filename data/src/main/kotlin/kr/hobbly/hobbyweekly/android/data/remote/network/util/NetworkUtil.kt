@@ -4,8 +4,6 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
-import io.sentry.Sentry
-import io.sentry.SentryLevel
 import kr.hobbly.hobbyweekly.android.data.remote.mapper.DataMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.error.ErrorRes
@@ -40,10 +38,10 @@ suspend inline fun <reified T : Any> HttpResponse.convert(
         }
     }.onFailure { exception ->
         Timber.d(exception)
-        Sentry.withScope {
-            it.level = SentryLevel.INFO
-            Sentry.captureException(exception)
-        }
+//        Sentry.withScope {
+//            it.level = SentryLevel.INFO
+//            Sentry.captureException(exception)
+//        }
         Firebase.crashlytics.recordException(exception)
     }
 }
