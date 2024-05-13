@@ -296,7 +296,7 @@ private fun MyPageScreen(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "하비위클리",
+                text = "루틴 통계",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )

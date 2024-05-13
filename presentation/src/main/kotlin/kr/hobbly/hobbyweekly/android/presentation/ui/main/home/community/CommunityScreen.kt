@@ -451,7 +451,7 @@ private fun CommunityScreen(
                 }
         ) {
             Text(
-                text = "하비위클리",
+                text = "취미블록 커뮤니티",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )

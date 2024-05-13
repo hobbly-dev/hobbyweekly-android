@@ -52,8 +52,10 @@ import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Blue
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
@@ -132,11 +134,20 @@ fun RoutineScreen(
         )
     }
 
+    val data: RoutineData = Unit.let {
+        val profile by viewModel.profile.collectAsStateWithLifecycle()
+
+        RoutineData(
+            profile = profile
+        )
+    }
+
     ErrorObserver(viewModel)
     RoutineScreen(
         navController = navController,
         parentArgument = parentArgument,
-        argument = argument
+        argument = argument,
+        data = data
     )
 }
 
@@ -144,7 +155,8 @@ fun RoutineScreen(
 private fun RoutineScreen(
     navController: NavController,
     parentArgument: HomeArgument,
-    argument: RoutineArgument
+    argument: RoutineArgument,
+    data: RoutineData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
@@ -247,7 +259,9 @@ private fun RoutineScreen(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "하비위클리",
+                text = data.profile.nickname.takeIfNotEmpty()
+                    ?.plus("'s 하비위클리")
+                    ?: "하비위클리",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
@@ -766,6 +780,14 @@ private fun RoutineScreenPreview1() {
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
+        data = RoutineData(
+            profile = Profile(
+                id = 1,
+                nickname = "장성혁",
+                image = "https://avatars.githubusercontent.com/u/48707913?v=4",
+                isHobbyChecked = true
+            )
+        )
     )
 }
 
@@ -788,5 +810,13 @@ private fun RoutineScreenPreview2() {
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
+        data = RoutineData(
+            profile = Profile(
+                id = 1,
+                nickname = "장성혁",
+                image = "https://avatars.githubusercontent.com/u/48707913?v=4",
+                isHobbyChecked = true
+            )
+        )
     )
 }

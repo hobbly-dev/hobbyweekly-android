@@ -12,15 +12,18 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.zip
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetCurrentRoutineListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.GetLatestRoutineListUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.SwitchRoutineAlarmUseCase
+import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
 
 @HiltViewModel
 class RoutineViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
+    private val getProfileUseCase: GetProfileUseCase,
     private val getCurrentRoutineListUseCase: GetCurrentRoutineListUseCase,
     private val getLatestRoutineListUseCase: GetLatestRoutineListUseCase,
     private val switchRoutineAlarmUseCase: SwitchRoutineAlarmUseCase
@@ -31,6 +34,9 @@ class RoutineViewModel @Inject constructor(
 
     private val _event: MutableEventFlow<RoutineEvent> = MutableEventFlow()
     val event: EventFlow<RoutineEvent> = _event.asEventFlow()
+
+    private val _profile: MutableStateFlow<Profile> = MutableStateFlow(Profile.empty)
+    val profile: StateFlow<Profile> = _profile.asStateFlow()
 
     fun onIntent(intent: RoutineIntent) {
         when (intent) {
@@ -74,10 +80,12 @@ class RoutineViewModel @Inject constructor(
         launch {
             _state.value = RoutineState.Loading
             zip(
+                { getProfileUseCase() },
                 { getCurrentRoutineListUseCase() },
                 { getLatestRoutineListUseCase() }
-            ).onSuccess { (currentRoutineList, latestRoutineList) ->
+            ).onSuccess { (profile, currentRoutineList, latestRoutineList) ->
                 _state.value = RoutineState.Init
+                _profile.value = profile
                 _event.emit(RoutineEvent.UpdateAlarm.Refresh(currentRoutineList, latestRoutineList))
                 _event.emit(RoutineEvent.UpdateRoutine(currentRoutineList, latestRoutineList))
             }.onFailure { exception ->

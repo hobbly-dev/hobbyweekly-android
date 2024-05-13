@@ -130,7 +130,7 @@ fun MyPageStatisticsScreen(
                 )
             }
             Text(
-                text = "하비위클리",
+                text = "주간챌린지 달성률",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
