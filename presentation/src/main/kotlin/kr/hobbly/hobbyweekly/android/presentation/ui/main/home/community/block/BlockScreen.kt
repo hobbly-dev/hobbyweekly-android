@@ -214,7 +214,7 @@ fun BlockScreen(
             ) {
                 SubcomposeAsyncImage(
                     model = ImageRequest.Builder(context)
-                        .data(data.block.thumbnail)
+                        .data(data.block.image)
                         .crossfade(true)
                         .build(),
                     contentScale = ContentScale.Crop,
