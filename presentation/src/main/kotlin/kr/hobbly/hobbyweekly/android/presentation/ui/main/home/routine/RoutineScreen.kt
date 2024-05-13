@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -337,77 +338,92 @@ private fun RoutineScreen(
                 }
             }
 
-            items(
-                items = todayRoutineList,
-//                key = {
-//                    it.id
-//                }
-            ) { routine ->
-                RoutineScreenItem(
-                    routine = routine,
-                    selectedDayOfWeek = selectedDayOfWeek,
-                    onEnableStateChanged = {
-                        fun MutableList<Routine>.switch(fixedRoutine: Routine) {
-                            val index = indexOfFirst { it.id == fixedRoutine.id }
-                            if (index != -1) {
-                                set(index, fixedRoutine)
-                            }
-                        }
-
-                        val fixedRoutine = routine.copy(isAlarmEnabled = it)
-
-                        currentRoutineList.switch(fixedRoutine)
-                        latestRoutineList.switch(fixedRoutine)
-                        intent(RoutineIntent.OnSwitch(fixedRoutine))
-                    },
-                    onConfirm = {
-                        navigateToPostAdd(routine)
-                    },
-                    onEdit = {
-                        navigateToEditRoutine(routine)
+            if (state == RoutineState.Loading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(Space80)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(Space24)
+                                .align(Alignment.Center),
+                            color = Neutral400,
+                            strokeWidth = 2.dp
+                        )
                     }
-                )
-            }
+                }
+            } else {
+                items(
+                    items = todayRoutineList
+                ) { routine ->
+                    RoutineScreenItem(
+                        routine = routine,
+                        selectedDayOfWeek = selectedDayOfWeek,
+                        onEnableStateChanged = {
+                            fun MutableList<Routine>.switch(fixedRoutine: Routine) {
+                                val index = indexOfFirst { it.id == fixedRoutine.id }
+                                if (index != -1) {
+                                    set(index, fixedRoutine)
+                                }
+                            }
 
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(White)
-                ) {
+                            val fixedRoutine = routine.copy(isAlarmEnabled = it)
+
+                            currentRoutineList.switch(fixedRoutine)
+                            latestRoutineList.switch(fixedRoutine)
+                            intent(RoutineIntent.OnSwitch(fixedRoutine))
+                        },
+                        onConfirm = {
+                            navigateToPostAdd(routine)
+                        },
+                        onEdit = {
+                            navigateToEditRoutine(routine)
+                        }
+                    )
+                }
+
+                item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = Space40)
-                            .clip(RoundedCornerShape(Radius12))
-                            .background(Neutral100)
+                            .background(White)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
-                                    isRoutineBlockShowing = true
-                                },
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .padding(horizontal = Space40)
+                                .clip(RoundedCornerShape(Radius12))
+                                .background(Neutral100)
                         ) {
-                            Spacer(modifier = Modifier.height(Space16))
-                            Box(
+                            Column(
                                 modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(White)
-                                    .size(Space32)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        isRoutineBlockShowing = true
+                                    },
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Icon(
+                                Spacer(modifier = Modifier.height(Space16))
+                                Box(
                                     modifier = Modifier
-                                        .size(Space16)
-                                        .align(Alignment.Center),
-                                    painter = painterResource(R.drawable.ic_plus),
-                                    contentDescription = null,
-                                    tint = Neutral900
-                                )
+                                        .clip(CircleShape)
+                                        .background(White)
+                                        .size(Space32)
+                                ) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(Space16)
+                                            .align(Alignment.Center),
+                                        painter = painterResource(R.drawable.ic_plus),
+                                        contentDescription = null,
+                                        tint = Neutral900
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(Space16))
                             }
-                            Spacer(modifier = Modifier.height(Space16))
                         }
                     }
                 }
@@ -733,7 +749,29 @@ fun RoutineScreenItem(
 
 @Preview
 @Composable
-private fun RoutineScreenPreview() {
+private fun RoutineScreenPreview1() {
+    RoutineScreen(
+        navController = rememberNavController(),
+        parentArgument = HomeArgument(
+            state = HomeState.Init,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            handler = CoroutineExceptionHandler { _, _ -> }
+        ),
+        argument = RoutineArgument(
+            state = RoutineState.Loading,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            handler = CoroutineExceptionHandler { _, _ -> }
+        ),
+    )
+}
+
+@Preview
+@Composable
+private fun RoutineScreenPreview2() {
     RoutineScreen(
         navController = rememberNavController(),
         parentArgument = HomeArgument(

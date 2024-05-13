@@ -22,7 +22,7 @@ sealed interface PostEditState {
 
 sealed interface PostEditEvent {
     sealed interface Load : PostEditEvent {
-        data class Success(val post: Post) : Load
+        data class Success(val post: kr.hobbly.hobbyweekly.android.domain.model.feature.community.Post) : Load
     }
 
     sealed interface Post : PostEditEvent {

@@ -46,19 +46,16 @@ class RoutineViewModel @Inject constructor(
 
     private fun switchRoutineAlarm(routine: Routine) {
         launch {
-            _state.value = RoutineState.Loading
             switchRoutineAlarmUseCase(
                 id = routine.id,
                 isEnabled = routine.isAlarmEnabled
             ).onSuccess {
-                _state.value = RoutineState.Init
                 if (routine.isAlarmEnabled) {
                     _event.emit(RoutineEvent.UpdateAlarm.On(routine))
                 } else {
                     _event.emit(RoutineEvent.UpdateAlarm.Off(routine))
                 }
             }.onFailure { exception ->
-                _state.value = RoutineState.Init
                 when (exception) {
                     is ServerException -> {
                         _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
