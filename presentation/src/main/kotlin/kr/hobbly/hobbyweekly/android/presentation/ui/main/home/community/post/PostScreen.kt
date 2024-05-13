@@ -505,11 +505,15 @@ fun PostScreen(
                             isChild = false,
                             selectedComment = selectedComment,
                             onComment = { comment, bringIntoViewRequester ->
-                                selectedComment = comment
+                                if (data.isMyBlock) {
+                                    selectedComment = comment
+                                }
                                 scope.launch {
-                                    focusRequester.requestFocus()
-                                    keyboard?.show()
-                                    bringIntoViewRequester.bringIntoView()
+                                    if (data.isMyBlock) {
+                                        focusRequester.requestFocus()
+                                        keyboard?.show()
+                                        bringIntoViewRequester.bringIntoView()
+                                    }
                                 }
                             },
                             onLike = {
@@ -745,25 +749,33 @@ fun PostScreen(
                 isCommentWriteSuccessDialogShowing = true
                 commentText = ""
                 selectedComment = null
-                focusRequester.freeFocus()
+                if (data.isMyBlock) {
+                    focusRequester.freeFocus()
+                }
             }
 
             PostEvent.Comment.Remove.Success -> {
                 isCommentRemoveSuccessDialogShowing = true
                 selectedComment = null
-                focusRequester.freeFocus()
+                if (data.isMyBlock) {
+                    focusRequester.freeFocus()
+                }
             }
 
             PostEvent.Comment.Block.Success -> {
                 isCommentUserBlockSuccessDialogShowing = true
                 selectedComment = null
-                focusRequester.freeFocus()
+                if (data.isMyBlock) {
+                    focusRequester.freeFocus()
+                }
             }
 
             PostEvent.Comment.Report.Success -> {
                 isCommentReportSuccessDialogShowing = true
                 selectedComment = null
-                focusRequester.freeFocus()
+                if (data.isMyBlock) {
+                    focusRequester.freeFocus()
+                }
             }
         }
     }
