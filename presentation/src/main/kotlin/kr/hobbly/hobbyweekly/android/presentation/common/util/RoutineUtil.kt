@@ -33,7 +33,7 @@ fun Context.registerRepeatRoutineList(
                 .plus(smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
                 .plus(1, DateTimeUnit.WEEK)
             val time = LocalDateTime(date, alarmTime)
-            val intent = makeRepeatRoutineToIntent(routine)
+            val intent = makeRepeatRoutineToIntent(routine, smallRoutine.dayOfWeek)
 
             alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
@@ -60,7 +60,7 @@ fun Context.registerInstantRoutineList(
                 .plus(smallRoutine.dayOfWeek - now.date.dayOfWeek.ordinal, DateTimeUnit.DAY)
             val time = LocalDateTime(date, alarmTime)
             if (time > now) {
-                val intent = makeInstantRoutineToIntent(routine)
+                val intent = makeInstantRoutineToIntent(routine, smallRoutine.dayOfWeek)
 
                 alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
@@ -145,18 +145,22 @@ fun Context.unregisterInstantRoutine(
     routine: Routine
 ) {
     val alarmManager = getSystemService(AlarmManager::class.java) ?: return
-    val intent = makeInstantRoutineToIntent(routine)
 
-    alarmManager.cancel(intent)
+    (0..6).forEach { dayOfWeek ->
+        val intent = makeInstantRoutineToIntent(routine, dayOfWeek)
+        alarmManager.cancel(intent)
+    }
 }
 
 fun Context.unregisterRepeatRoutine(
     routine: Routine
 ) {
     val alarmManager = getSystemService(AlarmManager::class.java) ?: return
-    val intent = makeRepeatRoutineToIntent(routine)
 
-    alarmManager.cancel(intent)
+    (0..6).forEach { dayOfWeek ->
+        val intent = makeRepeatRoutineToIntent(routine, dayOfWeek)
+        alarmManager.cancel(intent)
+    }
 }
 
 fun Context.unregisterInstantNotify(
@@ -188,8 +192,10 @@ fun Context.unregisterAlarmAll(
         alarmManager.cancelAll()
     } else {
         routineList.forEach { routine ->
-            alarmManager.cancel(makeRepeatRoutineToIntent(routine))
-            alarmManager.cancel(makeInstantRoutineToIntent(routine))
+            (0..6).forEach { dayOfWeek ->
+                alarmManager.cancel(makeRepeatRoutineToIntent(routine, dayOfWeek))
+                alarmManager.cancel(makeInstantRoutineToIntent(routine, dayOfWeek))
+            }
         }
         (0..6).forEach { dayOfWeek ->
             (makeRepeatNotifyToIntent(dayOfWeek) + makeInstantNotifyToIntent(dayOfWeek)).forEach { intent ->
@@ -200,7 +206,8 @@ fun Context.unregisterAlarmAll(
 }
 
 private fun Context.makeInstantRoutineToIntent(
-    routine: Routine
+    routine: Routine,
+    dayOfWeek: Int
 ): PendingIntent {
     return Intent(this, InstantRoutineReceiver::class.java).apply {
         putExtra(InstantRoutineReceiver.NOTIFICATION_ID, routine.id.toInt())
@@ -209,7 +216,7 @@ private fun Context.makeInstantRoutineToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            routine.id.toInt(),
+            routine.id.toInt() * 7 + dayOfWeek,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -217,7 +224,8 @@ private fun Context.makeInstantRoutineToIntent(
 }
 
 private fun Context.makeRepeatRoutineToIntent(
-    routine: Routine
+    routine: Routine,
+    dayOfWeek: Int
 ): PendingIntent {
     return Intent(this, RepeatRoutineReceiver::class.java).apply {
         putExtra(RepeatRoutineReceiver.NOTIFICATION_ID, routine.id.toInt())
@@ -226,7 +234,7 @@ private fun Context.makeRepeatRoutineToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            routine.id.toInt(),
+            routine.id.toInt() * 7 + dayOfWeek,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -243,7 +251,7 @@ private fun Context.makeInstantNotifyToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            dayOfWeek,
+            dayOfWeek * 2,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -255,7 +263,7 @@ private fun Context.makeInstantNotifyToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            dayOfWeek,
+            dayOfWeek * 2 + 1,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -273,7 +281,7 @@ private fun Context.makeRepeatNotifyToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            dayOfWeek,
+            14 + dayOfWeek * 2,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
@@ -285,7 +293,7 @@ private fun Context.makeRepeatNotifyToIntent(
     }.let { intent ->
         PendingIntent.getBroadcast(
             this,
-            dayOfWeek,
+            14 + dayOfWeek * 2 + 1,
             intent,
             PendingIntent.FLAG_IMMUTABLE
         )
