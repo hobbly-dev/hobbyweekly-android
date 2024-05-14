@@ -153,15 +153,14 @@ class PostViewModel @Inject constructor(
             refreshComment()
             zip(
                 { getBlockUseCase(id = blockId) },
-                { getBoardUseCase(id = boardId) },
                 { loadBlockPostUseCase(id = postId) },
                 { getMyBlockListUseCase() },
                 { getProfileUseCase() },
-            ).onSuccess { (block, board, post, myBlockList, profile) ->
+            ).onSuccess { (block, post, myBlockList, profile) ->
                 _state.value = PostState.Init
 
                 _block.value = block
-                _board.value = board
+                _board.value = post.board
                 _post.value = post
                 _isMyBlock.value = myBlockList.any { it.id == post.board.blockId }
                 _profile.value = profile
