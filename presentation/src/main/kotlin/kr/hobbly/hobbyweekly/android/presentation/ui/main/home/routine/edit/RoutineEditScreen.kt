@@ -46,6 +46,7 @@ import kotlinx.coroutines.plus
 import kotlinx.datetime.LocalTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
 import kr.hobbly.hobbyweekly.android.domain.model.feature.community.Block
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelMedium
@@ -216,7 +217,9 @@ fun RoutineEditScreen(
                 )
             }
             Text(
-                text = "하비위클리",
+                text = data.block.name.takeIfNotEmpty()
+                    ?.plus(" 루틴 설정")
+                    ?: "하비위클리",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)
             )
