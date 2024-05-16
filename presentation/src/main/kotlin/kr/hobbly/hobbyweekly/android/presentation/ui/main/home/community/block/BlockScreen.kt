@@ -340,7 +340,7 @@ fun BlockScreen(
                                 onClick = {
                                     logEvent(
                                         "clk_blk_board",
-                                        mapOf("board_type" to it.type)
+                                        mapOf("board_type" to it.type.name)
                                     )
                                     navigateToBoard(
                                         block = data.block,
