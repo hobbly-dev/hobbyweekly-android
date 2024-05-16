@@ -53,7 +53,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space40
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space60
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Space80
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleMedium
-import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBold
+import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldXSmall
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.view.BottomSheetScreen
@@ -133,10 +133,18 @@ private fun RoutineBlockScreen(
             Spacer(modifier = Modifier.height(Space40))
             Text(
                 modifier = Modifier.padding(horizontal = Space20),
-                text = "블록 설정",
-                style = TitleSemiBold.merge(Neutral900)
+                text = "내 블록 리스트",
+                style = TitleSemiBoldXSmall.merge(Neutral900)
             )
-            Spacer(modifier = Modifier.height(Space20))
+            Spacer(modifier = Modifier.height(Space10))
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = Space20)
+                    .fillMaxWidth(),
+                text = "블록을 선택해 나만의 루틴을 만드세요!",
+                style = TitleMedium.merge(Neutral900)
+            )
+            Spacer(modifier = Modifier.height(Space10))
             if (data.myBlockList.isEmpty()) {
                 Box(
                     modifier = Modifier
