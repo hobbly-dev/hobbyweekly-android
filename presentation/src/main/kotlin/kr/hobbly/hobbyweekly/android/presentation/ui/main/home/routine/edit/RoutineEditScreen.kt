@@ -116,6 +116,8 @@ fun RoutineEditScreen(
     var isTimePickerShowing: Boolean by remember { mutableStateOf(false) }
     var isAddDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isEditDialogShowing: Boolean by remember { mutableStateOf(false) }
+    var isDeleteConfirmDialogShowing: Boolean by remember { mutableStateOf(false) }
+    var isQuitConfirmDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isDeleteDialogShowing: Boolean by remember { mutableStateOf(false) }
     var isQuitDialogShowing: Boolean by remember { mutableStateOf(false) }
 
@@ -156,6 +158,35 @@ fun RoutineEditScreen(
             },
             onConfirm = {
                 navigateToHome()
+            }
+        )
+    }
+
+    if (isDeleteConfirmDialogShowing) {
+        DialogScreen(
+            title = "루틴 삭제",
+            message = "루틴 삭제시, 루틴은 제거되며\n지금까지의 루틴 달성률 또한\n모두 삭제됩니다. ",
+            isCancelable = false,
+            onDismissRequest = {
+                isDeleteConfirmDialogShowing = false
+            },
+            onConfirm = {
+                intent(RoutineEditIntent.OnDelete)
+            },
+            onCancel = {}
+        )
+    }
+
+    if (isQuitConfirmDialogShowing) {
+        DialogScreen(
+            title = "루틴 종료",
+            message = "루틴 종료시, 루틴은 제거되나\n지금까지의 루틴 달성률은\n통계탭에서 확인이 가능합니다. ",
+            isCancelable = false,
+            onDismissRequest = {
+                isQuitConfirmDialogShowing = false
+            },
+            onConfirm = {
+                intent(RoutineEditIntent.OnQuit)
             }
         )
     }
@@ -246,11 +277,11 @@ fun RoutineEditScreen(
                         onClick = { text ->
                             when (text) {
                                 "삭제" -> {
-                                    intent(RoutineEditIntent.OnDelete)
+                                    isDeleteConfirmDialogShowing = true
                                 }
 
                                 "종료" -> {
-                                    intent(RoutineEditIntent.OnQuit)
+                                    isQuitConfirmDialogShowing = true
                                 }
                             }
                         }
