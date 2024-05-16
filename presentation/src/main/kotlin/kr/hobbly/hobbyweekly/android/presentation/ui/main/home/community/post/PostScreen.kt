@@ -276,6 +276,7 @@ fun PostScreen(
             title = "게시글 신고",
             message = reportPostReason.second,
             onConfirm = {
+                logEvent("btn_report_post", emptyMap())
                 intent(PostIntent.Post.OnReport(reportPostReason.first))
             },
             onCancel = {},
@@ -290,6 +291,7 @@ fun PostScreen(
             title = "댓글 신고",
             message = reportCommentReason.second,
             onConfirm = {
+                logEvent("btn_report_reply", emptyMap())
                 intent(
                     PostIntent.Comment.OnReport(
                         commentId = reportCommentId,
@@ -432,6 +434,7 @@ fun PostScreen(
                             ) {
                                 Box(
                                     modifier = Modifier.clickable {
+                                        logEvent("icon_like_post", emptyMap())
                                         intent(PostIntent.Post.OnLike)
                                     }
                                 ) {
@@ -517,6 +520,7 @@ fun PostScreen(
                                 }
                             },
                             onLike = {
+                                logEvent("icon_like_reply", emptyMap())
                                 intent(PostIntent.Comment.OnLike(it.id))
                             },
                             onBlock = {
@@ -606,6 +610,7 @@ fun PostScreen(
                                 intent(PostIntent.Post.OnRemove)
                             }
                             if (text == "차단하기") {
+                                logEvent("btn_ben_reply", emptyMap())
                                 intent(PostIntent.Post.OnBlock)
                             }
                             if (text == "신고하기") {
@@ -704,6 +709,7 @@ fun PostScreen(
                         } else {
                             RippleBox(
                                 onClick = {
+                                    logEvent("btn_reply_success", emptyMap())
                                     intent(
                                         PostIntent.Comment.OnComment(
                                             parentId = selectedComment?.id ?: -1,

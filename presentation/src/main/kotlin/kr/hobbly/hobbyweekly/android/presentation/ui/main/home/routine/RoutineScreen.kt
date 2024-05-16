@@ -329,6 +329,7 @@ private fun RoutineScreen(
 
                             RippleBox(
                                 onClick = {
+                                    logEvent("icon_routine_nextweek", emptyMap())
                                     isLatestRoutineShowing = !isLatestRoutineShowing
                                 }
                             ) {
@@ -390,6 +391,7 @@ private fun RoutineScreen(
                             intent(RoutineIntent.OnSwitch(fixedRoutine))
                         },
                         onConfirm = {
+                            logEvent("btn_routine_certifi", emptyMap())
                             navigateToPostAdd(routine)
                         },
                         onEdit = {
@@ -415,6 +417,7 @@ private fun RoutineScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
+                                        logEvent("btn_routine_add", emptyMap())
                                         isRoutineBlockShowing = true
                                     },
                                 horizontalAlignment = Alignment.CenterHorizontally,

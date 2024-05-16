@@ -236,6 +236,7 @@ fun PostEditScreen(
                         .align(Alignment.CenterEnd)
                         .padding(end = Space20),
                     onClick = {
+                        logEvent("btn_post_success", emptyMap())
                         intent(
                             PostEditIntent.OnPost(
                                 title = title,

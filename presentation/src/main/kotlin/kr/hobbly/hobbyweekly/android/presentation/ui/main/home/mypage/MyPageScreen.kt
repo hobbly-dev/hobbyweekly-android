@@ -321,18 +321,22 @@ private fun MyPageScreen(
                     onClick = {
                         when (it) {
                             "로그아웃" -> {
+                                logEvent("btn_sign_out", emptyMap())
                                 intent(MyPageIntent.Logout)
                             }
 
                             "문의하기" -> {
+                                logEvent("btn_question", emptyMap())
                                 navigateToInquiry()
                             }
 
                             "정책약관" -> {
+                                logEvent("btn_policy", emptyMap())
                                 navigateToTerm()
                             }
 
                             "회원탈퇴" -> {
+                                logEvent("btn_sign_delete", emptyMap())
                                 intent(MyPageIntent.Withdraw)
                             }
                         }
@@ -413,6 +417,7 @@ private fun MyPageScreen(
                 Spacer(modifier = Modifier.width(Space10))
                 RippleBox(
                     onClick = {
+                        logEvent("clk_stat_plus", emptyMap())
                         navigateToMyPageStatistics()
                     }
                 ) {
@@ -537,6 +542,10 @@ private fun MyPageScreen(
                                 statistics = statistics,
                                 isSelected = !unselectedBlockList.contains(statistics.id),
                                 onClick = {
+                                    logEvent(
+                                        "clk_stat_blk",
+                                        mapOf("clk_stat_blk_id" to it.id)
+                                    )
                                     if (unselectedBlockList.contains(it.id)) {
                                         unselectedBlockList.remove(it.id)
                                     } else {

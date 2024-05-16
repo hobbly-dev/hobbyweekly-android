@@ -277,10 +277,12 @@ fun RoutineEditScreen(
                         onClick = { text ->
                             when (text) {
                                 "삭제" -> {
+                                    logEvent("btn_routine_delete", emptyMap())
                                     isDeleteConfirmDialogShowing = true
                                 }
 
                                 "종료" -> {
+                                    logEvent("btn_routine_end", emptyMap())
                                     isQuitConfirmDialogShowing = true
                                 }
                             }
@@ -466,6 +468,7 @@ fun RoutineEditScreen(
             ),
             isEnabled = isConfirmButtonEnabled,
             onClick = {
+                logEvent("btn_routine_check", emptyMap())
                 intent(
                     RoutineEditIntent.OnConfirm(
                         selectedDayOfWeek = selectedDayOfWeek,

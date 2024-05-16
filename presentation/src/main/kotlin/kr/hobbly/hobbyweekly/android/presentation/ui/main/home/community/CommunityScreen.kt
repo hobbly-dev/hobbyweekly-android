@@ -299,6 +299,10 @@ private fun CommunityScreen(
                             CommunityScreenMyBlockItem(
                                 block = block,
                                 onClick = {
+                                    logEvent(
+                                        "clk_comm_blk",
+                                        mapOf("clk_comm_blk_id" to it.id)
+                                    )
                                     navigateToBlock(it)
                                 }
                             )
@@ -369,6 +373,10 @@ private fun CommunityScreen(
                             CommunityScreenPopularBlockItem(
                                 block = block,
                                 onClick = {
+                                    logEvent(
+                                        "clk_comm_blk",
+                                        mapOf("clk_comm_blk_id" to it.id)
+                                    )
                                     navigateToBlock(it)
                                 }
                             )

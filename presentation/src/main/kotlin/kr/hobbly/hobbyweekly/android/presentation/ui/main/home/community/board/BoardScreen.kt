@@ -234,6 +234,7 @@ fun BoardScreen(
                     BoardScreenPostItem(
                         post = post,
                         onClick = {
+                            logEvent("clk_post", emptyMap())
                             navigateToPost(post)
                         }
                     )
@@ -299,6 +300,7 @@ fun BoardScreen(
                     shape = CircleShape,
                     containerColor = Red,
                     onClick = {
+                        logEvent("btn_write_post", emptyMap())
                         if (data.board.type == BoardType.Routine) {
                             isBoardRoutineShowing = true
                         } else {

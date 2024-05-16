@@ -106,6 +106,7 @@ fun LoginScreen(
             isEnabled = isConfirmButtonEnabled,
             onClick = {
                 scope.launch {
+                    logEvent("btn_sign_up", emptyMap())
                     loginWithKakao(
                         context = context,
                         onSuccess = { token ->

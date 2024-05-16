@@ -173,6 +173,10 @@ private fun RoutineBlockScreen(
                         RoutineBlockScreenBlockItem(
                             block = block,
                             onClick = {
+                                logEvent(
+                                    "btn_routine_block",
+                                    mapOf("btn_routine_block_id" to it.id)
+                                )
                                 onDismissRequest()
                                 onClickBlock(it)
                             }
@@ -199,6 +203,7 @@ private fun RoutineBlockScreen(
                     type = ConfirmButtonType.Primary
                 ),
                 onClick = {
+                    logEvent("btn_direct_comm", emptyMap())
                     onDismissRequest()
                     onConfirm()
                 }

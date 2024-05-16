@@ -338,6 +338,10 @@ fun BlockScreen(
                             BlockScreenBoardItem(
                                 board = board,
                                 onClick = {
+                                    logEvent(
+                                        "clk_blk_board",
+                                        mapOf("board_type" to it.type)
+                                    )
                                     navigateToBoard(
                                         block = data.block,
                                         board = it
@@ -469,6 +473,10 @@ fun BlockScreen(
                         onDismissRequest = { isMenuShowing = false },
                         onClick = { text ->
                             if (text == "삭제하기") {
+                                logEvent(
+                                    "btn_exit_block",
+                                    mapOf("btn_exit_block_id" to data.block.id)
+                                )
                                 intent(BlockIntent.OnRemove)
                             }
                         }
@@ -491,6 +499,12 @@ fun BlockScreen(
                     type = ConfirmButtonType.Primary
                 ),
                 onClick = {
+                    logEvent(
+                        "btn_join_block",
+                        mapOf(
+                            "btn_join_block_id" to data.block.id
+                        )
+                    )
                     navigateToRoutineEdit()
                 }
             ) { style ->
