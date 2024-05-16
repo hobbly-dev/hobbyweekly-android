@@ -160,18 +160,33 @@ fun PostEditScreen(
         )
     }
     if (isLeaveDialogShowing) {
-        DialogScreen(
-            title = "게시글 수정",
-            message = "블럭쓰기를 중단하시겠습니까?\n내용이 저장되지 않습니다",
-            confirmMessage = "종료",
-            onDismissRequest = {
-                isLeaveDialogShowing = false
-            },
-            onCancel = {},
-            onConfirm = {
-                navController.safeNavigateUp()
-            }
-        )
+        if (data.postId == -1L) {
+            DialogScreen(
+                title = "게시글 작성",
+                message = "게시글 작성을 중단하시겠습니까?\n작성된 내용이 저장되지 않습니다",
+                confirmMessage = "종료",
+                onDismissRequest = {
+                    isLeaveDialogShowing = false
+                },
+                onCancel = {},
+                onConfirm = {
+                    navController.safeNavigateUp()
+                }
+            )
+        } else {
+            DialogScreen(
+                title = "게시글 수정",
+                message = "게시글 수정을 중단하시겠습니까?\n변경된 내용이 저장되지 않습니다",
+                confirmMessage = "종료",
+                onDismissRequest = {
+                    isLeaveDialogShowing = false
+                },
+                onCancel = {},
+                onConfirm = {
+                    navController.safeNavigateUp()
+                }
+            )
+        }
     }
 
     BackHandler(
