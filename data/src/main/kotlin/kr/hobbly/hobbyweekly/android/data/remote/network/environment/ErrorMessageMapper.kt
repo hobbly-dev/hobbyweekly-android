@@ -76,10 +76,10 @@ class ErrorMessageMapper(
         const val REFRESH_TOKEN_INVALID: Long = 401004L // Invalid Refresh Token
         const val EMPTY_JWT_TOKEN: Long = 401005L // Empty jwt token
         const val INVALID_REFRESH_TOKEN: Long = 401006L // Valid jwt token, but different with DB
-        const val ADMIN_UNAUTHORIZED: Long = 401007L // Admin only
         const val WRITER_UNAUTHORIZED: Long = 403001L // Writer only
         const val MAKER_UNAUTHORIZED: Long = 403002L // Maker only
         const val BLOCK_MEMBER_UNAUTHORIZED: Long = 403003L // Block member only
+        const val ADMIN_UNAUTHORIZED: Long = 403004L // Admin only
         const val MEMBER_NOT_FOUND: Long = 404101L // Not exist member
         const val REFRESH_TOKEN_NOT_FOUND: Long = 404102L // Not found refresh token in DB
         const val BOARD_NOT_FOUND: Long = 404103L // Not found board
