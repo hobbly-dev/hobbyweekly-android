@@ -19,7 +19,7 @@ class EditProfileWithUploadUseCase @Inject constructor(
         } else {
             getUrlAndUploadImageUseCase(
                 imageUriList = listOf(imageUri)
-            ).map { imageList ->
+            ).mapCatching { imageList ->
                 editProfileUseCase(
                     nickname = nickname,
                     image = imageList.firstOrNull().orEmpty()

@@ -152,7 +152,7 @@ class PostEditViewModel @Inject constructor(
 
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
-            ).onSuccess { newImageList ->
+            ).mapCatching { newImageList ->
                 editPostUseCase(
                     id = postId,
                     title = title,
@@ -192,7 +192,7 @@ class PostEditViewModel @Inject constructor(
 
             getUrlAndUploadImageUseCase(
                 imageUriList = newImageList.map { it.filePath }
-            ).onSuccess { newImageList ->
+            ).mapCatching { newImageList ->
                 if (routineId == -1L) {
                     writePostUseCase(
                         id = boardId,

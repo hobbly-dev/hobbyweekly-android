@@ -63,7 +63,7 @@ class RoutineEditViewModel @Inject constructor(
             if (isEditMode) {
                 getRoutineUseCase(
                     id = routineId
-                ).onSuccess { routine ->
+                ).mapCatching { routine ->
                     val block = getBlockUseCase(
                         id = routine.blockId
                     ).getOrThrow()

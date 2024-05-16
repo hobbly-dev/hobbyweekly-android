@@ -11,7 +11,7 @@ class GetUrlAndUploadImageUseCase @Inject constructor(
     ): Result<List<String>> {
         return getPreSignedUrlListUseCase(
             count = imageUriList.size
-        ).map { preSignedUrlList ->
+        ).mapCatching { preSignedUrlList ->
             preSignedUrlList.mapIndexed { index, preSignedUrl ->
                 uploadImageUseCase(
                     preSignedUrl = preSignedUrl.preSignedUrl,

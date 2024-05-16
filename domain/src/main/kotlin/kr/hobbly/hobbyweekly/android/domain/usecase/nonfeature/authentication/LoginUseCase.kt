@@ -21,7 +21,7 @@ class LoginUseCase @Inject constructor(
             socialId = socialId,
             socialType = socialType,
             firebaseToken = getFcmTokenUseCase()
-        ).onSuccess {
+        ).mapCatching {
             getProfileUseCase().onSuccess { profile ->
                 setTrackingProfileUseCase(
                     profile = profile
