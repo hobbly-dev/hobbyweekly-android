@@ -905,6 +905,22 @@ fun PostScreenCommentItem(
                             overflow = TextOverflow.Ellipsis,
                             style = BodyRegular.merge(Neutral400)
                         )
+                        if (comment.likeCount > 0) {
+                            Spacer(modifier = Modifier.width(Space8))
+                            Icon(
+                                modifier = Modifier.size(Space12),
+                                painter = painterResource(R.drawable.ic_like),
+                                contentDescription = null,
+                                tint = Red
+                            )
+                            Spacer(modifier = Modifier.width(Space4))
+                            Text(
+                                text = comment.likeCount.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = BodyRegular.merge(Neutral900)
+                            )
+                        }
                         Spacer(modifier = Modifier.weight(1f))
                         Row(
                             modifier = Modifier
@@ -1095,7 +1111,77 @@ private fun PostScreenPreview() {
                 image = "https://avatars.githubusercontent.com/u/48707913?v=4",
                 isHobbyChecked = true
             ),
-            commentList = MutableStateFlow<PagingData<Comment>>(PagingData.empty()).collectAsLazyPagingItems(),
+            commentList = MutableStateFlow<PagingData<Comment>>(
+                PagingData.from(
+                    listOf(
+                        Comment(
+                            id = 1L,
+                            content = "좋은 글이네요!",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            member = Member(
+                                id = 1L,
+                                nickname = "히카루",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            likeCount = 99,
+                            child = listOf(),
+                            isAnonymous = false
+                        ),
+                        Comment(
+                            id = 2L,
+                            content = "좋은 글이네요!",
+                            createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                .atTime(0, 0, 0),
+                            member = Member(
+                                id = 1L,
+                                nickname = "히카루",
+                                image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                            ),
+                            likeCount = 99,
+                            child = listOf(
+                                Comment(
+                                    id = 3L,
+                                    content = "좋은 글이네요!",
+                                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                        .atTime(0, 0, 0),
+                                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                        .atTime(0, 0, 0),
+                                    member = Member(
+                                        id = 1L,
+                                        nickname = "히카루",
+                                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                                    ),
+                                    likeCount = 99,
+                                    child = listOf(),
+                                    isAnonymous = false
+                                ),
+                                Comment(
+                                    id = 4L,
+                                    content = "좋은 글이네요!",
+                                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                        .atTime(0, 0, 0),
+                                    updatedAt = Clock.System.todayIn(TimeZone.currentSystemDefault())
+                                        .atTime(0, 0, 0),
+                                    member = Member(
+                                        id = 1L,
+                                        nickname = "히카루",
+                                        image = "https://avatars.githubusercontent.com/u/48707913?v=4"
+                                    ),
+                                    likeCount = 99,
+                                    child = listOf(),
+                                    isAnonymous = false
+                                )
+                            ),
+                            isAnonymous = false
+                        )
+                    )
+                )
+            ).collectAsLazyPagingItems(),
         )
     )
 }
