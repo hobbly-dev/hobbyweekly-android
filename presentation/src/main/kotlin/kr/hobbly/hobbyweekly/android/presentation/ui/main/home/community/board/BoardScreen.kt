@@ -166,6 +166,7 @@ fun BoardScreen(
     if (isBoardRoutineShowing) {
         BoardRoutineScreen(
             navController = navController,
+            blockId = data.block.id,
             onDismissRequest = { isBoardRoutineShowing = false },
             onConfirm = {
                 navigateToPostAdd(

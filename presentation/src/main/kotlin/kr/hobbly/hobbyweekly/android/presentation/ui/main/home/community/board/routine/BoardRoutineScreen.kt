@@ -75,6 +75,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 @Composable
 fun BoardRoutineScreen(
     navController: NavController,
+    blockId: Long,
     onDismissRequest: () -> Unit,
     onConfirm: (Routine) -> Unit,
     viewModel: BoardRoutineViewModel = hiltViewModel()
@@ -95,6 +96,7 @@ fun BoardRoutineScreen(
         val routineList by viewModel.routineList.collectAsStateWithLifecycle()
 
         BoardRoutineData(
+            blockId = blockId,
             routineList = routineList
         )
     }
@@ -121,7 +123,7 @@ private fun BoardRoutineScreen(
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val routineList = data.routineList.filter {
-        it.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal }
+        it.smallRoutineList.any { it.dayOfWeek == now.dayOfWeek.ordinal } && it.blockId == data.blockId
     }
     var selectedRoutine: Routine? by remember { mutableStateOf(null) }
 
@@ -314,6 +316,7 @@ private fun BoardRoutineScreenPreview1() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardRoutineData(
+            blockId = 0L,
             routineList = listOf(
                 Routine(
                     id = 0L,
@@ -326,6 +329,20 @@ private fun BoardRoutineScreenPreview1() {
                         SmallRoutine(
                             dayOfWeek = now.dayOfWeek.ordinal,
                             isDone = true
+                        )
+                    )
+                ),
+                Routine(
+                    id = 1L,
+                    title = "하체 운동 30회",
+                    blockId = 0L,
+                    blockName = "헬스 블록",
+                    alarmTime = null,
+                    isAlarmEnabled = true,
+                    smallRoutineList = listOf(
+                        SmallRoutine(
+                            dayOfWeek = now.dayOfWeek.ordinal,
+                            isDone = false
                         )
                     )
                 )
@@ -349,6 +366,7 @@ private fun BoardRoutineScreenPreview2() {
             handler = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardRoutineData(
+            blockId = 0L,
             routineList = emptyList()
         ),
         onDismissRequest = {},
