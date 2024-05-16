@@ -67,27 +67,46 @@ class PostEditViewModel @Inject constructor(
     init {
         launch {
             _state.value = PostEditState.Loading
+            if (postId != -1L) {
+                zip(
+                    { getBlockUseCase(id = blockId) },
+                    { getBoardUseCase(id = boardId) },
+                    { loadPostUseCase(id = postId) }
+                ).onSuccess { (block, board, post) ->
+                    _state.value = PostEditState.Init
+                    _block.value = block
+                    _board.value = board
 
-            zip(
-                { getBlockUseCase(id = blockId) },
-                { getBoardUseCase(id = boardId) }
-            ).onSuccess { (block, board) ->
-                _state.value = PostEditState.Init
-                _block.value = block
-                _board.value = board
+                    _event.emit(PostEditEvent.Load.Success(post))
+                }.onFailure { exception ->
+                    _state.value = PostEditState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                if (postId != -1L) {
-                    load()
-                }
-            }.onFailure { exception ->
-                _state.value = PostEditState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
+                }
+            } else {
+                getBlockUseCase(
+                    id = blockId
+                ).onSuccess { block ->
+                    _state.value = PostEditState.Init
+                    _block.value = block
+                    _board.value = board.value.copy(name = "인증 게시판") // TODO
+                }.onFailure { exception ->
+                    _state.value = PostEditState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
                     }
                 }
             }
@@ -115,29 +134,6 @@ class PostEditViewModel @Inject constructor(
                         isSecret = intent.isSecret,
                         isAnonymous = intent.isAnonymous
                     )
-                }
-            }
-        }
-    }
-
-    private suspend fun load() {
-        _state.value = PostEditState.Loading
-
-        loadPostUseCase(
-            id = postId
-        ).onSuccess { post ->
-            _state.value = PostEditState.Init
-
-            _event.emit(PostEditEvent.Load.Success(post))
-        }.onFailure { exception ->
-            _state.value = PostEditState.Init
-            when (exception) {
-                is ServerException -> {
-                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                }
-
-                else -> {
-                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
         }
