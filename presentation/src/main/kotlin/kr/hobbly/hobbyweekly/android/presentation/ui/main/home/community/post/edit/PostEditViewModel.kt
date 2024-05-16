@@ -65,8 +65,32 @@ class PostEditViewModel @Inject constructor(
     val board: StateFlow<Board> = _board.asStateFlow()
 
     init {
-        if (postId != -1L) {
-            load()
+        launch {
+            _state.value = PostEditState.Loading
+
+            zip(
+                { getBlockUseCase(id = blockId) },
+                { getBoardUseCase(id = boardId) }
+            ).onSuccess { (block, board) ->
+                _state.value = PostEditState.Init
+                _block.value = block
+                _board.value = board
+
+                if (postId != -1L) {
+                    load()
+                }
+            }.onFailure { exception ->
+                _state.value = PostEditState.Init
+                when (exception) {
+                    is ServerException -> {
+                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                    }
+
+                    else -> {
+                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                    }
+                }
+            }
         }
     }
 
@@ -96,29 +120,24 @@ class PostEditViewModel @Inject constructor(
         }
     }
 
-    private fun load() {
-        launch {
-            _state.value = PostEditState.Loading
+    private suspend fun load() {
+        _state.value = PostEditState.Loading
 
-            zip(
-                { getBlockUseCase(id = blockId) },
-                { getBoardUseCase(id = boardId) },
-                { loadPostUseCase(id = postId) }
-            ).onSuccess { (block, board, post) ->
-                _state.value = PostEditState.Init
-                _block.value = block
-                _board.value = board
-                _event.emit(PostEditEvent.Load.Success(post))
-            }.onFailure { exception ->
-                _state.value = PostEditState.Init
-                when (exception) {
-                    is ServerException -> {
-                        _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
-                    }
+        loadPostUseCase(
+            id = postId
+        ).onSuccess { post ->
+            _state.value = PostEditState.Init
 
-                    else -> {
-                        _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
-                    }
+            _event.emit(PostEditEvent.Load.Success(post))
+        }.onFailure { exception ->
+            _state.value = PostEditState.Init
+            when (exception) {
+                is ServerException -> {
+                    _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                }
+
+                else -> {
+                    _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
                 }
             }
         }
