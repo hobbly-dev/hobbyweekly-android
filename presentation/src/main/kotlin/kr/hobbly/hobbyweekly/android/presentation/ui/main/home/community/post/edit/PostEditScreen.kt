@@ -226,6 +226,7 @@ fun PostEditScreen(
             Text(
                 text = data.block.name.takeIfNotEmpty()
                     ?.plus(" ${data.board.name}")
+                    ?.plus(" 작성란")
                     ?: "하비위클리",
                 modifier = Modifier.align(Alignment.Center),
                 style = TitleSemiBoldSmall.merge(Neutral900)

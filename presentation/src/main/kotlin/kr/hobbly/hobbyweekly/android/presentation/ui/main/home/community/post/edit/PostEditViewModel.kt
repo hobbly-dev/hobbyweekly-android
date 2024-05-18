@@ -67,7 +67,27 @@ class PostEditViewModel @Inject constructor(
     init {
         launch {
             _state.value = PostEditState.Loading
-            if (postId != -1L) {
+
+            if (routineId != -1L) {
+                getBlockUseCase(
+                    id = blockId
+                ).onSuccess { block ->
+                    _state.value = PostEditState.Init
+                    _block.value = block
+                    _board.value = board.value.copy(name = "인증 게시판") // TODO
+                }.onFailure { exception ->
+                    _state.value = PostEditState.Init
+                    when (exception) {
+                        is ServerException -> {
+                            _errorEvent.emit(ErrorEvent.InvalidRequest(exception))
+                        }
+
+                        else -> {
+                            _errorEvent.emit(ErrorEvent.UnavailableServer(exception))
+                        }
+                    }
+                }
+            } else if (postId != -1L) {
                 zip(
                     { getBlockUseCase(id = blockId) },
                     { getBoardUseCase(id = boardId) },
@@ -91,12 +111,13 @@ class PostEditViewModel @Inject constructor(
                     }
                 }
             } else {
-                getBlockUseCase(
-                    id = blockId
-                ).onSuccess { block ->
+                zip(
+                    { getBlockUseCase(id = blockId) },
+                    { getBoardUseCase(id = boardId) }
+                ).onSuccess { (block, board) ->
                     _state.value = PostEditState.Init
                     _block.value = block
-                    _board.value = board.value.copy(name = "인증 게시판") // TODO
+                    _board.value = board
                 }.onFailure { exception ->
                     _state.value = PostEditState.Init
                     when (exception) {

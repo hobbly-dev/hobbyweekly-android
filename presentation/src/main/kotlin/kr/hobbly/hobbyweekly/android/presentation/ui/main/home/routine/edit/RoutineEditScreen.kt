@@ -187,7 +187,8 @@ fun RoutineEditScreen(
             },
             onConfirm = {
                 intent(RoutineEditIntent.OnQuit)
-            }
+            },
+            onCancel = {}
         )
     }
 
@@ -412,6 +413,7 @@ fun RoutineEditScreen(
         Spacer(modifier = Modifier.height(Space12))
         TypingTextField(
             text = description,
+            hintText = "루틴 목표 설정은 최초 설정시에만 가능합니다.\n목표 설정은 수정이 불가능 하니 참고하세요!",
             modifier = Modifier
                 .heightIn(min = 100.dp)
                 .padding(horizontal = Space20),
