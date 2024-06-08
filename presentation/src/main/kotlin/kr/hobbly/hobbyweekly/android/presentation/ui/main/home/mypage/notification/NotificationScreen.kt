@@ -41,6 +41,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.notification.Notification
 import kr.hobbly.hobbyweekly.android.presentation.R
+import kr.hobbly.hobbyweekly.android.presentation.common.DOMAIN
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.BodyRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral030
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Neutral900
@@ -120,7 +121,11 @@ fun NotificationScreen(
                 NotificationScreenItem(
                     notification = notification,
                     onClick = {
-                        navController.navigate(notification.deeplink.toUri())
+                        it.deeplink
+                            .takeIf { it.startsWith(DOMAIN) }
+                            ?.runCatching { toUri() }
+                            ?.getOrNull()
+                            ?.let { uri -> navController.navigate(uri) }
                     }
                 )
             }

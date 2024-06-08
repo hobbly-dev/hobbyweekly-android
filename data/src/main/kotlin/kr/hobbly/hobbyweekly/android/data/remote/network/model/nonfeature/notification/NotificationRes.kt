@@ -17,7 +17,7 @@ data class NotificationRes(
     @SerialName("createdAt")
     val createdAt: LocalDateTime,
     @SerialName("deeplink")
-    val deeplink: String
+    val deeplink: String = ""
 ) : DataMapper<Notification> {
     override fun toDomain(): Notification {
         return Notification(
