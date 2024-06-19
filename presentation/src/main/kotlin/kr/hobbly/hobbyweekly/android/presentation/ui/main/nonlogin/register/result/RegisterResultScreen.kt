@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -116,11 +117,11 @@ fun RegisterResultScreen(
             val fixedIndex = index % introductionImageList.size
             val imageId = introductionImageList.getOrNull(fixedIndex) ?: return@HorizontalPager
 
-            Image(
+            AsyncImage(
+                model = imageId,
                 modifier = Modifier
                     .fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                painter = painterResource(id = imageId),
                 contentDescription = ""
             )
         }
