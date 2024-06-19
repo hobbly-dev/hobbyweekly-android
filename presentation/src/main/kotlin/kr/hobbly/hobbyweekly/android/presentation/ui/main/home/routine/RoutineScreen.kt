@@ -194,7 +194,7 @@ private fun RoutineScreen(
     val formattedSummary: String = if (isLatestRoutineShowing) {
         "루틴 변경사항이 적용된 다음주 루틴입니다"
     } else {
-        val week = (now.dayOfMonth - 1) / 7 + 1
+        val week = (now.minus(now.dayOfWeek.ordinal, DateTimeUnit.DAY).dayOfMonth - 1) / 7 + 1
         "${now.month.number}월 ${week}째주 루틴입니다"
     }
 
