@@ -74,9 +74,11 @@ fun RegisterProfileScreen(
     var image: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var nickname: String by rememberSaveable { mutableStateOf("") }
 
-    var isNicknameDuplicated: Boolean by remember { mutableStateOf(false) }
+    val isNicknameSizeValid = nickname.length in 0..10
+    val isNicknameFormValid = nickname.matches("[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9]*".toRegex())
+    var isNicknameServerCheckSuccess: Boolean by remember { mutableStateOf(true) }
     val isConfirmButtonEnabled =
-        state != RegisterProfileState.Loading && nickname.isNotBlank() && !isNicknameDuplicated
+        state != RegisterProfileState.Loading && nickname.isNotBlank() && isNicknameSizeValid && isNicknameFormValid && isNicknameServerCheckSuccess
 
     var isGalleryShowing by remember { mutableStateOf(false) }
 
@@ -173,19 +175,37 @@ fun RegisterProfileScreen(
                 .padding(horizontal = Space40),
             text = nickname,
             hintText = "닉네임",
-            isError = isNicknameDuplicated,
+            isError = !isNicknameServerCheckSuccess,
             onValueChange = {
                 nickname = it
-                isNicknameDuplicated = false
+                isNicknameServerCheckSuccess = true
             },
         )
-        if (isNicknameDuplicated) {
+        if (!isNicknameServerCheckSuccess) {
             Spacer(modifier = Modifier.height(Space6))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Space44),
                 text = "이미 사용중인 닉네임입니다.",
+                style = LabelRegular.merge(Red),
+            )
+        } else if (!isNicknameFormValid) {
+            Spacer(modifier = Modifier.height(Space6))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Space44),
+                text = "닉네임은 한글, 영문, 숫자만 입력 가능합니다.",
+                style = LabelRegular.merge(Red),
+            )
+        } else if (!isNicknameSizeValid) {
+            Spacer(modifier = Modifier.height(Space6))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Space44),
+                text = "닉네임은 최대 10자까지 입력 가능합니다.",
                 style = LabelRegular.merge(Red),
             )
         }
@@ -227,7 +247,7 @@ fun RegisterProfileScreen(
     fun checkNickname(event: RegisterProfileEvent.CheckNickname) {
         when (event) {
             RegisterProfileEvent.CheckNickname.Failure -> {
-                isNicknameDuplicated = true
+                isNicknameServerCheckSuccess = false
             }
         }
     }
