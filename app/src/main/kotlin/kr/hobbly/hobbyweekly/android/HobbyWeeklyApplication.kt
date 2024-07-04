@@ -9,9 +9,14 @@ import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
+import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProvider
 
 @HiltAndroidApp
 open class HobbyWeeklyApplication : Application() {
+
+    @Inject
+    lateinit var baseUrlProvider: BaseUrlProvider
 
     override fun onCreate() {
         super.onCreate()
@@ -19,6 +24,7 @@ open class HobbyWeeklyApplication : Application() {
         initializeChannel()
         initializeFirebase()
         initializeKakaoTalk()
+        initializeBaseUrl()
     }
 
     private fun initializeChannel() {
@@ -60,5 +66,11 @@ open class HobbyWeeklyApplication : Application() {
 
     private fun initializeKakaoTalk() {
         KakaoSdk.init(this, getString(R.string.key_kakao_app))
+    }
+
+    private fun initializeBaseUrl() {
+        baseUrlProvider.initialize(
+            defaultFlag = getString(R.string.server_flag)
+        )
     }
 }

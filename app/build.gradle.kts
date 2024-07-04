@@ -43,6 +43,18 @@ android {
         }
     }
 
+    flavorDimensions += "server"
+    productFlavors {
+        create("development") {
+            dimension = "server"
+            resValue("string", "server_flag", "development")
+        }
+        create("production") {
+            dimension = "server"
+            resValue("string", "server_flag", "production")
+        }
+    }
+
     /**
      * Android 14 JDK 17 지원
      * url : https://developer.android.com/about/versions/14/behavior-changes-14?hl=ko#core-libraries

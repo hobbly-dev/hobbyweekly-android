@@ -3,6 +3,7 @@ package kr.hobbly.hobbyweekly.android.data.remote.local
 import android.content.Context
 import androidx.core.content.edit
 
+// TODO : DataStore
 class SharedPreferencesManager(context: Context) {
     private val sharedPreferences = context.getSharedPreferences(
         SHARED_PREFERENCE_FILE_NAME,

@@ -6,18 +6,30 @@ class BaseUrlProvider(
     private val sharedPreferencesManager: SharedPreferencesManager
 ) {
     fun get(): String {
-        // TODO : Add Dev Flag
-        val isDev: Boolean = false
+        val serverFlag = sharedPreferencesManager.getString(SERVER_FLAG)
 
-        if (isDev) {
-            return DEV_BASE_URL
-        } else {
-            return RELEASE_BASE_URL
+        when (serverFlag) {
+            SERVER_FLAG_DEVELOPMENT -> return DEVELOPMENT_BASE_URL
+            SERVER_FLAG_PRODUCTION -> return PRODUCTION_BASE_URL
+        }
+
+        throw IllegalArgumentException("Invalid server flag")
+    }
+
+    fun initialize(
+        defaultFlag: String
+    ) {
+        sharedPreferencesManager.getString(SERVER_FLAG, defaultFlag).let { serverFlag ->
+            sharedPreferencesManager.setString(SERVER_FLAG, serverFlag)
         }
     }
 
     companion object {
-        private const val DEV_BASE_URL = "https://api.hobbly.co.kr"
-        private const val RELEASE_BASE_URL = "https://api.hobbly.co.kr"
+        private const val DEVELOPMENT_BASE_URL = "https://dev.hobbly.co.kr"
+        private const val PRODUCTION_BASE_URL = "https://api.hobbly.co.kr"
+
+        private const val SERVER_FLAG = "server_flag"
+        const val SERVER_FLAG_DEVELOPMENT = "development"
+        const val SERVER_FLAG_PRODUCTION = "production"
     }
 }
