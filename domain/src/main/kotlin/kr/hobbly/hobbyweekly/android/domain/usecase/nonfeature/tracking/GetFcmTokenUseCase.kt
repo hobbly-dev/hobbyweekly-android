@@ -6,7 +6,7 @@ import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingReposi
 class GetFcmTokenUseCase @Inject constructor(
     private val trackingRepository: TrackingRepository
 ) {
-    operator fun invoke(): String {
-        return trackingRepository.fcmToken
+    suspend operator fun invoke(): String {
+        return trackingRepository.getFcmToken()
     }
 }

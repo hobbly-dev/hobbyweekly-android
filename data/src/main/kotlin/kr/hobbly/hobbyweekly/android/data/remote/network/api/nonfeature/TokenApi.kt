@@ -9,7 +9,10 @@ import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProv
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.authentication.GetAccessTokenReq
 import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.authentication.GetAccessTokenRes
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.authentication.LoginReq
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.authentication.LoginRes
 import kr.hobbly.hobbyweekly.android.data.remote.network.util.convert
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
 
 class TokenApi @Inject constructor(
     @NoAuthHttpClient private val noAuthClient: HttpClient,
@@ -18,6 +21,22 @@ class TokenApi @Inject constructor(
 ) {
     private val baseUrl: String
         get() = baseUrlProvider.get()
+
+    suspend fun login(
+        socialId: String,
+        socialType: SocialType,
+        firebaseToken: String
+    ): Result<LoginRes> {
+        return noAuthClient.post("$baseUrl/v1/auth/login/social") {
+            setBody(
+                LoginReq(
+                    socialId = socialId,
+                    socialType = socialType.value,
+                    firebaseToken = firebaseToken
+                )
+            )
+        }.convert(errorMessageMapper::map)
+    }
 
     suspend fun getAccessToken(
         refreshToken: String

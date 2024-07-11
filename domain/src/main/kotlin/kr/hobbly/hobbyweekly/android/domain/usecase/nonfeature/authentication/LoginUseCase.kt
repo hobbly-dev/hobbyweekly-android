@@ -2,13 +2,13 @@ package kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.authentication
 
 import javax.inject.Inject
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
-import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.AuthenticationRepository
+import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.tracking.GetFcmTokenUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.tracking.SetTrackingProfileUseCase
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 
 class LoginUseCase @Inject constructor(
-    private val authenticationRepository: AuthenticationRepository,
+    private val tokenRepository: TokenRepository,
     private val getProfileUseCase: GetProfileUseCase,
     private val setTrackingProfileUseCase: SetTrackingProfileUseCase,
     private val getFcmTokenUseCase: GetFcmTokenUseCase
@@ -17,7 +17,7 @@ class LoginUseCase @Inject constructor(
         socialId: String,
         socialType: SocialType
     ): Result<Unit> {
-        return authenticationRepository.login(
+        return tokenRepository.login(
             socialId = socialId,
             socialType = socialType,
             firebaseToken = getFcmTokenUseCase()
