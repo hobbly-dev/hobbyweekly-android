@@ -7,6 +7,7 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlo
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.JwtToken
+import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
 
@@ -24,6 +25,18 @@ class MockTokenRepository @Inject constructor(
 
     private val _refreshFailEvent: MutableEventFlow<Unit> = MutableEventFlow()
     override val refreshFailEvent: EventFlow<Unit> = _refreshFailEvent.asEventFlow()
+
+    override suspend fun login(
+        socialId: String,
+        socialType: SocialType,
+        firebaseToken: String
+    ): Result<Unit> {
+        randomShortDelay()
+        return Result.success(Unit).onSuccess { token ->
+            refreshToken = "mock_access_token"
+            accessToken = "mock_refresh_token"
+        }
+    }
 
     override suspend fun refreshToken(
         refreshToken: String
