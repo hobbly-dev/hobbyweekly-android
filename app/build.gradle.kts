@@ -47,11 +47,9 @@ android {
     productFlavors {
         create("development") {
             dimension = "server"
-            resValue("string", "server_flag", "development")
         }
         create("production") {
             dimension = "server"
-            resValue("string", "server_flag", "production")
         }
     }
 

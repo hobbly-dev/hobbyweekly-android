@@ -1,12 +1,18 @@
 package kr.hobbly.hobbyweekly.android.data.remote.network.environment
 
+import android.content.Context
+import kr.hobbly.hobbyweekly.android.data.R
 import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 
 class BaseUrlProvider(
+    private val context: Context,
     private val sharedPreferencesManager: SharedPreferencesManager
 ) {
     fun get(): String {
-        val serverFlag = sharedPreferencesManager.getString(SERVER_FLAG)
+        val serverFlag = sharedPreferencesManager.getString(
+            SERVER_FLAG,
+            context.getString(R.string.server_flag)
+        )
 
         when (serverFlag) {
             SERVER_FLAG_DEVELOPMENT -> return DEVELOPMENT_BASE_URL
@@ -14,14 +20,6 @@ class BaseUrlProvider(
         }
 
         throw IllegalArgumentException("Invalid server flag")
-    }
-
-    fun initialize(
-        defaultFlag: String
-    ) {
-        sharedPreferencesManager.getString(SERVER_FLAG, defaultFlag).let { serverFlag ->
-            sharedPreferencesManager.setString(SERVER_FLAG, serverFlag)
-        }
     }
 
     companion object {
