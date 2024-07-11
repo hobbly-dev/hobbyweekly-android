@@ -1,13 +1,14 @@
 package kr.hobbly.hobbyweekly.android.data.remote.network.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.BaseUrlProvider
 import kr.hobbly.hobbyweekly.android.data.remote.network.environment.ErrorMessageMapper
 
@@ -19,9 +20,9 @@ internal object NetworkEnvironmentModule {
     @Singleton
     fun provideBaseUrlProvider(
         @ApplicationContext context: Context,
-        sharedPreferencesManager: SharedPreferencesManager
+        dataStore: DataStore<Preferences>
     ): BaseUrlProvider {
-        return BaseUrlProvider(context, sharedPreferencesManager)
+        return BaseUrlProvider(context, dataStore)
     }
 
     @Provides

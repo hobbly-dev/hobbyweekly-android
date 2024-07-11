@@ -5,7 +5,9 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 
 interface TrackingRepository {
 
-    var fcmToken: String
+    suspend fun setFcmToken(token: String)
+
+    suspend fun getFcmToken(): String
 
     suspend fun setProfile(
         profile: Profile

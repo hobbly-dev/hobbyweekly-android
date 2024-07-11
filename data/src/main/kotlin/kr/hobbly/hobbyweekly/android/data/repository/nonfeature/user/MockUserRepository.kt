@@ -11,7 +11,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.todayIn
-import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerException
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.notification.Notification
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
@@ -20,7 +19,6 @@ import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepositor
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.UserRepository
 
 class MockUserRepository @Inject constructor(
-    private val sharedPreferencesManager: SharedPreferencesManager,
     private val tokenRepository: TokenRepository
 ) : UserRepository {
     override suspend fun getTermList(): Result<List<Term>> {
@@ -86,7 +84,7 @@ class MockUserRepository @Inject constructor(
 
     override suspend fun getProfile(): Result<Profile> {
         randomShortDelay()
-        val isLogined = tokenRepository.accessToken.isNotEmpty()
+        val isLogined = tokenRepository.getAccessToken().isNotEmpty()
         return if (isLogined) {
             Result.success(
                 Profile(

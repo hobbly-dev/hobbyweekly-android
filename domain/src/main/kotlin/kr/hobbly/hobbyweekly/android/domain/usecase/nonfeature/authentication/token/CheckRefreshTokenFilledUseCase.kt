@@ -6,7 +6,7 @@ import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepositor
 class CheckRefreshTokenFilledUseCase @Inject constructor(
     private val tokenRepository: TokenRepository
 ) {
-    operator fun invoke(): Boolean {
-        return tokenRepository.refreshToken.isNotEmpty()
+    suspend operator fun invoke(): Boolean {
+        return tokenRepository.getAccessToken().isNotEmpty()
     }
 }

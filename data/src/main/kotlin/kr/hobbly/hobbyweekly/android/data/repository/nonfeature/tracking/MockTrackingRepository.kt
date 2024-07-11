@@ -1,18 +1,31 @@
 package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.tracking
 
 import androidx.annotation.Size
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import javax.inject.Inject
-import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.user.Profile
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TrackingRepository
 
 class MockTrackingRepository @Inject constructor(
-    private val sharedPreferencesManager: SharedPreferencesManager
+    private val dataStore: DataStore<Preferences>
 ) : TrackingRepository {
 
-    override var fcmToken: String
-        set(value) = sharedPreferencesManager.setString(FCM_TOKEN, value)
-        get() = sharedPreferencesManager.getString(FCM_TOKEN, "")
+    override suspend fun setFcmToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[stringPreferencesKey(FCM_TOKEN)] = token
+        }
+    }
+
+    override suspend fun getFcmToken(): String {
+        return dataStore.data.map { preferences ->
+            preferences[stringPreferencesKey(FCM_TOKEN)]
+        }.first().orEmpty()
+    }
 
     override suspend fun setProfile(
         profile: Profile

@@ -6,10 +6,6 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.Soci
 
 interface TokenRepository {
 
-    var refreshToken: String
-
-    var accessToken: String
-
     val refreshFailEvent: EventFlow<Unit>
 
     suspend fun login(
@@ -18,7 +14,13 @@ interface TokenRepository {
         firebaseToken: String
     ): Result<Unit>
 
+    suspend fun getRefreshToken(): String
+
+    suspend fun getAccessToken(): String
+
     suspend fun refreshToken(
         refreshToken: String
     ): Result<JwtToken>
+
+    suspend fun removeToken(): Result<Unit>
 }

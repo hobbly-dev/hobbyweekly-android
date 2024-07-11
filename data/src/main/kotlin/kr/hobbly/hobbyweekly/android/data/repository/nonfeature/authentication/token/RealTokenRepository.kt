@@ -1,10 +1,15 @@
 package kr.hobbly.hobbyweekly.android.data.repository.nonfeature.authentication.token
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
-import kr.hobbly.hobbyweekly.android.data.remote.local.SharedPreferencesManager
 import kr.hobbly.hobbyweekly.android.data.remote.network.api.nonfeature.TokenApi
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.JwtToken
 import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.authentication.SocialType
@@ -12,16 +17,9 @@ import kr.hobbly.hobbyweekly.android.domain.model.nonfeature.error.ServerExcepti
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
 
 class RealTokenRepository @Inject constructor(
-    private val tokenApi: TokenApi,
-    private val sharedPreferencesManager: SharedPreferencesManager
+    private val dataStore: DataStore<Preferences>,
+    private val tokenApi: TokenApi
 ) : TokenRepository {
-
-    override var refreshToken: String
-        set(value) = sharedPreferencesManager.setString(REFRESH_TOKEN, value)
-        get() = sharedPreferencesManager.getString(REFRESH_TOKEN, "")
-    override var accessToken: String
-        set(value) = sharedPreferencesManager.setString(ACCESS_TOKEN, value)
-        get() = sharedPreferencesManager.getString(ACCESS_TOKEN, "")
 
     private val _refreshFailEvent: MutableEventFlow<Unit> = MutableEventFlow()
     override val refreshFailEvent: EventFlow<Unit> = _refreshFailEvent.asEventFlow()
@@ -36,9 +34,23 @@ class RealTokenRepository @Inject constructor(
             socialType = socialType,
             firebaseToken = firebaseToken
         ).onSuccess { token ->
-            refreshToken = token.refreshToken
-            accessToken = token.accessToken
+            dataStore.edit { preferences ->
+                preferences[stringPreferencesKey(REFRESH_TOKEN)] = token.refreshToken
+                preferences[stringPreferencesKey(ACCESS_TOKEN)] = token.accessToken
+            }
         }.map { }
+    }
+
+    override suspend fun getRefreshToken(): String {
+        return dataStore.data.map { preferences ->
+            preferences[stringPreferencesKey(REFRESH_TOKEN)]
+        }.first().orEmpty()
+    }
+
+    override suspend fun getAccessToken(): String {
+        return dataStore.data.map { preferences ->
+            preferences[stringPreferencesKey(ACCESS_TOKEN)]
+        }.first().orEmpty()
     }
 
     override suspend fun refreshToken(
@@ -51,11 +63,12 @@ class RealTokenRepository @Inject constructor(
             tokenApi.getAccessToken(
                 refreshToken = refreshToken
             ).onSuccess { token ->
-                this.refreshToken = token.refreshToken
-                this.accessToken = token.accessToken
+                dataStore.edit { preferences ->
+                    preferences[stringPreferencesKey(REFRESH_TOKEN)] = token.refreshToken
+                    preferences[stringPreferencesKey(ACCESS_TOKEN)] = token.accessToken
+                }
             }.onFailure { exception ->
-                this.refreshToken = ""
-                this.accessToken = ""
+                removeToken()
                 _refreshFailEvent.emit(Unit)
             }.map { token ->
                 JwtToken(
@@ -64,6 +77,16 @@ class RealTokenRepository @Inject constructor(
                 )
             }
         }
+    }
+
+
+    override suspend fun removeToken(): Result<Unit> {
+        // TODO : KTOR-4759 BearerAuthProvider caches result of loadToken until process death
+        dataStore.edit { preferences ->
+            preferences.remove(stringPreferencesKey(REFRESH_TOKEN))
+            preferences.remove(stringPreferencesKey(ACCESS_TOKEN))
+        }
+        return Result.success(Unit)
     }
 
     companion object {

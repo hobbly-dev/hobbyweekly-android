@@ -9,6 +9,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.tracking.SetFcmTokenUseCase
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.DOMAIN
@@ -24,7 +25,9 @@ class HobbyWeeklyFcmService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        setFcmTokenUseCase(token)
+        runBlocking {
+            setFcmTokenUseCase(token)
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
