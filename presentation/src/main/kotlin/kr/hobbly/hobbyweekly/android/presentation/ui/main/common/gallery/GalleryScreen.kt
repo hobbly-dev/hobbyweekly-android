@@ -54,8 +54,6 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import com.holix.android.bottomsheetdialog.compose.BottomSheetBehaviorProperties
-import com.holix.android.bottomsheetdialog.compose.BottomSheetDialogProperties
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.plus
@@ -79,7 +77,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.theme.TitleSemiBoldSmal
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.Warning
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.White
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
-import kr.hobbly.hobbyweekly.android.presentation.common.view.BottomSheetScreen
+import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigateUp
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryFolder
@@ -156,138 +154,128 @@ private fun GalleryScreen(
     var isDropDownMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var currentFolder: GalleryFolder by remember { mutableStateOf(GalleryFolder.recent) }
 
-    BottomSheetScreen(
-        onDismissRequest = onDismissRequest,
-        properties = BottomSheetDialogProperties(
-            behaviorProperties = BottomSheetBehaviorProperties(
-                state = BottomSheetBehaviorProperties.State.Expanded,
-                skipCollapsed = true
-            )
-        )
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(White)
     ) {
-        ConstraintLayout(
+        val (topBar, contents) = createRefs()
+
+        LazyVerticalGrid(
             modifier = Modifier
                 .fillMaxSize()
-                .background(White)
+                .constrainAs(contents) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                },
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            contentPadding = PaddingValues(top = Space56),
+            verticalArrangement = Arrangement.spacedBy(1.dp),
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
-            val (topBar, contents) = createRefs()
-
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .constrainAs(contents) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.fillToConstraints
-                    },
-                columns = GridCells.Adaptive(minSize = 128.dp),
-                contentPadding = PaddingValues(top = Space56),
-                verticalArrangement = Arrangement.spacedBy(1.dp),
-                horizontalArrangement = Arrangement.spacedBy(1.dp)
-            ) {
-                // TODO : 아무것도 없을 경우 처리
-                items(data.galleryImageList.itemCount) { index ->
-                    data.galleryImageList[index]?.let { gallery ->
-                        GalleryScreenItem(
-                            galleryImage = gallery,
-                            selectedList = selectedList,
-                            onSelectImage = { image ->
-                                if (selectedList.size < data.maxSelectCount) {
-                                    selectedList.add(image)
-                                }
-                            },
-                            onDeleteImage = { image ->
-                                selectedList.removeIf { it.id == image.id }
+            // TODO : 아무것도 없을 경우 처리
+            items(data.galleryImageList.itemCount) { index ->
+                data.galleryImageList[index]?.let { gallery ->
+                    GalleryScreenItem(
+                        galleryImage = gallery,
+                        selectedList = selectedList,
+                        onSelectImage = { image ->
+                            if (selectedList.size < data.maxSelectCount) {
+                                selectedList.add(image)
                             }
-                        )
-                    }
+                        },
+                        onDeleteImage = { image ->
+                            selectedList.removeIf { it.id == image.id }
+                        }
+                    )
                 }
             }
-            Row(
-                modifier = Modifier
-                    .height(Space56)
-                    .background(White.copy(alpha = 0.9f))
-                    .constrainAs(topBar) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    },
-                verticalAlignment = Alignment.CenterVertically
+        }
+        Row(
+            modifier = Modifier
+                .height(Space56)
+                .background(White.copy(alpha = 0.9f))
+                .constrainAs(topBar) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(Space20))
+            RippleBox(
+                onClick = {
+                    navController.safeNavigateUp()
+                }
             ) {
-                Spacer(modifier = Modifier.width(Space20))
-                RippleBox(
-                    onClick = {
-                        onDismissRequest()
-                    }
+                Icon(
+                    modifier = Modifier.size(Space24),
+                    painter = painterResource(R.drawable.ic_close),
+                    contentDescription = null,
+                    tint = Neutral900
+                )
+            }
+            Spacer(modifier = Modifier.width(Space20))
+            RippleBox(
+                onClick = {
+                    isDropDownMenuExpanded = true
+                }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text(
+                        text = currentFolder.name,
+                        style = TitleSemiBoldSmall.merge(Neutral900)
+                    )
                     Icon(
-                        modifier = Modifier.size(Space24),
-                        painter = painterResource(id = R.drawable.ic_close),
+                        modifier = Modifier.size(Space16),
+                        painter = painterResource(R.drawable.ic_arrow_down),
                         contentDescription = null,
                         tint = Neutral900
                     )
                 }
-                Spacer(modifier = Modifier.width(Space20))
+                TextDropdownMenu(
+                    items = data.folderList,
+                    label = { it.name },
+                    isExpanded = isDropDownMenuExpanded,
+                    onDismissRequest = { isDropDownMenuExpanded = false },
+                    onClick = { folder ->
+                        currentFolder = folder
+                        intent(GalleryIntent.OnChangeFolder(folder))
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            if (selectedList.size >= data.minSelectCount) {
+                Text(
+                    text = selectedList.size.toString(),
+                    style = TitleSemiBoldSmall.merge(Blue)
+                )
+                Spacer(modifier = Modifier.width(Space8))
                 RippleBox(
                     onClick = {
-                        isDropDownMenuExpanded = true
+                        onDismissRequest()
+                        onResult(selectedList)
                     }
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = currentFolder.name,
-                            style = TitleSemiBoldSmall.merge(Neutral900)
-                        )
-                        Icon(
-                            modifier = Modifier.size(Space16),
-                            painter = painterResource(R.drawable.ic_arrow_down),
-                            contentDescription = null,
-                            tint = Neutral900
-                        )
-                    }
-                    TextDropdownMenu(
-                        items = data.folderList,
-                        label = { it.name },
-                        isExpanded = isDropDownMenuExpanded,
-                        onDismissRequest = { isDropDownMenuExpanded = false },
-                        onClick = { folder ->
-                            currentFolder = folder
-                            intent(GalleryIntent.OnChangeFolder(folder))
-                        }
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                if (selectedList.size >= data.minSelectCount) {
-                    Text(
-                        text = selectedList.size.toString(),
-                        style = TitleSemiBoldSmall.merge(Blue)
-                    )
-                    Spacer(modifier = Modifier.width(Space8))
-                    RippleBox(
-                        onClick = {
-                            onDismissRequest()
-                            onResult(selectedList)
-                        }
-                    ) {
-                        Text(
-                            text = "확인",
-                            style = TitleSemiBoldSmall.merge(Neutral900)
-                        )
-                    }
-                } else {
                     Text(
                         text = "확인",
-                        style = TitleSemiBoldSmall.merge(Neutral400)
+                        style = TitleSemiBoldSmall.merge(Neutral900)
                     )
                 }
-                Spacer(modifier = Modifier.width(Space20))
+            } else {
+                Text(
+                    text = "확인",
+                    style = TitleSemiBoldSmall.merge(Neutral400)
+                )
             }
+            Spacer(modifier = Modifier.width(Space20))
         }
     }
 
