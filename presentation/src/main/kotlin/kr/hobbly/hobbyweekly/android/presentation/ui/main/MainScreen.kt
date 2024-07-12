@@ -21,6 +21,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.ErrorObser
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.LaunchedEffectWithLifecycle
 import kr.hobbly.hobbyweekly.android.presentation.common.util.compose.safeNavigate
 import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.commonDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.homeDestination
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.nonLoginNavGraphNavGraph
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.splash.SplashConstant
@@ -65,6 +66,7 @@ fun MainScreen(
             }
         ) {
             splashDestination(navController = navController)
+            commonDestination(navController = navController)
             nonLoginNavGraphNavGraph(navController = navController)
             homeDestination(navController = navController)
         }

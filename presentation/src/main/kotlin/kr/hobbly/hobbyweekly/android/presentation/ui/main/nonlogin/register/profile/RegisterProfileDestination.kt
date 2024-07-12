@@ -28,10 +28,19 @@ fun NavGraphBuilder.registerProfileDestination(
             )
         }
 
+        val data: RegisterProfileData = let {
+            val selectedImageUri by viewModel.selectedImageUri.collectAsStateWithLifecycle()
+
+            RegisterProfileData(
+                selectedImageUri = selectedImageUri
+            )
+        }
+
         ErrorObserver(viewModel)
         RegisterProfileScreen(
             navController = navController,
-            argument = argument
+            argument = argument,
+            data = data
         )
     }
 }

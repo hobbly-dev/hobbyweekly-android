@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.math.max
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +37,24 @@ class GalleryViewModel @Inject constructor(
     private val _folderList: MutableStateFlow<List<GalleryFolder>> =
         MutableStateFlow(listOf(GalleryFolder.recent))
     val folderList: StateFlow<List<GalleryFolder>> = _folderList.asStateFlow()
+
+    val selectedImageUriList: List<String> by lazy {
+        savedStateHandle.get<Array<String>>(GalleryConstant.ROUTE_ARGUMENT_IMAGE_URI_LIST)
+            ?.toList()
+            .orEmpty()
+    }
+
+    val selectRange: IntRange by lazy {
+        val min = max(
+            savedStateHandle.get<Int>(GalleryConstant.ROUTE_ARGUMENT_MIN_SELECT_COUNT) ?: 1,
+            1
+        )
+        val max = max(
+            savedStateHandle.get<Int>(GalleryConstant.ROUTE_ARGUMENT_MAX_SELECT_COUNT) ?: 1,
+            min
+        )
+        min..max
+    }
 
     fun onIntent(intent: GalleryIntent) {
         when (intent) {

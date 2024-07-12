@@ -59,13 +59,10 @@ class GalleryCursor @Inject constructor(
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME))
                 val filePath =
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATA))
-                val date =
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN))
                 val image = GalleryImage(
                     id = id,
                     filePath = filePath,
-                    name = name,
-                    date = date ?: ""
+                    name = name
                 )
                 galleryImageList.add(image)
             }

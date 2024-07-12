@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -88,8 +87,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.EmptyTextField
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.post.PostConstant
 import timber.log.Timber
 
@@ -105,14 +103,12 @@ fun PostEditScreen(
 
     var title: String by rememberSaveable { mutableStateOf("") }
     var content: String by rememberSaveable { mutableStateOf("") }
-    var originalImageList: List<String> by rememberSaveable { mutableStateOf(emptyList()) }
-    var newImageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
+    var originalImageUriList: List<String> by rememberSaveable { mutableStateOf(emptyList()) }
     val isPostButtonEnabled =
         title.isNotEmpty() && content.isNotEmpty() && state != PostEditState.Loading
     var isAnonymous: Boolean by rememberSaveable { mutableStateOf(false) }
     var isSecret: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    var isGalleryShowing: Boolean by rememberSaveable { mutableStateOf(false) }
     var isLeaveDialogShowing: Boolean by rememberSaveable { mutableStateOf(false) }
 
     fun navigateToCommunityTerm() {
@@ -149,17 +145,19 @@ fun PostEditScreen(
         }
     }
 
-    if (isGalleryShowing) {
-        GalleryScreen(
-            navController = navController,
-            onDismissRequest = { isGalleryShowing = false },
-            selectedImageList = newImageList,
-            maxSelectCount = 10,
-            onResult = {
-                newImageList = it
-            }
+    fun navigateToGallery() {
+        navController.safeNavigate(
+            makeRoute(
+                GalleryConstant.ROUTE,
+                listOf(
+                    GalleryConstant.ROUTE_ARGUMENT_IMAGE_URI_LIST to data.newImageUriList.joinToString(","),
+                    GalleryConstant.ROUTE_ARGUMENT_MIN_SELECT_COUNT to 1,
+                    GalleryConstant.ROUTE_ARGUMENT_MAX_SELECT_COUNT to 10
+                )
+            )
         )
     }
+
     if (isLeaveDialogShowing) {
         if (data.postId == -1L) {
             DialogScreen(
@@ -243,8 +241,8 @@ fun PostEditScreen(
                             PostEditIntent.OnPost(
                                 title = title,
                                 content = content,
-                                originalImageList = originalImageList,
-                                newImageList = newImageList,
+                                originalImageUriList = originalImageUriList,
+                                newImageUriList = data.newImageUriList,
                                 isSecret = isSecret,
                                 isAnonymous = isAnonymous
                             )
@@ -408,23 +406,23 @@ fun PostEditScreen(
                 horizontalArrangement = Arrangement.spacedBy(Space16),
                 contentPadding = PaddingValues(start = Space20, end = Space20)
             ) {
-                items(originalImageList) { item ->
+                items(originalImageUriList) { item ->
                     PostEditScreenImageItem(
                         item = item,
                         isLoading = state == PostEditState.Loading,
                         itemToData = { it },
                         onRemove = {
-                            originalImageList = originalImageList.filter { it != item }
+                            originalImageUriList = originalImageUriList.filter { it != item }
                         }
                     )
                 }
-                items(newImageList) { item ->
+                items(data.newImageUriList) { item ->
                     PostEditScreenImageItem(
                         item = item,
                         isLoading = state == PostEditState.Loading,
-                        itemToData = { item.filePath },
+                        itemToData = { item },
                         onRemove = {
-                            newImageList = newImageList.filter { it != item }
+                            intent(PostEditIntent.EditNewImage.Remove(item))
                         }
                     )
                 }
@@ -452,7 +450,7 @@ fun PostEditScreen(
                 } else {
                     RippleBox(
                         onClick = {
-                            isGalleryShowing = true
+                            navigateToGallery()
                         }
                     ) {
                         Icon(
@@ -573,7 +571,7 @@ fun PostEditScreen(
             is PostEditEvent.Load.Success -> {
                 title = event.post.title
                 content = event.post.content
-                originalImageList = event.post.imageList
+                originalImageUriList = event.post.imageList
                 isSecret = event.post.isSecret
                 isAnonymous = event.post.isAnonymous
             }
@@ -670,7 +668,7 @@ fun <T> PostEditScreenImageItem(
 
 @Preview
 @Composable
-private fun PostEditScreenPreview() {
+private fun PostEditScreenPreview1() {
     PostEditScreen(
         navController = rememberNavController(),
         argument = PostEditArgument(
@@ -699,7 +697,48 @@ private fun PostEditScreenPreview() {
             blockId = 1L,
             boardId = 1L,
             postId = 1L,
-            routineId = 1L
+            routineId = 1L,
+            newImageUriList = listOf(),
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun PostEditScreenPreview2() {
+    PostEditScreen(
+        navController = rememberNavController(),
+        argument = PostEditArgument(
+            state = PostEditState.Init,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            handler = CoroutineExceptionHandler { _, _ -> }
+        ),
+        data = PostEditData(
+            block = Block(
+                id = 5,
+                name = "코딩 블록",
+                content = "코딩을 취미로 하는 사람들의 모임",
+                image = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                thumbnail = "https://i.namu.wiki/i/mQNc8LS1ABA0-jPY-PWldlZPpCB8cgcqgZNvE__Rk1Fw3FmCehm55EaqbsjsK-vTuhEeIj5bFiUdFIRr7RzOdckq2RiVOMM9otmh4yrcmiLKjfNlWJEN976c4ZS-SY8WfhlPSs5DsAvvQZukz3eRWg.webp",
+                memberCount = 100
+            ),
+            board = Board(
+                id = 1,
+                blockId = 1,
+                type = BoardType.Notice,
+                name = "공지사항",
+                hasNewPost = true
+            ),
+            blockId = 1L,
+            boardId = 1L,
+            postId = 1L,
+            routineId = 1L,
+            newImageUriList = listOf(
+                "https://via.placeholder.com/150",
+                "https://via.placeholder.com/150"
+            ),
         )
     )
 }

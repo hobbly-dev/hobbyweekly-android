@@ -9,7 +9,6 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 data class GalleryData(
     val folderList: List<GalleryFolder>,
     val galleryImageList: LazyPagingItems<GalleryImage>,
-    val selectedImageList: List<GalleryImage>,
-    val minSelectCount: Int,
-    val maxSelectCount: Int
+    val selectedImageUriList: List<String>,
+    val selectRange: IntRange
 )

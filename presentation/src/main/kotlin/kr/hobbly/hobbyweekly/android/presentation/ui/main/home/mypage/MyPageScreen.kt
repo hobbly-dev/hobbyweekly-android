@@ -99,7 +99,7 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.DialogScreen
 import kr.hobbly.hobbyweekly.android.presentation.common.view.RippleBox
 import kr.hobbly.hobbyweekly.android.presentation.common.view.dropdown.TextDropdownMenu
 import kr.hobbly.hobbyweekly.android.presentation.common.view.image.PostImage
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.HomeArgument
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock.MyBlockConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.home.mypage.statistics.MyPageStatisticsConstant
@@ -178,7 +178,6 @@ private fun MyPageScreen(
     }
 
     var isMenuShowing by remember { mutableStateOf(false) }
-    var isGalleryShowing by remember { mutableStateOf(false) }
     var isLogoutSuccessDialogShowing by remember { mutableStateOf(false) }
     var isWithdrawSuccessDialogShowing by remember { mutableStateOf(false) }
     var isLastStatisticsUnavailableDialogShowing by remember { mutableStateOf(false) }
@@ -223,6 +222,10 @@ private fun MyPageScreen(
         }
     }
 
+    fun navigateToGallery() {
+        navController.safeNavigate(GalleryConstant.ROUTE)
+    }
+
     // TODO : Migrate after Ktor 3.0.0
     fun restartApp() {
         context.packageManager.getLaunchIntentForPackage(context.packageName)?.let { intent ->
@@ -231,17 +234,6 @@ private fun MyPageScreen(
             )
         }
         exitProcess(0)
-    }
-
-    if (isGalleryShowing) {
-        GalleryScreen(
-            navController = navController,
-            onDismissRequest = { isGalleryShowing = false },
-            onResult = {
-                val image = it.firstOrNull() ?: return@GalleryScreen
-                intent(MyPageIntent.OnProfileImageSet(image))
-            }
-        )
     }
 
     if (isLogoutSuccessDialogShowing) {
@@ -580,7 +572,7 @@ private fun MyPageScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clickable {
-                                    isGalleryShowing = true
+                                    navigateToGallery()
                                 }
                         ) {
                             AsyncImage(

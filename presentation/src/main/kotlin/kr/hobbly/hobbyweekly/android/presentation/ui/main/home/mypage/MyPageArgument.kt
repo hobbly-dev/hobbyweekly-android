@@ -32,7 +32,7 @@ sealed interface MyPageEvent {
 }
 
 sealed interface MyPageIntent {
-    data class OnProfileImageSet(val image: GalleryImage) : MyPageIntent
+    data class OnProfileImageSet(val imageUri: String) : MyPageIntent
     data class OnDateChanged(val date: LocalDate) : MyPageIntent
     data object Logout : MyPageIntent
     data object Withdraw : MyPageIntent

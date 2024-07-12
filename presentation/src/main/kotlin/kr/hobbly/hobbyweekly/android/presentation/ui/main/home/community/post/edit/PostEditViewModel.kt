@@ -22,7 +22,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.feature.routine.WriteRoutine
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.file.GetUrlAndUploadImageUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 
 @HiltViewModel
 class PostEditViewModel @Inject constructor(
@@ -56,6 +56,13 @@ class PostEditViewModel @Inject constructor(
 
     val routineId: Long by lazy {
         savedStateHandle.get<Long>(PostEditConstant.ROUTE_ARGUMENT_ROUTINE_ID) ?: -1L
+    }
+
+    val newImageUriList: StateFlow<List<String>> = savedStateHandle.getStateFlow<Array<String>>(
+        GalleryConstant.RESULT_IMAGE_URI_LIST,
+        emptyArray()
+    ).map(emptyList()) {
+        it.toList()
     }
 
     private val _block: MutableStateFlow<Block> = MutableStateFlow(Block.empty)
@@ -141,8 +148,8 @@ class PostEditViewModel @Inject constructor(
                     post(
                         title = intent.title,
                         content = intent.content,
-                        originalImageList = intent.originalImageList,
-                        newImageList = intent.newImageList,
+                        originalImageUriList = intent.originalImageUriList,
+                        newImageUriList = intent.newImageUriList,
                         isSecret = intent.isSecret,
                         isAnonymous = intent.isAnonymous
                     )
@@ -150,12 +157,19 @@ class PostEditViewModel @Inject constructor(
                     edit(
                         title = intent.title,
                         content = intent.content,
-                        originalImageList = intent.originalImageList,
-                        newImageList = intent.newImageList,
+                        originalImageUriList = intent.originalImageUriList,
+                        newImageUriList = intent.newImageUriList,
                         isSecret = intent.isSecret,
                         isAnonymous = intent.isAnonymous
                     )
                 }
+            }
+
+            is PostEditIntent.EditNewImage.Remove -> {
+                savedStateHandle[GalleryConstant.RESULT_IMAGE_URI_LIST] =
+                    savedStateHandle.get<Array<String>>(GalleryConstant.RESULT_IMAGE_URI_LIST)
+                        .orEmpty()
+                        .filter { it != intent.item }
             }
         }
     }
@@ -163,8 +177,8 @@ class PostEditViewModel @Inject constructor(
     private fun edit(
         title: String,
         content: String,
-        originalImageList: List<String>,
-        newImageList: List<GalleryImage>,
+        originalImageUriList: List<String>,
+        newImageUriList: List<String>,
         isSecret: Boolean,
         isAnonymous: Boolean
     ) {
@@ -172,13 +186,13 @@ class PostEditViewModel @Inject constructor(
             _state.value = PostEditState.Loading
 
             getUrlAndUploadImageUseCase(
-                imageUriList = newImageList.map { it.filePath }
-            ).mapCatching { newImageList ->
+                imageUriList = newImageUriList
+            ).mapCatching { newImageUriList ->
                 editPostUseCase(
                     id = postId,
                     title = title,
                     content = content,
-                    imageList = originalImageList + newImageList,
+                    imageList = originalImageUriList + newImageUriList,
                     isSecret = isSecret,
                     isAnonymous = isAnonymous
                 ).onSuccess {
@@ -203,8 +217,8 @@ class PostEditViewModel @Inject constructor(
     private fun post(
         title: String,
         content: String,
-        originalImageList: List<String>,
-        newImageList: List<GalleryImage>,
+        originalImageUriList: List<String>,
+        newImageUriList: List<String>,
         isSecret: Boolean,
         isAnonymous: Boolean
     ) {
@@ -212,14 +226,14 @@ class PostEditViewModel @Inject constructor(
             _state.value = PostEditState.Loading
 
             getUrlAndUploadImageUseCase(
-                imageUriList = newImageList.map { it.filePath }
-            ).mapCatching { newImageList ->
+                imageUriList = newImageUriList
+            ).mapCatching { newImageUriList ->
                 if (routineId == -1L) {
                     writePostUseCase(
                         id = boardId,
                         title = title,
                         content = content,
-                        imageList = originalImageList + newImageList,
+                        imageList = originalImageUriList + newImageUriList,
                         isSecret = isSecret,
                         isAnonymous = isAnonymous
                     ).onSuccess { id ->
@@ -231,7 +245,7 @@ class PostEditViewModel @Inject constructor(
                         id = routineId,
                         title = title,
                         content = content,
-                        imageList = originalImageList + newImageList,
+                        imageList = originalImageUriList + newImageUriList,
                         isSecret = isSecret,
                         isAnonymous = isAnonymous
                     ).onSuccess { id ->

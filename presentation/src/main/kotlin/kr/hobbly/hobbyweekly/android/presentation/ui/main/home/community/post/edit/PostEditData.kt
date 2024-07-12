@@ -11,5 +11,6 @@ data class PostEditData(
     val blockId: Long,
     val boardId: Long,
     val postId: Long,
-    val routineId: Long
+    val routineId: Long,
+    val newImageUriList: List<String>
 )

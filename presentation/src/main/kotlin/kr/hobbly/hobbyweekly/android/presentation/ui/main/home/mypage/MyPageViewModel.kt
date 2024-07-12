@@ -20,7 +20,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.EditProfileW
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.GetProfileUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
@@ -45,14 +45,30 @@ class MyPageViewModel @Inject constructor(
         MutableStateFlow(emptyList())
     val routineStatisticsList: StateFlow<List<RoutineStatistics>> = _routineStatistics.asStateFlow()
 
+    val selectedImageUri: StateFlow<String> =
+        savedStateHandle.getStateFlow<Array<String>>(
+            GalleryConstant.RESULT_IMAGE_URI_LIST,
+            emptyArray()
+        ).map("") {
+            it.firstOrNull().orEmpty()
+        }
+
     init {
         refresh()
+
+        launch {
+            selectedImageUri.collect { image ->
+                if (image.isNotEmpty()) {
+                    onIntent(MyPageIntent.OnProfileImageSet(image))
+                }
+            }
+        }
     }
 
     fun onIntent(intent: MyPageIntent) {
         when (intent) {
             is MyPageIntent.OnProfileImageSet -> {
-                setProfileImage(intent.image)
+                setProfileImage(intent.imageUri)
             }
 
             is MyPageIntent.OnDateChanged -> {
@@ -88,13 +104,13 @@ class MyPageViewModel @Inject constructor(
     }
 
     private fun setProfileImage(
-        image: GalleryImage
+        imageUri: String
     ) {
         launch {
             _state.value = MyPageState.Loading
             editProfileWithUploadUseCase(
                 nickname = profile.value.nickname,
-                imageUri = image.filePath
+                imageUri = imageUri
             ).onSuccess {
                 _state.value = MyPageState.Init
                 refresh()

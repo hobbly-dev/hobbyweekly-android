@@ -46,8 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
@@ -86,54 +84,8 @@ import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
 @Composable
 fun GalleryScreen(
     navController: NavController,
-    onDismissRequest: () -> Unit,
-    selectedImageList: List<GalleryImage> = listOf(),
-    minSelectCount: Int = 1,
-    maxSelectCount: Int = 1,
-    onResult: (List<GalleryImage>) -> Unit,
-    viewModel: GalleryViewModel = hiltViewModel()
-) {
-    val argument: GalleryArgument = Unit.let {
-        val state by viewModel.state.collectAsStateWithLifecycle()
-
-        GalleryArgument(
-            state = state,
-            event = viewModel.event,
-            intent = viewModel::onIntent,
-            logEvent = viewModel::logEvent,
-            handler = viewModel.handler
-        )
-    }
-
-    val data: GalleryData = Unit.let {
-        val folderList by viewModel.folderList.collectAsStateWithLifecycle()
-        val galleryImageList = viewModel.galleryImageList.collectAsLazyPagingItems()
-
-        GalleryData(
-            folderList = folderList,
-            galleryImageList = galleryImageList,
-            selectedImageList = selectedImageList,
-            minSelectCount = minSelectCount,
-            maxSelectCount = maxSelectCount
-        )
-    }
-
-    GalleryScreen(
-        navController = navController,
-        argument = argument,
-        data = data,
-        onDismissRequest = onDismissRequest,
-        onResult = onResult
-    )
-}
-
-@Composable
-private fun GalleryScreen(
-    navController: NavController,
     argument: GalleryArgument,
-    data: GalleryData,
-    onDismissRequest: () -> Unit,
-    onResult: (List<GalleryImage>) -> Unit,
+    data: GalleryData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
@@ -145,11 +97,12 @@ private fun GalleryScreen(
         if (isGranted) {
             intent(GalleryIntent.OnGrantPermission)
         } else {
-            onDismissRequest()
+            // TODO : 고도화
+            navController.navigateUp()
         }
     }
-    val selectedList: MutableList<GalleryImage> = remember {
-        mutableStateListOf<GalleryImage>(*data.selectedImageList.toTypedArray())
+    val selectedImageUriList: MutableList<String> = remember {
+        mutableStateListOf<String>(*data.selectedImageUriList.toTypedArray())
     }
     var isDropDownMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var currentFolder: GalleryFolder by remember { mutableStateOf(GalleryFolder.recent) }
@@ -182,14 +135,14 @@ private fun GalleryScreen(
                 data.galleryImageList[index]?.let { gallery ->
                     GalleryScreenItem(
                         galleryImage = gallery,
-                        selectedList = selectedList,
+                        selectedUriList = selectedImageUriList,
                         onSelectImage = { image ->
-                            if (selectedList.size < data.maxSelectCount) {
-                                selectedList.add(image)
+                            if (selectedImageUriList.size < data.selectRange.last) {
+                                selectedImageUriList.add(image.filePath)
                             }
                         },
                         onDeleteImage = { image ->
-                            selectedList.removeIf { it.id == image.id }
+                            selectedImageUriList.remove(image.filePath)
                         }
                     )
                 }
@@ -252,16 +205,19 @@ private fun GalleryScreen(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            if (selectedList.size >= data.minSelectCount) {
+            if (selectedImageUriList.size in data.selectRange) {
                 Text(
-                    text = selectedList.size.toString(),
+                    text = selectedImageUriList.size.toString(),
                     style = TitleSemiBoldSmall.merge(Blue)
                 )
                 Spacer(modifier = Modifier.width(Space8))
                 RippleBox(
                     onClick = {
-                        onDismissRequest()
-                        onResult(selectedList)
+                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                            GalleryConstant.RESULT_IMAGE_URI_LIST,
+                            selectedImageUriList.toTypedArray()
+                        )
+                        navController.safeNavigateUp()
                     }
                 ) {
                     Text(
@@ -301,13 +257,13 @@ private fun GalleryScreen(
 @Composable
 fun GalleryScreenItem(
     galleryImage: GalleryImage,
-    selectedList: List<GalleryImage>,
+    selectedUriList: List<String>,
     onSelectImage: (GalleryImage) -> Unit,
     onDeleteImage: (GalleryImage) -> Unit
 ) {
     val context = LocalContext.current
 
-    val index = selectedList.indexOfFirst { it.id == galleryImage.id }
+    val index = selectedUriList.indexOfFirst { it == galleryImage.filePath }
 
     Box(
         modifier = Modifier
@@ -448,12 +404,9 @@ private fun GalleryScreenPreview1() {
         data = GalleryData(
             folderList = listOf(),
             galleryImageList = MutableStateFlow<PagingData<GalleryImage>>(PagingData.empty()).collectAsLazyPagingItems(),
-            selectedImageList = listOf(),
-            minSelectCount = 1,
-            maxSelectCount = 1
-        ),
-        onDismissRequest = {},
-        onResult = {}
+            selectedImageUriList = listOf(),
+            selectRange = 1..1
+        )
     )
 }
 
@@ -477,30 +430,20 @@ private fun GalleryScreenPreview2() {
                         GalleryImage(
                             id = 1,
                             filePath = "https://via.placeholder.com/150",
-                            name = "image1",
-                            date = "2021-09-01"
+                            name = "image1"
                         ),
                         GalleryImage(
                             id = 2,
                             filePath = "https://via.placeholder.com/150",
-                            name = "image1",
-                            date = "2021-09-01"
+                            name = "image2"
                         )
                     )
                 )
             ).collectAsLazyPagingItems(),
-            selectedImageList = listOf(
-                GalleryImage(
-                    id = 1,
-                    filePath = "https://via.placeholder.com/150",
-                    name = "image1",
-                    date = "2021-09-01"
-                )
+            selectedImageUriList = listOf(
+                "https://via.placeholder.com/150"
             ),
-            minSelectCount = 1,
-            maxSelectCount = 1
-        ),
-        onDismissRequest = {},
-        onResult = {}
+            selectRange = 1..1
+        )
     )
 }

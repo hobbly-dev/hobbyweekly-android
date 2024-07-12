@@ -39,6 +39,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.plus
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.MutableEventFlow
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.eventObserve
+import kr.hobbly.hobbyweekly.android.common.util.takeIfNotEmpty
 import kr.hobbly.hobbyweekly.android.presentation.R
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.HeadlineRegular
 import kr.hobbly.hobbyweekly.android.presentation.common.theme.LabelRegular
@@ -59,19 +60,18 @@ import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmBut
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonSize
 import kr.hobbly.hobbyweekly.android.presentation.common.view.confirm.ConfirmButtonType
 import kr.hobbly.hobbyweekly.android.presentation.common.view.textfield.TypingTextField
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
-import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryScreen
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 import kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.entry.RegisterEntryConstant
 
 @Composable
 fun RegisterProfileScreen(
     navController: NavController,
-    argument: RegisterProfileArgument
+    argument: RegisterProfileArgument,
+    data: RegisterProfileData
 ) {
     val (state, event, intent, logEvent, handler) = argument
     val scope = rememberCoroutineScope() + handler
 
-    var image: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var nickname: String by rememberSaveable { mutableStateOf("") }
 
     val isNicknameSizeValid = nickname.length in 0..10
@@ -80,22 +80,16 @@ fun RegisterProfileScreen(
     val isConfirmButtonEnabled =
         state != RegisterProfileState.Loading && nickname.isNotBlank() && isNicknameSizeValid && isNicknameFormValid && isNicknameServerCheckSuccess
 
-    var isGalleryShowing by remember { mutableStateOf(false) }
-
-    if (isGalleryShowing) {
-        GalleryScreen(
-            navController = navController,
-            onDismissRequest = { isGalleryShowing = false },
-            onResult = { image = it.firstOrNull() }
-        )
-    }
-
     fun navigateToRegisterEntry() {
         navController.safeNavigate(RegisterEntryConstant.ROUTE) {
             popUpTo(RegisterProfileConstant.ROUTE) {
                 inclusive = true
             }
         }
+    }
+
+    fun navigateToGallery() {
+        navController.safeNavigate(GalleryConstant.ROUTE)
     }
 
     Column(
@@ -117,12 +111,12 @@ fun RegisterProfileScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable {
-                            isGalleryShowing = true
+                            navigateToGallery()
                         }
                 ) {
-                    image?.let {
+                    data.selectedImageUri.takeIfNotEmpty()?.let {
                         AsyncImage(
-                            model = it.filePath,
+                            model = it,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -223,7 +217,7 @@ fun RegisterProfileScreen(
                 intent(
                     RegisterProfileIntent.OnConfirm(
                         nickname = nickname,
-                        image = image
+                        imageUri = data.selectedImageUri
                     )
                 )
             }
@@ -277,7 +271,7 @@ fun RegisterProfileScreen(
 
 @Preview
 @Composable
-private fun RegisterProfileScreenPreview() {
+private fun RegisterProfileScreenPreview1() {
     RegisterProfileScreen(
         navController = rememberNavController(),
         argument = RegisterProfileArgument(
@@ -286,6 +280,27 @@ private fun RegisterProfileScreenPreview() {
             intent = {},
             logEvent = { _, _ -> },
             handler = CoroutineExceptionHandler { _, _ -> }
+        ),
+        data = RegisterProfileData(
+            selectedImageUri = ""
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun RegisterProfileScreenPreview2() {
+    RegisterProfileScreen(
+        navController = rememberNavController(),
+        argument = RegisterProfileArgument(
+            state = RegisterProfileState.Init,
+            event = MutableEventFlow(),
+            intent = {},
+            logEvent = { _, _ -> },
+            handler = CoroutineExceptionHandler { _, _ -> }
+        ),
+        data = RegisterProfileData(
+            selectedImageUri = "https://via.placeholder.com/150"
         )
     )
 }

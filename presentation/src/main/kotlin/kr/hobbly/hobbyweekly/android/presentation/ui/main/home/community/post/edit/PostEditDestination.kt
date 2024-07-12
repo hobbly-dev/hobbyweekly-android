@@ -55,6 +55,7 @@ fun NavGraphBuilder.postEditDestination(
             val boardId = viewModel.boardId
             val postId = viewModel.postId
             val routineId = viewModel.postId
+            val newImageUriList by viewModel.newImageUriList.collectAsStateWithLifecycle()
 
             PostEditData(
                 block = block,
@@ -62,7 +63,8 @@ fun NavGraphBuilder.postEditDestination(
                 blockId = blockId,
                 boardId = boardId,
                 postId = postId,
-                routineId = routineId
+                routineId = routineId,
+                newImageUriList = newImageUriList
             )
         }
 

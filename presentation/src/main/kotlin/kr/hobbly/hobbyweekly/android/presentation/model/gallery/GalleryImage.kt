@@ -7,6 +7,5 @@ import kotlinx.parcelize.Parcelize
 data class GalleryImage(
     val id: Long,
     val filePath: String,
-    val name: String,
-    val date: String
+    val name: String
 ) : Parcelable

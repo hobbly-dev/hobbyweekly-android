@@ -14,7 +14,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.EditProfileU
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.user.EditProfileWithUploadUseCase
 import kr.hobbly.hobbyweekly.android.presentation.common.base.BaseViewModel
 import kr.hobbly.hobbyweekly.android.presentation.common.base.ErrorEvent
-import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryImage
+import kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery.GalleryConstant
 
 @HiltViewModel
 class RegisterProfileViewModel @Inject constructor(
@@ -30,12 +30,19 @@ class RegisterProfileViewModel @Inject constructor(
     private val _event: MutableEventFlow<RegisterProfileEvent> = MutableEventFlow()
     val event: EventFlow<RegisterProfileEvent> = _event.asEventFlow()
 
+    val selectedImageUri: StateFlow<String> = savedStateHandle.getStateFlow<Array<String>>(
+        GalleryConstant.RESULT_IMAGE_URI_LIST,
+        emptyArray()
+    ).map("") {
+        it.firstOrNull().orEmpty()
+    }
+
     fun onIntent(intent: RegisterProfileIntent) {
         when (intent) {
             is RegisterProfileIntent.OnConfirm -> {
                 setProfile(
                     nickname = intent.nickname,
-                    image = intent.image
+                    imageUri = intent.imageUri
                 )
             }
         }
@@ -43,11 +50,11 @@ class RegisterProfileViewModel @Inject constructor(
 
     private fun setProfile(
         nickname: String,
-        image: GalleryImage?
+        imageUri: String
     ) {
         launch {
             _state.value = RegisterProfileState.Loading
-            if (image == null) {
+            if (imageUri.isEmpty()) {
                 editProfileUseCase(
                     nickname = nickname,
                     image = ""
@@ -69,7 +76,7 @@ class RegisterProfileViewModel @Inject constructor(
             } else {
                 editProfileWithUploadUseCase(
                     nickname = nickname,
-                    imageUri = image.filePath
+                    imageUri = imageUri
                 ).onSuccess {
                     _state.value = RegisterProfileState.Init
                     _event.emit(RegisterProfileEvent.SetProfile.Success)
