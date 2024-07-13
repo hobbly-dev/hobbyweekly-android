@@ -65,8 +65,7 @@ class GalleryCursor @Inject constructor(
                     id = id,
                     filePath = filePath,
                     name = name,
-                    date = date ?: "",
-                    size = 0,
+                    date = date ?: ""
                 )
                 galleryImageList.add(image)
             }

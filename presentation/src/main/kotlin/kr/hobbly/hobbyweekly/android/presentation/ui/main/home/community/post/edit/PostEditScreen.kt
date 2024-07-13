@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -105,7 +106,7 @@ fun PostEditScreen(
     var title: String by rememberSaveable { mutableStateOf("") }
     var content: String by rememberSaveable { mutableStateOf("") }
     var originalImageList: List<String> by rememberSaveable { mutableStateOf(emptyList()) }
-    var newImageList: List<GalleryImage> by rememberSaveable { mutableStateOf(emptyList()) }
+    var newImageList: List<GalleryImage> by remember { mutableStateOf(emptyList()) }
     val isPostButtonEnabled =
         title.isNotEmpty() && content.isNotEmpty() && state != PostEditState.Loading
     var isAnonymous: Boolean by rememberSaveable { mutableStateOf(false) }
