@@ -1,6 +1,6 @@
 # HobbyWeekly
 
-[![Android CI](https://github.com/hobbly-dev/hobbyweekly-android/actions/workflows/android.yml/badge.svg?branch=main)](https://github.com/hobbly-dev/hobbyweekly-android/actions/workflows/android.yml)
+[![android-ci](https://github.com/hobbly-dev/hobbyweekly-android/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/hobbly-dev/hobbyweekly-android/actions/workflows/android-ci.yml)
 
 ## Description
 
