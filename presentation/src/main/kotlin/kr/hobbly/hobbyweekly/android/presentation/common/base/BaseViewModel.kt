@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -20,6 +18,7 @@ import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.tracking.LogEvent
 
 abstract class BaseViewModel : ViewModel() {
 
+    // TODO : ioDispatcher Injection
     val coroutineContext: CoroutineContext by lazy {
         handler
     }
