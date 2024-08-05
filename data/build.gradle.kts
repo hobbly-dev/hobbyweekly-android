@@ -72,6 +72,7 @@ dependencies {
     testImplementation(testFixtures(project(":domain")))
 
     testImplementation(libs.bundles.test)
+    testImplementation(libs.ktor.mock)
     kspTest(libs.hilt.android.compiler)
 
     testFixturesImplementation(libs.bundles.kotlin)

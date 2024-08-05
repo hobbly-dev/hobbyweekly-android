@@ -3,10 +3,12 @@ package kr.hobbly.hobbyweekly.android.data.remote.network.di
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dagger.hilt.testing.TestInstallIn
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -15,48 +17,70 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
-import java.util.Optional
-import javax.inject.Qualifier
+import io.ktor.utils.io.ByteReadChannel
 import javax.inject.Singleton
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kr.hobbly.hobbyweekly.android.data.remote.network.api.ApiTestConstant
+import kr.hobbly.hobbyweekly.android.data.remote.network.api.nonfeature.FileApiTestRoute
+import kr.hobbly.hobbyweekly.android.data.remote.network.model.nonfeature.error.ErrorRes
 import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.TokenRepository
-import okhttp3.Interceptor
 
 @Module
-@InstallIn(SingletonComponent::class)
-object KtorModule {
+@TestInstallIn(
+    components = [SingletonComponent::class],
+    replaces = [KtorModule::class]
+)
+internal object KtorModuleTest {
 
     private val jsonConfiguration = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
 
+    private val mockEngine = MockEngine { request ->
+        listOf(
+            FileApiTestRoute()
+        ).forEach { route ->
+            with(route) {
+                routing(request)?.let { response ->
+                    return@MockEngine response
+                }
+            }
+        }
+
+        return@MockEngine respond(
+            content = ByteReadChannel(
+                Json.encodeToString(
+                    ErrorRes(
+                        detailStatusCode = ApiTestConstant.DEFAULT_ERROR_CODE,
+                        message = ApiTestConstant.DEFAULT_ERROR_MESSAGE
+                    )
+                )
+            ),
+            status = HttpStatusCode.BadRequest,
+            headers = headersOf(HttpHeaders.ContentType, "application/json")
+        )
+    }
+
     @Provides
     @Singleton
     @NoAuthHttpClient
-    internal fun provideNoAuthHttpClient(
-        @ApplicationContext context: Context,
-        @DebugInterceptor debugInterceptor: Optional<Interceptor>
+    fun provideNoAuthHttpClient(
+        @ApplicationContext context: Context
     ): HttpClient {
-        return HttpClient(OkHttp) {
+        return HttpClient(mockEngine) {
             expectSuccess = false
-
-            engine {
-                if (debugInterceptor.isPresent) {
-                    addInterceptor(debugInterceptor.get())
-                }
-            }
 
             install(ContentNegotiation) {
                 json(jsonConfiguration)
             }
 
-            // TODO : install(HttpTimeout)
-
-            // TODO : 이거 왜 안 들어가고 있는지 확인
             defaultRequest {
-                header(HttpHeaders.ContentType, "application/json")
+                header("Content-Type", "application/json")
             }
         }
     }
@@ -64,19 +88,12 @@ object KtorModule {
     @Provides
     @Singleton
     @AuthHttpClient
-    internal fun provideAuthHttpClient(
+    fun provideAuthHttpClient(
         @ApplicationContext context: Context,
-        @DebugInterceptor debugInterceptor: Optional<Interceptor>,
         tokenRepository: TokenRepository
     ): HttpClient {
-        return HttpClient(OkHttp) {
+        return HttpClient(mockEngine) {
             expectSuccess = false
-
-            engine {
-                if (debugInterceptor.isPresent) {
-                    addInterceptor(debugInterceptor.get())
-                }
-            }
 
             install(ContentNegotiation) {
                 json(jsonConfiguration)
@@ -115,16 +132,9 @@ object KtorModule {
                 }
             }
 
-            // TODO : 이거 왜 안 들어가고 있는지 확인
             defaultRequest {
-                header(HttpHeaders.ContentType, "application/json")
+                header("Content-Type", "application/json")
             }
         }
     }
 }
-
-@Qualifier
-annotation class NoAuthHttpClient
-
-@Qualifier
-annotation class AuthHttpClient
