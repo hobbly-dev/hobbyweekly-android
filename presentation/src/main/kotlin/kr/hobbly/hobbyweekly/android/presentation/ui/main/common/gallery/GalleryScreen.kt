@@ -103,7 +103,7 @@ fun GalleryScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -137,8 +137,8 @@ private fun GalleryScreen(
     onDismissRequest: () -> Unit,
     onResult: (List<GalleryImage>) -> Unit,
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val localConfiguration = LocalConfiguration.current
 
     val perMissionAlbumLauncher = rememberLauncherForActivityResult(
@@ -303,7 +303,7 @@ private fun GalleryScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -455,7 +455,7 @@ private fun GalleryScreenPreview1() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = GalleryData(
             folderList = listOf(),
@@ -479,7 +479,7 @@ private fun GalleryScreenPreview2() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = GalleryData(
             folderList = listOf(),

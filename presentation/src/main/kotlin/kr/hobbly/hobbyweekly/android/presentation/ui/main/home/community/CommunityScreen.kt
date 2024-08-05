@@ -122,7 +122,7 @@ fun CommunityScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -153,8 +153,8 @@ private fun CommunityScreen(
     argument: CommunityArgument,
     data: CommunityData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val refreshState = rememberPullToRefreshState()
 
     fun navigateToNotification() {
@@ -481,23 +481,23 @@ private fun CommunityScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(CommunityIntent.Refresh)
     }
 
-    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, coroutineContext) {
         if (refreshState.isRefreshing) {
             intent(CommunityIntent.Refresh)
         }
     }
 
-    LaunchedEffectWithLifecycle(state, handler) {
+    LaunchedEffectWithLifecycle(state, coroutineContext) {
         if (state != CommunityState.Loading) {
             refreshState.endRefresh()
         }
@@ -683,7 +683,7 @@ private fun CommunityScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = CommunityData(
             myBlockList = listOf(

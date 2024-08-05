@@ -99,8 +99,8 @@ fun PostEditScreen(
     argument: PostEditArgument,
     data: PostEditData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     var title: String by rememberSaveable { mutableStateOf("") }
@@ -596,7 +596,7 @@ fun PostEditScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is PostEditEvent.Load -> {
@@ -678,7 +678,7 @@ private fun PostEditScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = PostEditData(
             block = Block(

@@ -1,7 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.myblock
 
 import androidx.compose.runtime.Immutable
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlin.coroutines.CoroutineContext
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 
 @Immutable
@@ -10,7 +10,7 @@ data class MyBlockArgument(
     val event: EventFlow<MyBlockEvent>,
     val intent: (MyBlockIntent) -> Unit,
     val logEvent: (eventName: String, params: Map<String, Any>) -> Unit,
-    val handler: CoroutineExceptionHandler
+    val coroutineContext: CoroutineContext
 )
 
 sealed interface MyBlockState {

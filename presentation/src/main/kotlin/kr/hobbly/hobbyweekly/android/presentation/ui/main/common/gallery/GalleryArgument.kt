@@ -1,7 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.common.gallery
 
 import androidx.compose.runtime.Immutable
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlin.coroutines.CoroutineContext
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.presentation.model.gallery.GalleryFolder
 
@@ -11,7 +11,7 @@ data class GalleryArgument(
     val event: EventFlow<GalleryEvent>,
     val intent: (GalleryIntent) -> Unit,
     val logEvent: (eventName: String, params: Map<String, Any>) -> Unit,
-    val handler: CoroutineExceptionHandler
+    val coroutineContext: CoroutineContext
 )
 
 sealed interface GalleryState {

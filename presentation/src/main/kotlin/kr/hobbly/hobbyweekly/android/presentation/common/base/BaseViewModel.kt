@@ -3,8 +3,11 @@ package kr.hobbly.hobbyweekly.android.presentation.common.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -16,7 +19,12 @@ import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.asEventFlow
 import kr.hobbly.hobbyweekly.android.domain.usecase.nonfeature.tracking.LogEventUseCase
 
 abstract class BaseViewModel : ViewModel() {
-    val handler = CoroutineExceptionHandler { _, throwable ->
+
+    val coroutineContext: CoroutineContext by lazy {
+        handler
+    }
+
+    protected val handler = CoroutineExceptionHandler { _, throwable ->
         viewModelScope.launch {
             _errorEvent.emit(ErrorEvent.Client(throwable))
         }
@@ -29,7 +37,7 @@ abstract class BaseViewModel : ViewModel() {
     lateinit var logEventUseCase: LogEventUseCase
 
     fun launch(block: suspend CoroutineScope.() -> Unit) {
-        viewModelScope.launch(handler, block = block)
+        viewModelScope.launch(coroutineContext, block = block)
     }
 
     protected inline fun <T, R> StateFlow<T>.map(

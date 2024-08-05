@@ -79,7 +79,7 @@ fun RoutineBlockScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -110,8 +110,8 @@ private fun RoutineBlockScreen(
     onClickBlock: (Block) -> Unit,
     onConfirm: () -> Unit
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val localConfiguration = LocalConfiguration.current
 
     BottomSheetScreen(
@@ -216,13 +216,13 @@ private fun RoutineBlockScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(RoutineBlockIntent.Refresh)
     }
 }
@@ -282,7 +282,7 @@ private fun RoutineBlockScreenPreview1() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineBlockData(
             myBlockList = listOf(
@@ -344,7 +344,7 @@ private fun RoutineBlockScreenPreview2() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineBlockData(
             myBlockList = emptyList()

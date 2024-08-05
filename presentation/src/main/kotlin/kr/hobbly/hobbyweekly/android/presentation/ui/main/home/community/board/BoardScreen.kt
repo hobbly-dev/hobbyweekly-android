@@ -103,8 +103,8 @@ fun BoardScreen(
     argument: BoardArgument,
     data: BoardData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val refreshState = rememberPullToRefreshState()
 
     var isBoardRoutineShowing: Boolean by remember { mutableStateOf(false) }
@@ -322,23 +322,23 @@ fun BoardScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(BoardIntent.Refresh)
     }
 
-    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, coroutineContext) {
         if (refreshState.isRefreshing) {
             intent(BoardIntent.Refresh)
         }
     }
 
-    LaunchedEffectWithLifecycle(state, handler) {
+    LaunchedEffectWithLifecycle(state, coroutineContext) {
         if (state != BoardState.Loading) {
             refreshState.endRefresh()
         }
@@ -465,7 +465,7 @@ private fun BoardScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardData(
             block = Block(

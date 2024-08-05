@@ -117,8 +117,8 @@ fun PostScreen(
     argument: PostArgument,
     data: PostData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val focusRequester = remember { FocusRequester() }
     val keyboard = LocalSoftwareKeyboardController.current
 
@@ -786,7 +786,7 @@ fun PostScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is PostEvent.Post -> {
@@ -800,17 +800,17 @@ fun PostScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(PostIntent.Post.Refresh)
     }
 
-    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, coroutineContext) {
         if (refreshState.isRefreshing) {
             intent(PostIntent.Post.Refresh)
         }
     }
 
-    LaunchedEffectWithLifecycle(state, handler) {
+    LaunchedEffectWithLifecycle(state, coroutineContext) {
         if (state != PostState.Loading) {
             refreshState.endRefresh()
         }
@@ -1061,7 +1061,7 @@ private fun PostScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = PostData(
             block = Block(

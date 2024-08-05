@@ -68,8 +68,8 @@ fun RegisterProfileScreen(
     navController: NavController,
     argument: RegisterProfileArgument
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     var image: GalleryImage? by rememberSaveable { mutableStateOf(null) }
     var nickname: String by rememberSaveable { mutableStateOf("") }
@@ -260,7 +260,7 @@ fun RegisterProfileScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is RegisterProfileEvent.CheckNickname -> {
@@ -285,7 +285,7 @@ private fun RegisterProfileScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         )
     )
 }

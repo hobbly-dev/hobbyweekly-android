@@ -72,8 +72,8 @@ fun MyPageStatisticsScreen(
     argument: MyPageStatisticsArgument,
     data: MyPageStatisticsData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val totalCount = data.routineStatisticsList.sumOf { it.totalCount }
@@ -216,13 +216,13 @@ fun MyPageStatisticsScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
     }
 
-    LaunchedEffectWithLifecycle(showingDate, handler) {
+    LaunchedEffectWithLifecycle(showingDate, coroutineContext) {
         intent(MyPageStatisticsIntent.OnDateChanged(showingDate))
     }
 }
@@ -301,7 +301,7 @@ private fun MyPageStatisticsScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyPageStatisticsData(
             routineStatisticsList = listOf(

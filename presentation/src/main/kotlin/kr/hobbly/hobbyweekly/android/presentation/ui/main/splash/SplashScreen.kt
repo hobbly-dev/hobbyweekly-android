@@ -35,8 +35,8 @@ fun SplashScreen(
     navController: NavController,
     argument: SplashArgument,
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     fun navigateToRegister() {
@@ -92,7 +92,7 @@ fun SplashScreen(
         )
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             scope.launch {
                 when (event) {
@@ -113,7 +113,7 @@ private fun SplashScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         )
     )
 }

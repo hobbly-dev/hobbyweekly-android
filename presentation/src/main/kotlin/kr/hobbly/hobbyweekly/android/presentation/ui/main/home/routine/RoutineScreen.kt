@@ -130,7 +130,7 @@ fun RoutineScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -158,8 +158,8 @@ private fun RoutineScreen(
     argument: RoutineArgument,
     data: RoutineData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
@@ -514,7 +514,7 @@ private fun RoutineScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             scope.launch {
                 when (event) {
@@ -533,7 +533,7 @@ private fun RoutineScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(RoutineIntent.Refresh)
     }
 }
@@ -774,14 +774,14 @@ private fun RoutineScreenPreview1() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         argument = RoutineArgument(
             state = RoutineState.Loading,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineData(
             profile = Profile(
@@ -804,14 +804,14 @@ private fun RoutineScreenPreview2() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         argument = RoutineArgument(
             state = RoutineState.Init,
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineData(
             profile = Profile(

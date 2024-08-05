@@ -1,7 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.routine.edit
 
 import androidx.compose.runtime.Immutable
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlin.coroutines.CoroutineContext
 import kotlinx.datetime.LocalTime
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 import kr.hobbly.hobbyweekly.android.domain.model.feature.routine.Routine
@@ -12,7 +12,7 @@ data class RoutineEditArgument(
     val event: EventFlow<RoutineEditEvent>,
     val intent: (RoutineEditIntent) -> Unit,
     val logEvent: (eventName: String, params: Map<String, Any>) -> Unit,
-    val handler: CoroutineExceptionHandler
+    val coroutineContext: CoroutineContext
 )
 
 sealed interface RoutineEditState {

@@ -64,8 +64,8 @@ fun MyBlockScreen(
     argument: MyBlockArgument,
     data: MyBlockData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     fun navigateToBlock(
         block: Block
@@ -152,7 +152,7 @@ fun MyBlockScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -214,7 +214,7 @@ private fun MyBlockScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyBlockData(
             myBlockList = listOf(

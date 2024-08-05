@@ -79,8 +79,8 @@ fun CommunitySearchScreen(
     argument: CommunitySearchArgument,
     data: CommunitySearchData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val focusRequester = remember { FocusRequester() }
 
     var keyword: String by remember { mutableStateOf("") }
@@ -240,7 +240,7 @@ fun CommunitySearchScreen(
         focusRequester.requestFocus()
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -302,7 +302,7 @@ private fun CommunitySearchScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = CommunitySearchData(
             suggestBlockList = listOf(

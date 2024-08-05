@@ -2,7 +2,6 @@ package kr.hobbly.hobbyweekly.android.presentation.ui.main.nonlogin.register.res
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -57,8 +55,8 @@ fun RegisterResultScreen(
     navController: NavController,
     argument: RegisterResultArgument
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     val introductionImageList = listOf(
         R.drawable.img_introduction_1,
@@ -146,7 +144,7 @@ fun RegisterResultScreen(
     }
 
     LaunchedEffect(pagerState) {
-        launch(handler) {
+        launch(coroutineContext) {
             while (true) {
                 delay(2000L)
                 pagerState.animateScrollToPage(
@@ -157,7 +155,7 @@ fun RegisterResultScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -174,7 +172,7 @@ private fun RegisterResultScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         )
     )
 }

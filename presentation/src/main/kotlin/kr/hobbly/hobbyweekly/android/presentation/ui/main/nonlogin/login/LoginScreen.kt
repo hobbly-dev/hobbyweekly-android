@@ -50,8 +50,8 @@ fun LoginScreen(
     navController: NavController,
     argument: LoginArgument
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     val isConfirmButtonEnabled = argument.state != LoginState.Loading
@@ -143,7 +143,7 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is LoginEvent.Login -> login(event)
@@ -163,7 +163,7 @@ private fun LoginScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         )
     )
 }

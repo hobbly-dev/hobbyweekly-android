@@ -66,8 +66,8 @@ fun PopularBlockScreen(
     argument: PopularBlockArgument,
     data: PopularBlockData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     fun navigateToBlock(
         block: Block
@@ -166,7 +166,7 @@ fun PopularBlockScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -228,7 +228,7 @@ private fun PopularBlockScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = PopularBlockData(
             popularBlockList = listOf(

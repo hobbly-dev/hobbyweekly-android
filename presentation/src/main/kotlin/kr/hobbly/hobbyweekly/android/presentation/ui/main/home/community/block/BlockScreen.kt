@@ -124,8 +124,8 @@ fun BlockScreen(
     argument: BlockArgument,
     data: BlockData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
     val refreshState = rememberPullToRefreshState()
 
@@ -524,7 +524,7 @@ fun BlockScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is BlockEvent.RemoveBlock -> {
@@ -534,17 +534,17 @@ fun BlockScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(Unit, handler) {
+    LaunchedEffectWithLifecycle(Unit, coroutineContext) {
         intent(BlockIntent.Refresh)
     }
 
-    LaunchedEffectWithLifecycle(refreshState.isRefreshing, handler) {
+    LaunchedEffectWithLifecycle(refreshState.isRefreshing, coroutineContext) {
         if (refreshState.isRefreshing) {
             intent(BlockIntent.Refresh)
         }
     }
 
-    LaunchedEffectWithLifecycle(state, handler) {
+    LaunchedEffectWithLifecycle(state, coroutineContext) {
         if (state != BlockState.Loading) {
             refreshState.endRefresh()
         }
@@ -695,7 +695,7 @@ private fun BlockScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BlockData(
             block = Block(

@@ -88,8 +88,8 @@ fun RoutineEditScreen(
     argument: RoutineEditArgument,
     data: RoutineEditData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     val selectedDayOfWeek: MutableList<Int> = remember { mutableStateListOf<Int>() }
@@ -106,7 +106,7 @@ fun RoutineEditScreen(
         runCatching {
             String.format(format, timeAmPm, timeHour, timeMinute)
         }.onFailure { exception ->
-            scope.launch(handler) {
+            scope.launch(coroutineContext) {
                 throw exception
             }
         }.getOrDefault("?? ??:??")
@@ -530,7 +530,7 @@ fun RoutineEditScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is RoutineEditEvent.LoadData -> {
@@ -567,7 +567,7 @@ private fun RoutineEditScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RoutineEditData(
             block = Block(

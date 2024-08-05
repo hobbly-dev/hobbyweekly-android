@@ -119,7 +119,7 @@ fun MyPageScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -147,8 +147,8 @@ private fun MyPageScreen(
     argument: MyPageArgument,
     data: MyPageData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
     val context = LocalContext.current
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -632,7 +632,7 @@ private fun MyPageScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is MyPageEvent.Logout -> {
@@ -646,7 +646,7 @@ private fun MyPageScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(showingDate, handler) {
+    LaunchedEffectWithLifecycle(showingDate, coroutineContext) {
         intent(MyPageIntent.OnDateChanged(showingDate))
     }
 }
@@ -719,7 +719,7 @@ private fun MyPageScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = MyPageData(
             profile = Profile(

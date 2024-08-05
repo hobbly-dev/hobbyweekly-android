@@ -20,8 +20,8 @@ fun RegisterEntryScreen(
     navController: NavController,
     argument: RegisterEntryArgument
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     fun navigateToRegisterTerm() {
         navController.navigate(RegisterTermConstant.ROUTE) {
@@ -55,7 +55,7 @@ fun RegisterEntryScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 RegisterEntryEvent.NeedNickname -> {
@@ -88,7 +88,7 @@ private fun RegisterEntryScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         )
     )
 }

@@ -67,8 +67,8 @@ fun RegisterTermScreen(
     argument: RegisterTermArgument,
     data: RegisterTermData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     val checkedTermList = remember { mutableStateListOf<Long>() }
 
@@ -145,7 +145,7 @@ fun RegisterTermScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is RegisterTermEvent.AgreeTerm -> {
@@ -236,7 +236,7 @@ private fun RegisterTermScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RegisterTermData(
             termList = listOf(

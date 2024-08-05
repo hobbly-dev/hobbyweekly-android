@@ -88,7 +88,7 @@ fun BoardRoutineScreen(
             event = viewModel.event,
             intent = viewModel::onIntent,
             logEvent = viewModel::logEvent,
-            handler = viewModel.handler
+            coroutineContext = viewModel.coroutineContext
         )
     }
 
@@ -118,8 +118,8 @@ private fun BoardRoutineScreen(
     onDismissRequest: () -> Unit,
     onConfirm: (Routine) -> Unit
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val routineList = data.routineList.filter {
@@ -214,7 +214,7 @@ private fun BoardRoutineScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
 
         }
@@ -313,7 +313,7 @@ private fun BoardRoutineScreenPreview1() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardRoutineData(
             blockId = 0L,
@@ -363,7 +363,7 @@ private fun BoardRoutineScreenPreview2() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = BoardRoutineData(
             blockId = 0L,

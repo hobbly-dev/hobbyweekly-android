@@ -73,8 +73,8 @@ fun RegisterHobbyScreen(
     argument: RegisterHobbyArgument,
     data: RegisterHobbyData
 ) {
-    val (state, event, intent, logEvent, handler) = argument
-    val scope = rememberCoroutineScope() + handler
+    val (state, event, intent, logEvent, coroutineContext) = argument
+    val scope = rememberCoroutineScope() + coroutineContext
 
     val minimumHobbyCount = 5
     val additionalHobbyList = remember { mutableStateListOf<String>() }
@@ -198,7 +198,7 @@ fun RegisterHobbyScreen(
         }
     }
 
-    LaunchedEffectWithLifecycle(event, handler) {
+    LaunchedEffectWithLifecycle(event, coroutineContext) {
         event.eventObserve { event ->
             when (event) {
                 is RegisterHobbyEvent.PatchHobby -> {
@@ -247,7 +247,7 @@ private fun RegisterHobbyScreenPreview() {
             event = MutableEventFlow(),
             intent = {},
             logEvent = { _, _ -> },
-            handler = CoroutineExceptionHandler { _, _ -> }
+            coroutineContext = CoroutineExceptionHandler { _, _ -> }
         ),
         data = RegisterHobbyData(
             hobbyList = listOf(

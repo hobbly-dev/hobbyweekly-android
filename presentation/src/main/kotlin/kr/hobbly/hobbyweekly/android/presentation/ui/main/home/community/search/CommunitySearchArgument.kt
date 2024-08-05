@@ -1,7 +1,7 @@
 package kr.hobbly.hobbyweekly.android.presentation.ui.main.home.community.search
 
 import androidx.compose.runtime.Immutable
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlin.coroutines.CoroutineContext
 import kr.hobbly.hobbyweekly.android.common.util.coroutine.event.EventFlow
 
 @Immutable
@@ -10,7 +10,7 @@ data class CommunitySearchArgument(
     val event: EventFlow<CommunitySearchEvent>,
     val intent: (CommunitySearchIntent) -> Unit,
     val logEvent: (eventName: String, params: Map<String, Any>) -> Unit,
-    val handler: CoroutineExceptionHandler
+    val coroutineContext: CoroutineContext
 )
 
 sealed interface CommunitySearchState {

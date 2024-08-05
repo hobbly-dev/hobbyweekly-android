@@ -44,7 +44,7 @@ fun NavGraphBuilder.postEditDestination(
                 event = viewModel.event,
                 intent = viewModel::onIntent,
                 logEvent = viewModel::logEvent,
-                handler = viewModel.handler
+                coroutineContext = viewModel.coroutineContext
             )
         }
 
