@@ -8,8 +8,8 @@ Hobby Weekly 안드로이드 프로젝트입니다.
 
 ### Build
 
-- Gradle 8.7
-- AGP 8.4.0
+- Gradle 8.9
+- AGP 8.5.1
 - Kotlin 1.9.23
 - JDK 17
 - Kotlin DSL
