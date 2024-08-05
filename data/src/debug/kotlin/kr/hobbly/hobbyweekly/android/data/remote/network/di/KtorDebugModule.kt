@@ -10,12 +10,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object KtorDebugModule {
+object KtorDebugModule {
 
     @Provides
     @DebugInterceptor
     @Singleton
-    fun provideDebugInterceptor(): Interceptor {
+    internal fun provideDebugInterceptor(): Interceptor {
         return HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }

@@ -22,47 +22,47 @@ import kr.hobbly.hobbyweekly.android.domain.repository.nonfeature.UserRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class RepositoryModule {
+abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindsAuthenticationRepository(
+    internal abstract fun bindsAuthenticationRepository(
         authenticationRepository: RealAuthenticationRepository
     ): AuthenticationRepository
 
     @Binds
     @Singleton
-    abstract fun bindsFileRepository(
+    internal abstract fun bindsFileRepository(
         fileRepository: RealFileRepository
     ): FileRepository
 
     @Binds
     @Singleton
-    abstract fun bindsTokenRepository(
+    internal abstract fun bindsTokenRepository(
         tokenRepository: RealTokenRepository
     ): TokenRepository
 
     @Binds
     @Singleton
-    abstract fun bindsUserRepository(
+    internal abstract fun bindsUserRepository(
         userRepository: RealUserRepository
     ): UserRepository
 
     @Binds
     @Singleton
-    abstract fun bindsTrackingRepository(
+    internal abstract fun bindsTrackingRepository(
         userRepository: RealTrackingRepository
     ): TrackingRepository
 
     @Binds
     @Singleton
-    abstract fun bindsCommunityRepository(
+    internal abstract fun bindsCommunityRepository(
         communityRepository: RealCommunityRepository
     ): CommunityRepository
 
     @Binds
     @Singleton
-    abstract fun bindsRoutineRepository(
+    internal abstract fun bindsRoutineRepository(
         routineRepository: RealRoutineRepository
     ): RoutineRepository
 }
