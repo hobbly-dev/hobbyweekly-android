@@ -45,14 +45,8 @@ jobs:
           echo $SERVICE_ACCOUNT_FILE_JSON | base64 -di > service_account_file.json
           echo "FIREBASE_APP_ID=$(grep '        "mobilesdk_app_id": "' app/google-services.json | grep -oP '        "mobilesdk_app_id": "\K[^"]+')" >> $GITHUB_ENV
 
-      - name: Stop if tag exists
-        if: env.TAG_EXISTS == 'true'
-        run: |
-          echo "Tag v${APP_VERSION_NAME} already exists. Stopping the workflow."
-          exit 0
-        shell: bash
-
       - name: Create tag
+        if: env.TAG_EXISTS == 'false'
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
@@ -64,6 +58,7 @@ jobs:
 
       # ./gradlew :app:bundleProductionRelease
       - name: Build AAB
+        if: env.TAG_EXISTS == 'false'
         run: |
           ./gradlew :app:bundleDevelopmentDebug
         env:
@@ -72,6 +67,7 @@ jobs:
           KAKAO_APP_KEY: ${{ secrets.KAKAO_APP_KEY }}
 
       - name: Deploy to Firebase
+        if: env.TAG_EXISTS == 'false'
         run: |
           curl -sL https://firebase.tools | bash
           firebase appdistribution:distribute \
