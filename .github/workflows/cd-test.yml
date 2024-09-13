@@ -31,7 +31,7 @@ jobs:
           
           echo "$TAG"
           
-          if [ -z $TAG ]; then
+          if [ -z "$TAG" ]; then
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
           else
             echo "TAG_EXISTS=true" >> $GITHUB_ENV
