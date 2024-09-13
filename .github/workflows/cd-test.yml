@@ -29,7 +29,7 @@ jobs:
           APP_VERSION_NAME=$(grep 'app-versionname = ' gradle/libs.versions.toml | grep -oP 'app-versionname = "\K[^"]+')
           echo "APP_VERSION_CODE=${APP_VERSION_CODE}" >> $GITHUB_ENV
           echo "APP_VERSION_NAME=${APP_VERSION_NAME}" >> $GITHUB_ENV
-          TAG=$(git ls-remote --tags origin | grep -o "refs/tags/v${APP_VERSION_NAME}$" || "")
+          TAG=$(git ls-remote --tags origin | grep -o "refs/tags/v${APP_VERSION_NAME}$") || ""
           
           if [ -z "$TAG" ]; then
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
